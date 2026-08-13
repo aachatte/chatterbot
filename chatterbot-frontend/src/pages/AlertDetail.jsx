@@ -9,6 +9,7 @@ const MOCK_ALERT = {
   status: 'parent_notified',
   severity: 'medium',
   keywords_matched: ['stressed', 'overwhelmed', "can't take it"],
+
   context_summary: 'Chatterbot detected signs of academic stress from Maya around a history paper deadline. The AI provided supportive guidance and broke down the assignment into smaller tasks. No self-harm language was detected.',
   parent_notified_at: '2026-08-10T14:31:00Z',
   created_at: '2026-08-10T14:30:00Z',
