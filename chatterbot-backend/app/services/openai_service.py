@@ -138,8 +138,7 @@ Respond with ONLY valid JSON, no markdown."""
                 model=self.model,
                 messages=[{
                     "role": "user",
-                    "content": f"Rate the sentiment of this text on a scale from -1.0 (very negative) to 1.0 (very positive). Respond with ONLY a number.\n\nText: "{text}""
-                }],
+"content": f'Rate the sentiment of this text on a scale from -1.0 (very negative) to 1.0 (very positive). Respond with ONLY a number.\n\nText: "{text}"'                }],
                 max_tokens=10,
                 temperature=0.1,
             )
