@@ -1,0 +1,150 @@
+/* Chatterbot Guardian Dashboard — Design System */
+
+:root {
+  /* Colors */
+  --cb-bg: #fafafa;
+  --cb-bg-elevated: #ffffff;
+  --cb-bg-muted: #f4f4f5;
+  --cb-bg-strong: #e4e4e7;
+
+  --cb-text-primary: #18181b;
+  --cb-text-secondary: #52525b;
+  --cb-text-tertiary: #a1a1aa;
+  --cb-text-quaternary: #d4d4d8;
+
+  --cb-border: #e4e4e7;
+  --cb-border-strong: #d4d4d8;
+
+  --cb-accent: #2563eb;
+  --cb-accent-soft: color-mix(in srgb, var(--cb-accent) 10%, transparent);
+
+  --cb-positive: #16a34a;
+  --cb-positive-soft: color-mix(in srgb, var(--cb-positive) 12%, transparent);
+  --cb-warning: #ca8a04;
+  --cb-warning-soft: color-mix(in srgb, var(--cb-warning) 12%, transparent);
+  --cb-danger: #dc2626;
+  --cb-danger-soft: color-mix(in srgb, var(--cb-danger) 10%, transparent);
+
+  --cb-chart-1: #2563eb;
+  --cb-chart-2: #dc2626;
+  --cb-chart-3: #16a34a;
+  --cb-chart-4: #7c3aed;
+  --cb-chart-5: #71717a;
+
+  /* Spacing */
+  --cb-space-1: 4px;
+  --cb-space-2: 8px;
+  --cb-space-3: 12px;
+  --cb-space-4: 16px;
+  --cb-space-5: 20px;
+  --cb-space-6: 24px;
+  --cb-space-8: 32px;
+  --cb-space-10: 40px;
+
+  /* Radius */
+  --cb-radius-sm: 6px;
+  --cb-radius-md: 8px;
+  --cb-radius-lg: 10px;
+  --cb-radius-xl: 12px;
+  --cb-radius-full: 9999px;
+
+  /* Shadows */
+  --cb-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --cb-shadow-md: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --cb-shadow-lg: 0 4px 6px -1px rgb(0 0 0 / 0.06), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+
+  /* Transitions */
+  --cb-transition-fast: 150ms ease-out;
+  --cb-transition-normal: 200ms ease-out;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cb-bg: #09090b;
+    --cb-bg-elevated: #18181b;
+    --cb-bg-muted: #27272a;
+    --cb-bg-strong: #3f3f46;
+
+    --cb-text-primary: #fafafa;
+    --cb-text-secondary: #a1a1aa;
+    --cb-text-tertiary: #71717a;
+    --cb-text-quaternary: #52525b;
+
+    --cb-border: #27272a;
+    --cb-border-strong: #3f3f46;
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--cb-text-primary);
+  background: var(--cb-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--cb-border-strong);
+  border-radius: var(--cb-radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cb-text-tertiary);
+}
+
+/* Typography */
+h1, h2, h3, h4 {
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+/* Links */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* Inputs */
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Utility classes */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

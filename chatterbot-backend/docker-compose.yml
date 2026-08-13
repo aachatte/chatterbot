@@ -1,0 +1,89 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    container_name: chatterbot-api
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=False
+      - DATABASE_URL=postgresql://chatterbot:chatterbot@db:5432/chatterbot
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - chatterbot-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: chatterbot-db
+    environment:
+      - POSTGRES_USER=chatterbot
+      - POSTGRES_PASSWORD=chatterbot
+      - POSTGRES_DB=chatterbot
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - chatterbot-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: chatterbot-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - chatterbot-network
+
+  # Celery worker for background tasks (proactive nudges)
+  celery-worker:
+    build: .
+    container_name: chatterbot-celery-worker
+    command: celery -A tasks worker --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://chatterbot:chatterbot@db:5432/chatterbot
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+    networks:
+      - chatterbot-network
+
+  # Celery beat for scheduled tasks
+  celery-beat:
+    build: .
+    container_name: chatterbot-celery-beat
+    command: celery -A tasks beat --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://chatterbot:chatterbot@db:5432/chatterbot
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+      - celery-worker
+    restart: unless-stopped
+    networks:
+      - chatterbot-network
+
+volumes:
+  postgres_data:
+
+networks:
+  chatterbot-network:
+    driver: bridge
