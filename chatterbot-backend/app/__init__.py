@@ -34,7 +34,7 @@ def create_app(config_override=None):
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-    cors.init_app(app)
+    cors.init_app(app, resources={r"/api/*": {"origins": ["https://chatterbot-topaz.vercel.app", "http://localhost:5173"]}})
     limiter.init_app(app)
 
     # Register blueprints
