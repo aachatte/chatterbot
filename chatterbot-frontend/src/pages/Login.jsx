@@ -25,7 +25,6 @@ export default function Login() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--cb-space-4)' }}>
-      {/* We apply the new glass-card class here! */}
       <div className="glass-card" style={{ width: '100%', maxWidth: 420 }}>
         
         {/* Logo and Header */}
@@ -45,27 +44,41 @@ export default function Login() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--cb-space-4)' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--cb-space-5)' }}>
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cb-text-secondary)', marginBottom: 'var(--cb-space-2)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cb-text-secondary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email</label>
             <input 
               type="email" required value={email} onChange={e => setEmail(e.target.value)}
               style={{ 
-                width: '100%', padding: '12px 16px', borderRadius: 'var(--cb-radius-md)', 
-                border: '1px solid var(--cb-border)', background: 'var(--cb-bg-elevated)', 
-                outline: 'none', fontSize: 15, color: 'var(--cb-text-primary)'
+                width: '100%', 
+                padding: '14px 20px', /* Increased padding for more breathing room */
+                borderRadius: 'var(--cb-radius-md)', 
+                border: '2px solid var(--cb-border)', /* Slightly thicker border for definition */
+                background: 'var(--cb-bg-elevated)', 
+                outline: 'none', 
+                fontSize: 16, 
+                color: 'var(--cb-text-primary)'
               }} 
+              onFocus={e => e.target.style.borderColor = 'var(--cb-primary)'}
+              onBlur={e => e.target.style.borderColor = 'var(--cb-border)'}
             />
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cb-text-secondary)', marginBottom: 'var(--cb-space-2)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Password</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cb-text-secondary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Password</label>
             <input 
               type="password" required value={password} onChange={e => setPassword(e.target.value)}
               style={{ 
-                width: '100%', padding: '12px 16px', borderRadius: 'var(--cb-radius-md)', 
-                border: '1px solid var(--cb-border)', background: 'var(--cb-bg-elevated)', 
-                outline: 'none', fontSize: 15, color: 'var(--cb-text-primary)'
-              }} 
+                width: '100%', 
+                padding: '14px 20px', /* Increased padding for more breathing room */
+                borderRadius: 'var(--cb-radius-md)', 
+                border: '2px solid var(--cb-border)', 
+                background: 'var(--cb-bg-elevated)', 
+                outline: 'none', 
+                fontSize: 16, 
+                color: 'var(--cb-text-primary)'
+              }}
+              onFocus={e => e.target.style.borderColor = 'var(--cb-primary)'}
+              onBlur={e => e.target.style.borderColor = 'var(--cb-border)'}
             />
           </div>
 
@@ -74,10 +87,17 @@ export default function Login() {
           <button 
             type="submit" disabled={loading} 
             style={{ 
-              marginTop: 'var(--cb-space-2)', padding: '14px', borderRadius: 'var(--cb-radius-md)', 
-              background: 'var(--cb-primary-gradient)', color: 'white', border: 'none', 
-              fontWeight: 600, fontSize: 15, cursor: loading ? 'not-allowed' : 'pointer', 
-              boxShadow: 'var(--cb-shadow-glow)', transition: 'transform 0.1s' 
+              marginTop: '8px', 
+              padding: '14px', 
+              borderRadius: 'var(--cb-radius-md)', 
+              background: 'var(--cb-primary-gradient)', 
+              color: 'white', 
+              border: 'none', 
+              fontWeight: 600, 
+              fontSize: 16, 
+              cursor: loading ? 'not-allowed' : 'pointer', 
+              boxShadow: 'var(--cb-shadow-glow)', 
+              transition: 'transform 0.1s' 
             }}
             onMouseDown={e => e.currentTarget.style.transform = 'scale(0.98)'}
             onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
