@@ -26,22 +26,60 @@ export default function Dashboard() {
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto', paddingBottom: 40 }}>
       
+      {/* Embedded Mobile CSS */}
+      <style>{`
+        .dashboard-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: var(--cb-space-6);
+        }
+        .dashboard-buttons {
+          display: flex;
+          gap: 12px;
+        }
+        .dashboard-grid {
+          display: grid;
+          grid-template-columns: 2fr 1fr;
+          gap: var(--cb-space-6);
+        }
+        
+        /* Mobile Breakpoints */
+        @media (max-width: 900px) {
+          .dashboard-grid {
+            grid-template-columns: 1fr; /* Stacks graph and insights vertically */
+          }
+          .dashboard-header {
+            flex-direction: column;
+            gap: 20px;
+          }
+          .dashboard-buttons {
+            width: 100%;
+          }
+          .dashboard-buttons button {
+            flex: 1; /* Makes buttons stretch to fill mobile screen */
+            padding: 12px 8px !important;
+            font-size: 14px !important;
+          }
+        }
+      `}</style>
+
       {/* HEADER ROW */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--cb-space-6)' }}>
+      <div className="dashboard-header">
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8, flexWrap: 'wrap' }}>
             <h1 style={{ fontSize: 32, fontWeight: 700, margin: 0, letterSpacing: '-0.5px' }}>Command Center</h1>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(16, 185, 129, 0.1)', color: 'var(--cb-success)', padding: '4px 10px', borderRadius: 20, fontSize: 13, fontWeight: 600 }}>
-              <div className="pulse-dot"></div> AI Monitoring Active
+              <div className="pulse-dot"></div> AI Active
             </div>
           </div>
           <p style={{ color: 'var(--cb-text-secondary)', fontSize: 16 }}>Real-time analytics and predictive safety insights.</p>
         </div>
         
-        <div className="no-print" style={{ display: 'flex', gap: 12 }}>
+        <div className="dashboard-buttons no-print">
           <button 
             onClick={handleExport}
-            style={{ padding: '12px 20px', background: 'white', color: 'var(--cb-text-primary)', border: '1px solid var(--cb-border)', borderRadius: 'var(--cb-radius-lg)', fontWeight: 600, cursor: 'pointer', boxShadow: 'var(--cb-shadow-sm)' }}
+            style={{ padding: '12px 20px', background: 'var(--cb-bg-elevated)', color: 'var(--cb-text-primary)', border: '1px solid var(--cb-border)', borderRadius: 'var(--cb-radius-lg)', fontWeight: 600, cursor: 'pointer', boxShadow: 'var(--cb-shadow-sm)' }}
           >
             📄 Export Report
           </button>
@@ -70,7 +108,7 @@ export default function Dashboard() {
       )}
 
       {/* TOP STATS */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--cb-space-4)', marginBottom: 'var(--cb-space-6)' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--cb-space-4)', marginBottom: 'var(--cb-space-6)' }}>
         {[
           { label: 'Active Teens', value: '2', color: 'var(--cb-text-primary)' },
           { label: 'Messages Processed', value: '141', color: 'var(--cb-text-primary)' },
@@ -84,27 +122,27 @@ export default function Dashboard() {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 'var(--cb-space-6)' }}>
+      <div className="dashboard-grid">
         {/* GRAPH */}
-        <div className="glass-card">
+        <div className="glass-card" style={{ minWidth: 0 }}>
           <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: '4px' }}>Predictive Sentiment Trend</h2>
           <p style={{ fontSize: 14, color: 'var(--cb-text-tertiary)', marginBottom: 'var(--cb-space-5)' }}>
             Scores below 0.0 indicate distress. Early detection prevents crises.
           </p>
-          <div style={{ height: 320, width: '100%' }}>
+          <div style={{ height: 320, width: '100%', minWidth: 0 }}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={weeklyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorMood" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--cb-border)" />
                 <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 13, fill: 'var(--cb-text-tertiary)', fontWeight: 500 }} dy={10} />
                 <YAxis domain={[-1, 1]} axisLine={false} tickLine={false} tick={{ fontSize: 13, fill: 'var(--cb-text-tertiary)' }} />
-                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: 'var(--cb-shadow-lg)' }} labelStyle={{ fontWeight: 'bold', color: 'black' }} />
-                <Area type="monotone" dataKey="mood" stroke="#4f46e5" strokeWidth={4} fillOpacity={1} fill="url(#colorMood)" />
+                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', background: 'var(--cb-bg-elevated)', color: 'var(--cb-text-primary)', boxShadow: 'var(--cb-shadow-lg)' }} labelStyle={{ fontWeight: 'bold' }} />
+                <Area type="monotone" dataKey="mood" stroke="#6366f1" strokeWidth={4} fillOpacity={1} fill="url(#colorMood)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -115,14 +153,14 @@ export default function Dashboard() {
           <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: '4px' }}>AI Insights</h2>
           <p style={{ fontSize: 14, color: 'var(--cb-text-tertiary)', marginBottom: 'var(--cb-space-5)' }}>Based on recent conversations.</p>
           
-          <div style={{ background: 'rgba(79, 70, 229, 0.05)', border: '1px solid rgba(79, 70, 229, 0.2)', padding: 16, borderRadius: 'var(--cb-radius-md)', marginBottom: 16 }}>
+          <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: 16, borderRadius: 'var(--cb-radius-md)', marginBottom: 16 }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cb-primary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Observation</div>
             <p style={{ fontSize: 14, color: 'var(--cb-text-primary)', lineHeight: 1.5 }}>
               Maya has mentioned feeling "overwhelmed" by a history paper 3 times in the last 48 hours. 
             </p>
           </div>
 
-          <div style={{ background: 'var(--cb-bg)', border: '1px solid var(--cb-border)', padding: 16, borderRadius: 'var(--cb-radius-md)' }}>
+          <div style={{ background: 'var(--cb-bg-elevated)', border: '1px solid var(--cb-border)', padding: 16, borderRadius: 'var(--cb-radius-md)' }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cb-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Suggested Approach</div>
             <p style={{ fontSize: 14, color: 'var(--cb-text-secondary)', lineHeight: 1.5 }}>
               Instead of asking "Are you stressed?", try asking: <em>"Would you like me to help you break down your history paper into smaller chunks?"</em>
