@@ -1,4 +1,46 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
+
+const AuthContext = createContext(null)
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const token = localStorage.getItem('cb_token')
+    const demoMode = localStorage.getItem('cb_demo')
+    
+    if (demoMode === 'true') {
+      setUser({ first_name: 'Demo', last_name: 'Parent', email: 'demo@chatterbot.com' })
+    } else if (token) {
+      // Normal token verification logic...
+    }
+    setLoading(false)
+  }, [])
+
+  const loginAsDemo = () => {
+    localStorage.setItem('cb_demo', 'true')
+    setUser({ first_name: 'Demo', last_name: 'Parent', email: 'demo@chatterbot.com' })
+  }
+
+  const logout = () => {
+    localStorage.removeItem('cb_token')
+    localStorage.removeItem('cb_demo')
+    setUser(null)
+  }
+
+  const isAuthenticated = !!user
+
+  return (
+    <AuthContext.Provider value={{ user, isAuthenticated, loading, loginAsDemo, logout }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
+export const useAuth = () => useContext(AuthContext)
+
+import React, { createContext, useContext, useState, useEffect } from 'react'
 import { api, ApiError } from '../services/api.js'
 
 const AuthContext = createContext(null)
