@@ -7,8 +7,9 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const { login, loginAsDemo } = useAuth()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -16,11 +17,16 @@ export default function Login() {
     setLoading(true)
     try {
       await login(email, password)
-      navigate('/')
+      navigate('/dashboard')
     } catch (err) {
       setError(err.data?.error || 'Login failed')
     }
     setLoading(false)
+  }
+
+  const handleDemoBypass = () => {
+    loginAsDemo()
+    navigate('/dashboard')
   }
 
   return (
@@ -51,9 +57,9 @@ export default function Login() {
               type="email" required value={email} onChange={e => setEmail(e.target.value)}
               style={{ 
                 width: '100%', 
-                padding: '14px 20px', /* Increased padding for more breathing room */
+                padding: '14px 20px', 
                 borderRadius: 'var(--cb-radius-md)', 
-                border: '2px solid var(--cb-border)', /* Slightly thicker border for definition */
+                border: '2px solid var(--cb-border)', 
                 background: 'var(--cb-bg-elevated)', 
                 outline: 'none', 
                 fontSize: 16, 
@@ -69,7 +75,7 @@ export default function Login() {
               type="password" required value={password} onChange={e => setPassword(e.target.value)}
               style={{ 
                 width: '100%', 
-                padding: '14px 20px', /* Increased padding for more breathing room */
+                padding: '14px 20px', 
                 borderRadius: 'var(--cb-radius-md)', 
                 border: '2px solid var(--cb-border)', 
                 background: 'var(--cb-bg-elevated)', 
@@ -103,6 +109,28 @@ export default function Login() {
             onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
           >
             {loading ? 'Signing in...' : 'Sign in'}
+          </button>
+
+          {/* Render Offline Demo Bypass Button */}
+          <button 
+            type="button" 
+            onClick={handleDemoBypass}
+            style={{ 
+              padding: '12px', 
+              borderRadius: 'var(--cb-radius-md)', 
+              background: 'transparent', 
+              color: 'var(--cb-text-secondary)', 
+              border: '1px dashed var(--cb-border)', 
+              fontWeight: 500, 
+              fontSize: 14, 
+              cursor: 'pointer',
+              width: '100%',
+              transition: 'background 0.1s'
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--cb-bg-elevated)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          >
+            ⚡ Bypass Login (Render Offline Demo)
           </button>
         </form>
 
