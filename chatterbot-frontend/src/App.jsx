@@ -2,6 +2,7 @@ import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext.jsx'
 import Layout from './components/Layout.jsx'
+import Landing from './pages/Landing.jsx'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import Dashboard from './pages/Dashboard.jsx'
@@ -11,20 +12,14 @@ import Alerts from './pages/Alerts.jsx'
 import AlertDetail from './pages/AlertDetail.jsx'
 import Settings from './pages/Settings.jsx'
 import Billing from './pages/Billing.jsx'
-import DashboardChat from './pages/DashboardChat.jsx' // <-- Added this import
+import DashboardChat from './pages/DashboardChat.jsx'
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
 
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-        color: 'var(--cb-text-secondary)'
-      }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', color: 'var(--cb-text-secondary)' }}>
         Loading...
       </div>
     )
@@ -36,9 +31,12 @@ function ProtectedRoute({ children }) {
 function App() {
   return (
     <Routes>
+      <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/" element={
+      
+      {/* Protected Dashboard Routes */}
+      <Route path="/dashboard" element={
         <ProtectedRoute>
           <Layout />
         </ProtectedRoute>
@@ -46,12 +44,13 @@ function App() {
         <Route index element={<Dashboard />} />
         <Route path="teens" element={<Teens />} />
         <Route path="teens/:id" element={<TeenDetail />} />
-        <Route path="chat" element={<DashboardChat />} /> {/* <-- Added this route */}
+        <Route path="chat" element={<DashboardChat />} />
         <Route path="alerts" element={<Alerts />} />
         <Route path="alerts/:id" element={<AlertDetail />} />
         <Route path="settings" element={<Settings />} />
         <Route path="billing" element={<Billing />} />
       </Route>
+      
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
