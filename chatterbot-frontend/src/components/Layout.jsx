@@ -5,10 +5,19 @@ import { useAuth } from '../context/AuthContext.jsx'
 const navItems = [
   { path: '/', label: 'Dashboard', icon: DashboardIcon },
   { path: '/teens', label: 'Teens', icon: UsersIcon },
+  { path: '/chat', label: 'Assistant', icon: ChatIcon },
   { path: '/alerts', label: 'Alerts', icon: ShieldIcon },
   { path: '/billing', label: 'Billing', icon: CreditCardIcon },
   { path: '/settings', label: 'Settings', icon: SettingsIcon },
 ]
+
+function ChatIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </svg>
+  )
+}
 
 function DashboardIcon({ active }) {
   return (
