@@ -11,6 +11,7 @@ import Alerts from './pages/Alerts.jsx'
 import AlertDetail from './pages/AlertDetail.jsx'
 import Settings from './pages/Settings.jsx'
 import Billing from './pages/Billing.jsx'
+import DashboardChat from './pages/DashboardChat.jsx' // <-- Added this import
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
@@ -45,6 +46,7 @@ function App() {
         <Route index element={<Dashboard />} />
         <Route path="teens" element={<Teens />} />
         <Route path="teens/:id" element={<TeenDetail />} />
+        <Route path="chat" element={<DashboardChat />} /> {/* <-- Added this route */}
         <Route path="alerts" element={<Alerts />} />
         <Route path="alerts/:id" element={<AlertDetail />} />
         <Route path="settings" element={<Settings />} />
