@@ -40,12 +40,14 @@ def create_app(config_override=None):
     # Register blueprints
     from app.routes.auth import auth_bp
     from app.routes.sms import sms_bp
+    from app.routes.dashboard_chat import dashboard_chat_bp
     from app.routes.dashboard import dashboard_bp
     from app.routes.webhook import webhook_bp
     from app.routes.admin import admin_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(sms_bp, url_prefix="/api/sms")
+    app.register_blueprint(dashboard_chat_bp, url_prefix='/api/dashboard-chat')
     app.register_blueprint(dashboard_bp, url_prefix="/api/dashboard")
     app.register_blueprint(webhook_bp, url_prefix="/api/webhooks")
     app.register_blueprint(admin_bp, url_prefix="/api/admin")
