@@ -25,51 +25,23 @@ export default function Dashboard() {
 
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto', paddingBottom: 40 }}>
-      
-      {/* Embedded Mobile CSS */}
       <style>{`
-        .dashboard-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: var(--cb-space-6);
-        }
-        .dashboard-buttons {
-          display: flex;
-          gap: 12px;
-        }
-        .dashboard-grid {
-          display: grid;
-          grid-template-columns: 2fr 1fr;
-          gap: var(--cb-space-6);
-        }
-        
-        /* Mobile Breakpoints */
+        .dashboard-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--cb-space-6); }
+        .dashboard-buttons { display: flex; gap: 12px; }
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: var(--cb-space-6); }
         @media (max-width: 900px) {
-          .dashboard-grid {
-            grid-template-columns: 1fr; /* Stacks graph and insights vertically */
-          }
-          .dashboard-header {
-            flex-direction: column;
-            gap: 20px;
-          }
-          .dashboard-buttons {
-            width: 100%;
-          }
-          .dashboard-buttons button {
-            flex: 1; /* Makes buttons stretch to fill mobile screen */
-            padding: 12px 8px !important;
-            font-size: 14px !important;
-          }
+          .dashboard-grid { grid-template-columns: 1fr; }
+          .dashboard-header { flex-direction: column; gap: 20px; }
+          .dashboard-buttons { width: 100%; }
+          .dashboard-buttons button { flex: 1; padding: 12px 8px !important; font-size: 14px !important; }
         }
       `}</style>
 
-      {/* HEADER ROW */}
       <div className="dashboard-header">
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8, flexWrap: 'wrap' }}>
-            <h1 style={{ fontSize: 32, fontWeight: 700, margin: 0, letterSpacing: '-0.5px' }}>Command Center</h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(16, 185, 129, 0.1)', color: 'var(--cb-success)', padding: '4px 10px', borderRadius: 20, fontSize: 13, fontWeight: 600 }}>
+            <h1 style={{ fontSize: 32, fontWeight: 700, margin: 0 }}>Command Center</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--cb-bg-muted)', color: 'var(--cb-success)', padding: '4px 10px', borderRadius: 20, fontSize: 13, fontWeight: 600 }}>
               <div className="pulse-dot"></div> AI Active
             </div>
           </div>
@@ -77,37 +49,28 @@ export default function Dashboard() {
         </div>
         
         <div className="dashboard-buttons no-print">
-          <button 
-            onClick={handleExport}
-            style={{ padding: '12px 20px', background: 'var(--cb-bg-elevated)', color: 'var(--cb-text-primary)', border: '1px solid var(--cb-border)', borderRadius: 'var(--cb-radius-lg)', fontWeight: 600, cursor: 'pointer', boxShadow: 'var(--cb-shadow-sm)' }}
-          >
+          <button onClick={handleExport} style={{ padding: '12px 20px', background: 'var(--cb-bg-elevated)', color: 'var(--cb-text-primary)', border: '1px solid var(--cb-border)', borderRadius: 'var(--cb-radius-lg)', fontWeight: 600, cursor: 'pointer', boxShadow: 'var(--cb-shadow-sm)' }}>
             📄 Export Report
           </button>
-          <button 
-            onClick={triggerDemoAlert}
-            style={{ padding: '12px 20px', background: 'var(--cb-primary-gradient)', color: 'white', border: 'none', borderRadius: 'var(--cb-radius-lg)', fontWeight: 600, cursor: 'pointer', boxShadow: 'var(--cb-shadow-glow)' }}
-          >
+          <button onClick={triggerDemoAlert} style={{ padding: '12px 20px', background: 'var(--cb-primary-gradient)', color: 'white', border: 'none', borderRadius: 'var(--cb-radius-lg)', fontWeight: 600, cursor: 'pointer', boxShadow: 'var(--cb-shadow-glow)' }}>
             🚨 Simulate Crisis
           </button>
         </div>
       </div>
 
-      {/* DEMO CRISIS BANNER */}
       {showDemoAlert && (
-        <div className="glass-card" style={{ background: 'rgba(254, 242, 242, 0.9)', borderLeft: '6px solid var(--cb-danger)', marginBottom: 'var(--cb-space-6)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="glass-card" style={{ background: 'rgba(225, 29, 72, 0.1)', borderLeft: '6px solid var(--cb-danger)', marginBottom: 'var(--cb-space-6)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h3 style={{ color: '#991B1B', margin: 0, fontSize: 20, display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700 }}>
+            <h3 style={{ color: 'var(--cb-danger)', margin: 0, fontSize: 20, display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700 }}>
               ⚠️ Emergency Alert: Self-Harm Keyword Detected
             </h3>
-            <p style={{ color: '#7F1D1D', margin: '8px 0 0 0', fontSize: 16 }}>
-              <strong>Maya (16)</strong> used high-risk language indicating severe distress in a recent text. 
-              An automatic SMS has been sent to the parent, and 988 resources were provided to the teen.
+            <p style={{ color: 'var(--cb-text-primary)', margin: '8px 0 0 0', fontSize: 16 }}>
+              <strong>Maya (16)</strong> used high-risk language indicating severe distress in a recent text. An automatic SMS has been sent to the parent, and 988 resources were provided.
             </p>
           </div>
         </div>
       )}
 
-      {/* TOP STATS */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--cb-space-4)', marginBottom: 'var(--cb-space-6)' }}>
         {[
           { label: 'Active Teens', value: '2', color: 'var(--cb-text-primary)' },
@@ -117,54 +80,44 @@ export default function Dashboard() {
         ].map(stat => (
           <div key={stat.label} className="glass-card" style={{ padding: '24px' }}>
             <div style={{ fontSize: 14, color: 'var(--cb-text-secondary)', marginBottom: 12, fontWeight: 500 }}>{stat.label}</div>
-            <div style={{ fontSize: 36, fontWeight: 700, color: stat.color, letterSpacing: '-1px' }}>{stat.value}</div>
+            <div style={{ fontSize: 36, fontWeight: 700, color: stat.color }}>{stat.value}</div>
           </div>
         ))}
       </div>
 
       <div className="dashboard-grid">
-        {/* GRAPH */}
         <div className="glass-card" style={{ minWidth: 0 }}>
           <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: '4px' }}>Predictive Sentiment Trend</h2>
-          <p style={{ fontSize: 14, color: 'var(--cb-text-tertiary)', marginBottom: 'var(--cb-space-5)' }}>
-            Scores below 0.0 indicate distress. Early detection prevents crises.
-          </p>
+          <p style={{ fontSize: 14, color: 'var(--cb-text-tertiary)', marginBottom: 'var(--cb-space-5)' }}>Scores below 0.0 indicate distress. Early detection prevents crises.</p>
           <div style={{ height: 320, width: '100%', minWidth: 0 }}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={weeklyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorMood" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--cb-border)" />
                 <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 13, fill: 'var(--cb-text-tertiary)', fontWeight: 500 }} dy={10} />
                 <YAxis domain={[-1, 1]} axisLine={false} tickLine={false} tick={{ fontSize: 13, fill: 'var(--cb-text-tertiary)' }} />
                 <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', background: 'var(--cb-bg-elevated)', color: 'var(--cb-text-primary)', boxShadow: 'var(--cb-shadow-lg)' }} labelStyle={{ fontWeight: 'bold' }} />
-                <Area type="monotone" dataKey="mood" stroke="#6366f1" strokeWidth={4} fillOpacity={1} fill="url(#colorMood)" />
+                <Area type="monotone" dataKey="mood" stroke="#10b981" strokeWidth={4} fillOpacity={1} fill="url(#colorMood)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* AI ACTIONABLE INSIGHTS */}
         <div className="glass-card" style={{ display: 'flex', flexDirection: 'column' }}>
           <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: '4px' }}>AI Insights</h2>
           <p style={{ fontSize: 14, color: 'var(--cb-text-tertiary)', marginBottom: 'var(--cb-space-5)' }}>Based on recent conversations.</p>
-          
-          <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: 16, borderRadius: 'var(--cb-radius-md)', marginBottom: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cb-primary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Observation</div>
-            <p style={{ fontSize: 14, color: 'var(--cb-text-primary)', lineHeight: 1.5 }}>
-              Maya has mentioned feeling "overwhelmed" by a history paper 3 times in the last 48 hours. 
-            </p>
+          <div style={{ background: 'var(--cb-bg-muted)', border: '1px solid var(--cb-border)', padding: 16, borderRadius: 'var(--cb-radius-md)', marginBottom: 16 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cb-primary)', marginBottom: 8, textTransform: 'uppercase' }}>Observation</div>
+            <p style={{ fontSize: 14, color: 'var(--cb-text-primary)', lineHeight: 1.5 }}>Maya has mentioned feeling "overwhelmed" by a history paper 3 times in the last 48 hours.</p>
           </div>
-
           <div style={{ background: 'var(--cb-bg-elevated)', border: '1px solid var(--cb-border)', padding: 16, borderRadius: 'var(--cb-radius-md)' }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cb-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Suggested Approach</div>
-            <p style={{ fontSize: 14, color: 'var(--cb-text-secondary)', lineHeight: 1.5 }}>
-              Instead of asking "Are you stressed?", try asking: <em>"Would you like me to help you break down your history paper into smaller chunks?"</em>
-            </p>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cb-text-secondary)', marginBottom: 8, textTransform: 'uppercase' }}>Suggested Approach</div>
+            <p style={{ fontSize: 14, color: 'var(--cb-text-secondary)', lineHeight: 1.5 }}>Instead of asking "Are you stressed?", try asking: <em>"Would you like me to help you break down your history paper into smaller chunks?"</em></p>
           </div>
         </div>
       </div>
