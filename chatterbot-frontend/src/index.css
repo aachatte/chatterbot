@@ -16,25 +16,15 @@
   /* Borders */
   --cb-border: rgba(134, 239, 172, 0.18);
   
- /* Accent Action Colors (Sunset Orange) */
-  --cb-primary: #ea580c;                /* Vibrant Sunset Orange */
-  --cb-primary-hover: #c2410c;          /* Deep Sunset */
-  --cb-primary-gradient: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-  
-  /* Alert & Status Tokens (For badges and charts) */
-  --cb-success: #10b981;                /* Clinical Emerald */
-  --cb-warning: #f59e0b;                /* Amber warning */
-  --cb-danger: #e11d48;                 /* Critical Alert Crimson */
-  
-  /* Alert & Status Tokens (For badges and charts) */
-  --cb-success: #10b981;                /* Clinical Emerald */
-  --cb-warning: #f59e0b;                /* Amber warning */
-  --cb-danger: #e11d48;                 /* Critical Alert Crimson */
+/* Accent Action Colors (Desaturated Ole Miss Navy) */
+  --cb-primary: #475a75;                /* Muted Oxford Navy */
+  --cb-primary-hover: #324259;          /* Deep Muted Navy */
+  --cb-primary-gradient: linear-gradient(135deg, #5b7190 0%, #475a75 100%);
   
   /* Alert & Status Tokens */
-  --cb-success: #10b981;                /* Active safety badge */
-  --cb-warning: #f59e0b;                /* Moderate sentiment flag */
-  --cb-danger: #e11d48;                 /* Critical escalation alert */
+  --cb-success: #10b981;                /* Clinical Emerald (Kept for health metrics) */
+  --cb-warning: #d99b58;                /* Soft Amber */
+  --cb-danger: #b85a62;                 /* Desaturated Cardinal Red for crises */
 
   /* Layout & Spacing */
   --cb-space-1: 4px; 
