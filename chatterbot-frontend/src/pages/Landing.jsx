@@ -1,9 +1,70 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function Landing() {
-  
-  // Dynamic CSS to apply specific colors to our Lyceum-style pillars
+  // --- DEMO STATE & LOGIC ---
+  const [messages, setMessages] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [parentAlert, setParentAlert] = useState(null);
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
+
+  const playDemo = async (flow) => {
+    setMessages([]);
+    setParentAlert(null);
+    setIsTyping(true);
+    
+    const delay = (ms) => new Promise(res => setTimeout(res, ms));
+
+    if (flow === 'nudge') {
+      await delay(800);
+      setIsTyping(false);
+      setMessages([{ sender: 'bot', text: 'Hey Maya! 👋 How did the rest of your Wednesday go?' }]);
+      
+      await delay(1500);
+      setMessages(prev => [...prev, { sender: 'teen', text: "It was okay. Just got home from practice and I'm exhausted." }]);
+      setIsTyping(true);
+      
+      await delay(1200);
+      setIsTyping(false);
+      setMessages(prev => [...prev, { sender: 'bot', text: 'Practice will definitely do that! Make sure to grab some water. You just chilling for the rest of the night?' }]);
+      
+      await delay(2000);
+      setMessages(prev => [...prev, { sender: 'teen', text: "No I have so much homework. I'm literally so overwhelmed by this history paper." }]);
+      setIsTyping(true);
+
+      await delay(1500);
+      setIsTyping(false);
+      setMessages(prev => [...prev, { sender: 'bot', text: 'Ah, history papers can definitely pile up. 📚 Taking it one step at a time helps. Do you know what topic you\'re focusing on yet?' }]);
+    } 
+    
+    else if (flow === 'crisis') {
+      await delay(500);
+      setIsTyping(false);
+      setMessages([{ sender: 'teen', text: "I can't take this anymore, everyone hates me and I just want to hurt myself." }]);
+      setIsTyping(true);
+      
+      await delay(1500);
+      setIsTyping(false);
+      setMessages(prev => [...prev, { sender: 'bot', text: 'I am so sorry you are feeling this way, but please know you are not alone. Please talk to your parents or call the suicide lifeline at 988 immediately. They can help.' }]);
+      
+      // Trigger the dual-sided parent alert simulation
+      await delay(500);
+      setParentAlert({
+        title: "⚠️ Emergency Alert: Self-Harm Keyword Detected",
+        body: "Maya (16) used high-risk language indicating severe distress. An automatic SMS has been sent to your phone."
+      });
+    }
+  };
+
+  // --- PILLAR STYLING ---
   const getPillarStyle = (colorVar) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -36,7 +97,7 @@ export default function Landing() {
       </nav>
 
       {/* HERO SECTION */}
-      <section style={{ maxWidth: 900, margin: '80px auto 60px auto', textAlign: 'center', padding: '0 var(--cb-space-4)' }}>
+      <section style={{ maxWidth: 900, margin: '60px auto', textAlign: 'center', padding: '0 var(--cb-space-4)' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(200, 16, 46, 0.1)', color: 'var(--cb-danger)', padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 700, marginBottom: 24, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
           <span className="pulse-dot"></span> Next-Gen Adolescent Safety Infrastructure
         </div>
@@ -46,13 +107,76 @@ export default function Landing() {
         <p style={{ fontSize: 'clamp(16px, 2vw, 20px)', color: 'var(--cb-text-secondary)', marginBottom: 40, lineHeight: 1.6, maxWidth: 700, margin: '0 auto 40px auto' }}>
           Chatterbot builds deep trust through daily SMS check-ins, monitoring sentiment patterns and providing automated safety interventions before a crisis occurs.
         </p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <Link to="/register" style={{ background: 'var(--cb-danger)', color: 'white', padding: '16px 32px', borderRadius: 'var(--cb-radius-lg)', textDecoration: 'none', fontWeight: 700, fontSize: 16, boxShadow: 'var(--cb-shadow-glow)' }}>
-            Start Family Protection
-          </Link>
-          <Link to="/login" style={{ background: 'var(--cb-bg-elevated)', color: 'var(--cb-text-primary)', border: '2px solid var(--cb-border)', padding: '16px 32px', borderRadius: 'var(--cb-radius-lg)', textDecoration: 'none', fontWeight: 700, fontSize: 16 }}>
-            Access Demo Dashboard
-          </Link>
+      </section>
+
+      {/* INTERACTIVE DEMO SECTION */}
+      <section style={{ maxWidth: 1000, margin: '0 auto 80px auto', padding: '0 var(--cb-space-4)' }}>
+        <div className="glass-card" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 40, alignItems: 'center', padding: '40px' }}>
+          
+          {/* Left: Phone Mockup */}
+          <div style={{ margin: '0 auto', width: '100%', maxWidth: 320, height: 550, background: '#ffffff', borderRadius: 40, border: '12px solid #1e293b', position: 'relative', overflow: 'hidden', boxShadow: 'var(--cb-shadow-lg)', display: 'flex', flexDirection: 'column' }}>
+            {/* Phone Notch */}
+            <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 120, height: 24, background: '#1e293b', borderBottomLeftRadius: 16, borderBottomRightRadius: 16, zIndex: 10 }}></div>
+            
+            {/* Header */}
+            <div style={{ padding: '36px 16px 12px 16px', background: 'var(--cb-bg-muted)', borderBottom: '1px solid var(--cb-border)', textAlign: 'center', fontSize: 15, fontWeight: 700 }}>
+              Chatterbot (SMS)
+            </div>
+
+            {/* Chat Area */}
+            <div style={{ flex: 1, padding: 16, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 12, background: '#f8fafc' }}>
+              {messages.length === 0 && !isTyping && (
+                <div style={{ textAlign: 'center', color: 'var(--cb-text-tertiary)', fontSize: 13, marginTop: '50%' }}>
+                  Select a scenario to start demo
+                </div>
+              )}
+              
+              {messages.map((m, i) => (
+                <div key={i} style={{ alignSelf: m.sender === 'teen' ? 'flex-end' : 'flex-start', background: m.sender === 'teen' ? 'var(--cb-primary)' : '#e2e8f0', color: m.sender === 'teen' ? '#ffffff' : 'var(--cb-text-primary)', padding: '10px 14px', borderRadius: 18, borderBottomRightRadius: m.sender === 'teen' ? 4 : 18, borderBottomLeftRadius: m.sender === 'bot' ? 4 : 18, maxWidth: '85%', fontSize: 14, lineHeight: 1.4 }}>
+                  {m.text}
+                </div>
+              ))}
+              
+              {isTyping && (
+                <div style={{ alignSelf: 'flex-start', background: '#e2e8f0', padding: '10px 14px', borderRadius: 18, width: 50, display: 'flex', gap: 4, justifyContent: 'center' }}>
+                  <span style={{ width: 6, height: 6, background: 'var(--cb-text-tertiary)', borderRadius: '50%', animation: 'pulse 1s infinite' }}></span>
+                  <span style={{ width: 6, height: 6, background: 'var(--cb-text-tertiary)', borderRadius: '50%', animation: 'pulse 1s infinite 0.2s' }}></span>
+                  <span style={{ width: 6, height: 6, background: 'var(--cb-text-tertiary)', borderRadius: '50%', animation: 'pulse 1s infinite 0.4s' }}></span>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          </div>
+
+          {/* Right: Controls & Alerts */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <div>
+              <h2 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12 }}>Experience the Platform</h2>
+              <p style={{ color: 'var(--cb-text-secondary)', fontSize: 16 }}>See how the system interacts with teens and escalates to parents in real-time. Try a scenario:</p>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <button onClick={() => playDemo('nudge')} style={{ background: 'var(--cb-bg-elevated)', color: 'var(--cb-primary)', border: '2px solid var(--cb-primary)', padding: '14px 20px', borderRadius: 'var(--cb-radius-md)', fontWeight: 700, fontSize: 15, cursor: 'pointer', textAlign: 'left', display: 'flex', justifyContent: 'space-between' }}>
+                <span>👋 Simulate Proactive Check-in</span>
+                <span>→</span>
+              </button>
+              <button onClick={() => playDemo('crisis')} style={{ background: 'var(--cb-bg-elevated)', color: 'var(--cb-danger)', border: '2px solid var(--cb-danger)', padding: '14px 20px', borderRadius: 'var(--cb-radius-md)', fontWeight: 700, fontSize: 15, cursor: 'pointer', textAlign: 'left', display: 'flex', justifyContent: 'space-between' }}>
+                <span>🚨 Simulate Crisis Escalation</span>
+                <span>→</span>
+              </button>
+            </div>
+
+            {/* Parent Alert Banner Simulation */}
+            <div style={{ minHeight: 120 }}>
+              {parentAlert && (
+                <div style={{ background: 'rgba(200, 16, 46, 0.1)', borderLeft: '6px solid var(--cb-danger)', padding: '16px', borderRadius: 'var(--cb-radius-md)', animation: 'slideDown 0.3s ease-out' }}>
+                  <h4 style={{ color: 'var(--cb-danger)', margin: '0 0 8px 0', fontSize: 15, fontWeight: 700 }}>{parentAlert.title}</h4>
+                  <p style={{ color: 'var(--cb-text-primary)', margin: 0, fontSize: 14, lineHeight: 1.5 }}>{parentAlert.body}</p>
+                  <div style={{ fontSize: 12, color: 'var(--cb-danger)', marginTop: 8, fontWeight: 600 }}>DASHBOARD SYNCED & SMS SENT</div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -64,40 +188,32 @@ export default function Landing() {
         </div>
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 32 }}>
-          
           {/* Pillar 1: Navy */}
           <div style={getPillarStyle('--cb-primary')}>
-            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--cb-bg-muted)', color: 'var(--cb-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>
-              I
-            </div>
+            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--cb-bg-muted)', color: 'var(--cb-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>I</div>
             <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cb-primary)' }}>The Core Teen Experience</h3>
             <p style={{ color: 'var(--cb-text-secondary)', lineHeight: 1.6, fontSize: 15 }}>
-              We meet teenagers where they already are. Using Twilio SMS integration, the system proactively texts your teen first—acting as a lifestyle organizer and supportive sounding board. There are no apps to download or bypass, ensuring high daily engagement through frictionless conversation.
+              We meet teenagers where they already are. Using Twilio SMS integration, the system proactively texts your teen first—acting as a lifestyle organizer and supportive sounding board. There are no apps to download or bypass.
             </p>
           </div>
 
           {/* Pillar 2: Cardinal Red */}
           <div style={getPillarStyle('--cb-danger')}>
-            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(200, 16, 46, 0.1)', color: 'var(--cb-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>
-              II
-            </div>
+            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(200, 16, 46, 0.1)', color: 'var(--cb-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>II</div>
             <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cb-danger)' }}>The Guardian Dashboard</h3>
             <p style={{ color: 'var(--cb-text-secondary)', lineHeight: 1.6, fontSize: 15 }}>
-              Parents access a secure, premium portal designed to provide peace of mind. A secondary analytical pipeline reviews text logs to display high-level behavioral insights and predictive mood trends. We give parents the data they need without ever exposing the exact text messages.
+              Parents access a secure, premium portal designed to provide peace of mind. A secondary analytical pipeline reviews text logs to display high-level behavioral insights and predictive mood trends without exposing exact messages.
             </p>
           </div>
 
           {/* Pillar 3: Navy */}
           <div style={getPillarStyle('--cb-primary')}>
-            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--cb-bg-muted)', color: 'var(--cb-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>
-              III
-            </div>
+            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--cb-bg-muted)', color: 'var(--cb-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>III</div>
             <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cb-primary)' }}>Legal & Safety Compliance</h3>
             <p style={{ color: 'var(--cb-text-secondary)', lineHeight: 1.6, fontSize: 15 }}>
-              Built from day one with strict COPPA compliance and data encryption. If the system detects critical zero-latency keywords related to self-harm, bullying, or illegal activity, it instantly pushes SMS alerts to parents while providing 988 resources to the teen.
+              Built from day one with strict COPPA compliance and data encryption. If the system detects critical keywords related to self-harm, bullying, or illegal activity, it instantly pushes alerts to parents and provides 988 resources.
             </p>
           </div>
-
         </div>
       </section>
 
