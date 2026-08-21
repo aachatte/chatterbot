@@ -2,29 +2,29 @@
   /* Clean Sans-Serif Stack for Readability */
   --cb-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   
-  /* Dark Oxford Backgrounds (Deep, desaturated navy slates) */
-  --cb-bg: #0d1117;                     
-  --cb-bg-elevated: #161c24;            
-  --cb-bg-glass: rgba(22, 28, 36, 0.75); 
-  --cb-bg-muted: rgba(71, 90, 117, 0.15);
+  /* Bright Academic Backgrounds */
+  --cb-bg: #f4f6f8;                     
+  --cb-bg-elevated: #ffffff;            
+  --cb-bg-glass: rgba(255, 255, 255, 0.95); 
+  --cb-bg-muted: rgba(0, 32, 91, 0.06);
 
-  /* Neutral Text Tokens */
-  --cb-text-primary: #f0f2f5;           
-  --cb-text-secondary: #9ea8b3;         
-  --cb-text-tertiary: #6b7785;          
+  /* Navy Text Tokens */
+  --cb-text-primary: #00205B;           /* Official Ole Miss Navy */
+  --cb-text-secondary: #334155;         
+  --cb-text-tertiary: #64748b;          
   
   /* Borders */
-  --cb-border: rgba(158, 168, 179, 0.15);
+  --cb-border: rgba(0, 32, 91, 0.15);
   
-  /* Accent Action Colors (Desaturated Ole Miss Navy) */
-  --cb-primary: #475a75;                
-  --cb-primary-hover: #324259;
-  --cb-primary-gradient: linear-gradient(135deg, #5b7190 0%, #475a75 100%);
+  /* Official Ole Miss Navy Action Colors */
+  --cb-primary: #00205B;                
+  --cb-primary-hover: #001338;
+  --cb-primary-gradient: linear-gradient(135deg, #003380 0%, #00205B 100%);
   
-  /* Alert & Status Tokens (Zero Green) */
-  --cb-success: #5b7190;                /* Light Navy for active states instead of green */
-  --cb-warning: #d99b58;                /* Soft Amber */
-  --cb-danger: #b85a62;                 /* Desaturated Cardinal Red */
+  /* Alert & Status Tokens */
+  --cb-success: #00205B;                /* Navy for active states */
+  --cb-warning: #eab308;                
+  --cb-danger: #C8102E;                 /* Official Ole Miss Cardinal Red */
 
   /* Layout & Spacing */
   --cb-space-1: 4px; 
@@ -40,9 +40,9 @@
   --cb-radius-xl: 20px;
   
   /* Shadows */
-  --cb-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --cb-shadow-lg: 0 12px 36px -8px rgba(0, 0, 0, 0.6);
-  --cb-shadow-glow: 0 8px 24px -4px rgba(71, 90, 117, 0.35); /* Navy glow */
+  --cb-shadow-sm: 0 2px 8px rgba(0, 32, 91, 0.08);
+  --cb-shadow-lg: 0 12px 36px -8px rgba(0, 32, 91, 0.15);
+  --cb-shadow-glow: 0 8px 24px -4px rgba(200, 16, 46, 0.25); /* Subtle red glow for main buttons */
 }
 
 * { 
@@ -54,45 +54,38 @@
 body {
   font-family: var(--cb-font);
   background-color: var(--cb-bg);
-  /* Ambient glow using Ole Miss colors */
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(71, 90, 117, 0.12) 0px, transparent 55%),
-    radial-gradient(at 100% 100%, rgba(184, 90, 98, 0.08) 0px, transparent 50%);
   color: var(--cb-text-primary);
   letter-spacing: 0.01em;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Frosted Card */
+/* Crisp White Cards */
 .glass-card {
   background: var(--cb-bg-glass);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--cb-border);
   box-shadow: var(--cb-shadow-lg);
   border-radius: var(--cb-radius-xl);
   padding: var(--cb-space-6);
 }
 
-/* Pulsing Indicator (Navy instead of green) */
+/* Pulsing Indicator */
 .pulse-dot {
   width: 10px; 
   height: 10px; 
   border-radius: 50%; 
-  background-color: var(--cb-success);
-  box-shadow: 0 0 0 0 rgba(91, 113, 144, 0.8);
+  background-color: var(--cb-danger);
+  box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.8);
   animation: pulse 2.2s infinite ease-in-out;
 }
 
 @keyframes pulse {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(91, 113, 144, 0.8); }
-  70% { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(91, 113, 144, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(91, 113, 144, 0); }
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.8); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(200, 16, 46, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(200, 16, 46, 0); }
 }
 
-/* Print Styles */
 @media print {
   .no-print { display: none !important; }
-  body { background: white; color: #111827; }
-  .glass-card { box-shadow: none; border: 1px solid #d1d5db; background: white; color: #111827; }
+  body { background: white; color: black; }
+  .glass-card { box-shadow: none; border: 1px solid #d1d5db; }
 }
