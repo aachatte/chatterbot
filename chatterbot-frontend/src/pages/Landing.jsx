@@ -7,10 +7,10 @@ export default function Landing() {
   const [isTyping, setIsTyping] = useState(false);
   const [parentAlert, setParentAlert] = useState(null);
   
-  // NEW: Ref targets the container, not the bottom element
+  // Ref targets the container, not the bottom element, to prevent page jumping
   const chatContainerRef = useRef(null);
 
-  // NEW: Only scrolls the internal chat box, never the whole webpage
+  // Only scrolls the internal chat box
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -33,34 +33,99 @@ export default function Landing() {
       setIsTyping(false);
       setMessages([{ sender: 'bot', text: 'Hey Maya! 👋 How did the rest of your Wednesday go?' }]);
       
-      await delay(1500);
+      await delay(2000);
       setMessages(prev => [...prev, { sender: 'teen', text: "It was okay. Just got home from practice and I'm exhausted." }]);
       setIsTyping(true);
       
-      await delay(1200);
+      await delay(1500);
       setIsTyping(false);
       setMessages(prev => [...prev, { sender: 'bot', text: 'Practice will definitely do that! Make sure to grab some water. You just chilling for the rest of the night?' }]);
       
-      await delay(2000);
+      await delay(2500);
       setMessages(prev => [...prev, { sender: 'teen', text: "No I have so much homework. I'm literally so overwhelmed by this history paper." }]);
+      setIsTyping(true);
+
+      await delay(2000);
+      setIsTyping(false);
+      setMessages(prev => [...prev, { sender: 'bot', text: 'Ah, history papers can definitely pile up. 📚 Taking it one step at a time helps. Do you know what topic you\'re focusing on yet?' }]);
+      
+      await delay(3000);
+      setMessages(prev => [...prev, { sender: 'teen', text: "Yeah the industrial revolution but I can't find good sources and it's due Friday. I'm freaking out a little." }]);
+      setIsTyping(true);
+
+      await delay(2000);
+      setIsTyping(false);
+      setMessages(prev => [...prev, { sender: 'bot', text: "Deep breaths! You still have time. Maybe just aim to find two good sources tonight and write the intro tomorrow? You've got this." }]);
+      
+      await delay(2000);
+      setMessages(prev => [...prev, { sender: 'teen', text: "Yeah maybe. I'll try looking on the school portal." }]);
       setIsTyping(true);
 
       await delay(1500);
       setIsTyping(false);
-      setMessages(prev => [...prev, { sender: 'bot', text: 'Ah, history papers can definitely pile up. 📚 Taking it one step at a time helps. Do you know what topic you\'re focusing on yet?' }]);
+      setMessages(prev => [...prev, { sender: 'bot', text: "Good plan. Good luck with the research, and let me know if you need a distraction later!" }]);
     } 
     
-    else if (flow === 'crisis') {
-      await delay(500);
+    else if (flow === 'friends') {
+      await delay(800);
       setIsTyping(false);
-      setMessages([{ sender: 'teen', text: "I can't take this anymore, everyone hates me and I just want to hurt myself." }]);
+      setMessages([{ sender: 'teen', text: "my best friend is being weird today and I'm really annoyed." }]);
+      setIsTyping(true);
+      
+      await delay(1800);
+      setIsTyping(false);
+      setMessages(prev => [...prev, { sender: 'bot', text: "I'm sorry to hear that. Friend drama is always tough. Have you talked to them directly about it?" }]);
+      
+      await delay(2000);
+      setMessages(prev => [...prev, { sender: 'teen', text: "no I'm too scared they'll get mad and ice me out." }]);
+      setIsTyping(true);
+
+      await delay(2200);
+      setIsTyping(false);
+      setMessages(prev => [...prev, { sender: 'bot', text: "That's totally understandable. Sometimes writing out what you want to say in your notes app first can make it less scary. Want to try that?" }]);
+    }
+
+    else if (flow === 'boredom') {
+      await delay(800);
+      setIsTyping(false);
+      setMessages([{ sender: 'teen', text: "i am so bored and idk what to do right now." }]);
       setIsTyping(true);
       
       await delay(1500);
       setIsTyping(false);
-      setMessages(prev => [...prev, { sender: 'bot', text: 'I am so sorry you are feeling this way, but please know you are not alone. Please talk to your parents or call the suicide lifeline at 988 immediately. They can help.' }]);
+      setMessages(prev => [...prev, { sender: 'bot', text: "I feel that! Sometimes doing one tiny thing helps. Want a random mini-goal to build some momentum?" }]);
       
-      await delay(500);
+      await delay(1800);
+      setMessages(prev => [...prev, { sender: 'teen', text: "sure what is it" }]);
+      setIsTyping(true);
+
+      await delay(2000);
+      setIsTyping(false);
+      setMessages(prev => [...prev, { sender: 'bot', text: "Drink a glass of water, find one song you haven't heard in a year, and listen to it. Let me know what song it is!" }]);
+    }
+    
+    else if (flow === 'crisis') {
+      await delay(800);
+      setIsTyping(false);
+      setMessages([{ sender: 'teen', text: "I can't take this anymore, everyone hates me and I just want to hurt myself." }]);
+      setIsTyping(true);
+      
+      // Graduated 3-part crisis response
+      await delay(2000);
+      setIsTyping(false);
+      setMessages(prev => [...prev, { sender: 'bot', text: 'I am so sorry you are feeling this way. That sounds incredibly heavy, but please know you are not alone.' }]);
+      setIsTyping(true);
+
+      await delay(1500);
+      setIsTyping(false);
+      setMessages(prev => [...prev, { sender: 'bot', text: "I'm here for you. It's really important to talk to someone who can help keep you safe right now." }]);
+      setIsTyping(true);
+
+      await delay(1500);
+      setIsTyping(false);
+      setMessages(prev => [...prev, { sender: 'bot', text: 'Please talk to your parents or call the suicide lifeline at 988 immediately. They are trained to help.' }]);
+      
+      await delay(800);
       setParentAlert({
         title: "⚠️ Emergency Alert: Self-Harm Keyword Detected",
         body: "Maya (16) used high-risk language indicating severe distress. An automatic SMS has been sent to your phone."
@@ -110,17 +175,16 @@ export default function Landing() {
         </p>
       </section>
 
-      <section style={{ maxWidth: 1000, margin: '0 auto 80px auto', padding: '0 var(--cb-space-4)' }}>
-        <div className="glass-card" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 40, alignItems: 'center', padding: '40px' }}>
+      <section style={{ maxWidth: 1100, margin: '0 auto 80px auto', padding: '0 var(--cb-space-4)' }}>
+        <div className="glass-card" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 40, alignItems: 'center', padding: '40px' }}>
           
-          <div style={{ margin: '0 auto', width: '100%', maxWidth: 320, height: 550, background: '#ffffff', borderRadius: 40, border: '12px solid #1e293b', position: 'relative', overflow: 'hidden', boxShadow: 'var(--cb-shadow-lg)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ margin: '0 auto', width: '100%', maxWidth: 340, height: 600, background: '#ffffff', borderRadius: 40, border: '12px solid #1e293b', position: 'relative', overflow: 'hidden', boxShadow: 'var(--cb-shadow-lg)', display: 'flex', flexDirection: 'column' }}>
             <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 120, height: 24, background: '#1e293b', borderBottomLeftRadius: 16, borderBottomRightRadius: 16, zIndex: 10 }}></div>
             
             <div style={{ padding: '36px 16px 12px 16px', background: 'var(--cb-bg-muted)', borderBottom: '1px solid var(--cb-border)', textAlign: 'center', fontSize: 15, fontWeight: 700 }}>
               Chatterbot (SMS)
             </div>
 
-            {/* NEW: chatContainerRef added here for internal scrolling */}
             <div ref={chatContainerRef} style={{ flex: 1, padding: 16, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 12, background: '#f8fafc', scrollBehavior: 'smooth' }}>
               {messages.length === 0 && !isTyping && (
                 <div style={{ textAlign: 'center', color: 'var(--cb-text-tertiary)', fontSize: 13, marginTop: '50%' }}>
@@ -147,21 +211,25 @@ export default function Landing() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <div>
               <h2 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12 }}>Experience the Platform</h2>
-              <p style={{ color: 'var(--cb-text-secondary)', fontSize: 16 }}>See how the system interacts with teens and escalates to parents in real-time. Try a scenario:</p>
+              <p style={{ color: 'var(--cb-text-secondary)', fontSize: 16 }}>Watch how Chatterbot extracts context, builds rapport across different topics, and triggers a graduated response during crises.</p>
             </div>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <button onClick={() => playDemo('nudge')} style={{ background: 'var(--cb-bg-elevated)', color: 'var(--cb-primary)', border: '2px solid var(--cb-primary)', padding: '14px 20px', borderRadius: 'var(--cb-radius-md)', fontWeight: 700, fontSize: 15, cursor: 'pointer', textAlign: 'left', display: 'flex', justifyContent: 'space-between' }}>
-                <span>👋 Simulate Proactive Check-in</span>
-                <span>→</span>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <button onClick={() => playDemo('nudge')} style={{ background: 'var(--cb-bg-elevated)', color: 'var(--cb-primary)', border: '2px solid var(--cb-primary)', padding: '14px', borderRadius: 'var(--cb-radius-md)', fontWeight: 700, fontSize: 14, cursor: 'pointer', textAlign: 'left' }}>
+                👋 Extended Check-in
               </button>
-              <button onClick={() => playDemo('crisis')} style={{ background: 'var(--cb-bg-elevated)', color: 'var(--cb-danger)', border: '2px solid var(--cb-danger)', padding: '14px 20px', borderRadius: 'var(--cb-radius-md)', fontWeight: 700, fontSize: 15, cursor: 'pointer', textAlign: 'left', display: 'flex', justifyContent: 'space-between' }}>
-                <span>🚨 Simulate Crisis Escalation</span>
-                <span>→</span>
+              <button onClick={() => playDemo('friends')} style={{ background: 'var(--cb-bg-elevated)', color: 'var(--cb-primary)', border: '2px solid var(--cb-primary)', padding: '14px', borderRadius: 'var(--cb-radius-md)', fontWeight: 700, fontSize: 14, cursor: 'pointer', textAlign: 'left' }}>
+                👯‍♀️ Peer Conflict
+              </button>
+              <button onClick={() => playDemo('boredom')} style={{ background: 'var(--cb-bg-elevated)', color: 'var(--cb-primary)', border: '2px solid var(--cb-primary)', padding: '14px', borderRadius: 'var(--cb-radius-md)', fontWeight: 700, fontSize: 14, cursor: 'pointer', textAlign: 'left' }}>
+                🥱 Teen Boredom
+              </button>
+              <button onClick={() => playDemo('crisis')} style={{ background: 'var(--cb-danger)', color: '#ffffff', border: '2px solid var(--cb-danger)', padding: '14px', borderRadius: 'var(--cb-radius-md)', fontWeight: 700, fontSize: 14, cursor: 'pointer', textAlign: 'left' }}>
+                🚨 Crisis Pipeline
               </button>
             </div>
 
-            <div style={{ minHeight: 120 }}>
+            <div style={{ minHeight: 120, marginTop: 16 }}>
               {parentAlert && (
                 <div style={{ background: 'rgba(200, 16, 46, 0.1)', borderLeft: '6px solid var(--cb-danger)', padding: '16px', borderRadius: 'var(--cb-radius-md)', animation: 'slideDown 0.3s ease-out' }}>
                   <h4 style={{ color: 'var(--cb-danger)', margin: '0 0 8px 0', fontSize: 15, fontWeight: 700 }}>{parentAlert.title}</h4>
