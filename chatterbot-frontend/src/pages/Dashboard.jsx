@@ -11,6 +11,28 @@ const weeklyData = [
   { day: 'Sun', mood: 0.8, messages: 20 },
 ];
 
+// Expanded AI Insights Data
+const aiInsights = [
+  {
+    id: 1,
+    category: "Academic Stress",
+    observation: 'Maya has mentioned feeling "overwhelmed" by a history paper 3 times in the last 48 hours.',
+    suggestion: 'Instead of asking "Are you stressed?", try asking: "Would you like me to help you break down your history paper into smaller chunks?"'
+  },
+  {
+    id: 2,
+    category: "Sleep Patterns",
+    observation: 'Texting patterns indicate Maya is frequently active and responding to messages past 1:30 AM on weeknights.',
+    suggestion: 'Consider establishing a "devices in the kitchen by 10 PM" family routine, framing it around wellness rather than punishment.'
+  },
+  {
+    id: 3,
+    category: "Social Dynamics",
+    observation: 'Maya used language indicating frustration with her peer group (e.g., "being weird", "icing me out").',
+    suggestion: 'Validate her feelings first. Try saying: "Friend drama is really exhausting. Do you want advice, or do you just want to vent?"'
+  }
+];
+
 export default function Dashboard() {
   const [showDemoAlert, setShowDemoAlert] = useState(false);
 
@@ -25,10 +47,13 @@ export default function Dashboard() {
 
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto', paddingBottom: 40 }}>
+      
       <style>{`
         .dashboard-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--cb-space-6); }
         .dashboard-buttons { display: flex; gap: 12px; }
-        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: var(--cb-space-6); }
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1.2fr; gap: var(--cb-space-6); }
+        .insight-scroll::-webkit-scrollbar { width: 6px; }
+        .insight-scroll::-webkit-scrollbar-thumb { background: var(--cb-border); border-radius: 10px; }
         @media (max-width: 900px) {
           .dashboard-grid { grid-template-columns: 1fr; }
           .dashboard-header { flex-direction: column; gap: 20px; }
@@ -40,12 +65,12 @@ export default function Dashboard() {
       <div className="dashboard-header">
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8, flexWrap: 'wrap' }}>
-            <h1 style={{ fontSize: 32, fontWeight: 700, margin: 0 }}>Command Center</h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--cb-bg-muted)', color: 'var(--cb-success)', padding: '4px 10px', borderRadius: 20, fontSize: 13, fontWeight: 600 }}>
+            <h1 style={{ fontSize: 32, fontWeight: 700, margin: 0, letterSpacing: '-0.5px' }}>Command Center</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(16, 185, 129, 0.1)', color: 'var(--cb-success)', padding: '4px 10px', borderRadius: 20, fontSize: 13, fontWeight: 600 }}>
               <div className="pulse-dot"></div> AI Active
             </div>
           </div>
-          <p style={{ color: 'var(--cb-text-secondary)', fontSize: 16 }}>Real-time analytics and predictive safety insights.</p>
+          <p style={{ color: 'var(--cb-text-secondary)', fontSize: 16 }}>Real-time analytics and predictive safety insights[cite: 1].</p>
         </div>
         
         <div className="dashboard-buttons no-print">
@@ -59,13 +84,14 @@ export default function Dashboard() {
       </div>
 
       {showDemoAlert && (
-        <div className="glass-card" style={{ background: 'rgba(225, 29, 72, 0.1)', borderLeft: '6px solid var(--cb-danger)', marginBottom: 'var(--cb-space-6)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="glass-card" style={{ background: 'rgba(254, 242, 242, 0.9)', borderLeft: '6px solid var(--cb-danger)', marginBottom: 'var(--cb-space-6)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h3 style={{ color: 'var(--cb-danger)', margin: 0, fontSize: 20, display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700 }}>
+            <h3 style={{ color: '#991B1B', margin: 0, fontSize: 20, display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700 }}>
               ⚠️ Emergency Alert: Self-Harm Keyword Detected
             </h3>
-            <p style={{ color: 'var(--cb-text-primary)', margin: '8px 0 0 0', fontSize: 16 }}>
-              <strong>Maya (16)</strong> used high-risk language indicating severe distress in a recent text. An automatic SMS has been sent to the parent, and 988 resources were provided.
+            <p style={{ color: '#7F1D1D', margin: '8px 0 0 0', fontSize: 16 }}>
+              <strong>Maya (16)</strong> used high-risk language indicating severe distress in a recent text. 
+              An automatic SMS has been sent to the parent, and 988 resources were provided to the teen[cite: 1].
             </p>
           </div>
         </div>
@@ -80,44 +106,67 @@ export default function Dashboard() {
         ].map(stat => (
           <div key={stat.label} className="glass-card" style={{ padding: '24px' }}>
             <div style={{ fontSize: 14, color: 'var(--cb-text-secondary)', marginBottom: 12, fontWeight: 500 }}>{stat.label}</div>
-            <div style={{ fontSize: 36, fontWeight: 700, color: stat.color }}>{stat.value}</div>
+            <div style={{ fontSize: 36, fontWeight: 700, color: stat.color, letterSpacing: '-1px' }}>{stat.value}</div>
           </div>
         ))}
       </div>
 
       <div className="dashboard-grid">
-        <div className="glass-card" style={{ minWidth: 0 }}>
+        {/* GRAPH */}
+        <div className="glass-card" style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
           <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: '4px' }}>Predictive Sentiment Trend</h2>
-          <p style={{ fontSize: 14, color: 'var(--cb-text-tertiary)', marginBottom: 'var(--cb-space-5)' }}>Scores below 0.0 indicate distress. Early detection prevents crises.</p>
-          <div style={{ height: 320, width: '100%', minWidth: 0 }}>
+          <p style={{ fontSize: 14, color: 'var(--cb-text-tertiary)', marginBottom: 'var(--cb-space-5)' }}>
+            Scores below 0.0 indicate distress. Early detection prevents crises[cite: 1].
+          </p>
+          <div style={{ flex: 1, minHeight: 320, width: '100%', minWidth: 0 }}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={weeklyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorMood" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="var(--cb-primary)" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="var(--cb-primary)" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--cb-border)" />
                 <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 13, fill: 'var(--cb-text-tertiary)', fontWeight: 500 }} dy={10} />
                 <YAxis domain={[-1, 1]} axisLine={false} tickLine={false} tick={{ fontSize: 13, fill: 'var(--cb-text-tertiary)' }} />
                 <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', background: 'var(--cb-bg-elevated)', color: 'var(--cb-text-primary)', boxShadow: 'var(--cb-shadow-lg)' }} labelStyle={{ fontWeight: 'bold' }} />
-                <Area type="monotone" dataKey="mood" stroke="#10b981" strokeWidth={4} fillOpacity={1} fill="url(#colorMood)" />
+                <Area type="monotone" dataKey="mood" stroke="var(--cb-primary)" strokeWidth={4} fillOpacity={1} fill="url(#colorMood)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column' }}>
-          <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: '4px' }}>AI Insights</h2>
-          <p style={{ fontSize: 14, color: 'var(--cb-text-tertiary)', marginBottom: 'var(--cb-space-5)' }}>Based on recent conversations.</p>
-          <div style={{ background: 'var(--cb-bg-muted)', border: '1px solid var(--cb-border)', padding: 16, borderRadius: 'var(--cb-radius-md)', marginBottom: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cb-primary)', marginBottom: 8, textTransform: 'uppercase' }}>Observation</div>
-            <p style={{ fontSize: 14, color: 'var(--cb-text-primary)', lineHeight: 1.5 }}>Maya has mentioned feeling "overwhelmed" by a history paper 3 times in the last 48 hours.</p>
-          </div>
-          <div style={{ background: 'var(--cb-bg-elevated)', border: '1px solid var(--cb-border)', padding: 16, borderRadius: 'var(--cb-radius-md)' }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cb-text-secondary)', marginBottom: 8, textTransform: 'uppercase' }}>Suggested Approach</div>
-            <p style={{ fontSize: 14, color: 'var(--cb-text-secondary)', lineHeight: 1.5 }}>Instead of asking "Are you stressed?", try asking: <em>"Would you like me to help you break down your history paper into smaller chunks?"</em></p>
+        {/* EXPANDED AI INSIGHTS */}
+        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', maxHeight: 500 }}>
+          <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: '4px' }}>AI Coaching Insights</h2>
+          <p style={{ fontSize: 14, color: 'var(--cb-text-tertiary)', marginBottom: 'var(--cb-space-5)' }}>Synthesized from recent conversations[cite: 1].</p>
+          
+          <div className="insight-scroll" style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 'var(--cb-space-5)', paddingRight: '8px' }}>
+            {aiInsights.map((insight) => (
+              <div key={insight.id} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                
+                {/* Observation Block */}
+                <div style={{ background: 'var(--cb-bg-muted)', border: '1px solid var(--cb-border)', padding: 16, borderRadius: 'var(--cb-radius-md)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--cb-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Observation</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, background: 'var(--cb-bg)', padding: '2px 8px', borderRadius: 12, color: 'var(--cb-text-secondary)' }}>{insight.category}</div>
+                  </div>
+                  <p style={{ fontSize: 14, color: 'var(--cb-text-primary)', lineHeight: 1.5 }}>{insight.observation}</p>
+                </div>
+
+                {/* Suggestion Block */}
+                <div style={{ background: 'var(--cb-bg-elevated)', border: '1px dashed var(--cb-border)', padding: 16, borderRadius: 'var(--cb-radius-md)' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--cb-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Suggested Approach</div>
+                  <p style={{ fontSize: 14, color: 'var(--cb-text-secondary)', lineHeight: 1.5 }}>
+                    {insight.suggestion.split('"').map((text, i) => i % 2 !== 0 ? <em key={i} style={{ color: 'var(--cb-text-primary)', fontWeight: 500 }}>"{text}"</em> : text )}
+                  </p>
+                </div>
+                
+                {/* Divider between items except last */}
+                {insight.id !== aiInsights.length && <hr style={{ border: 'none', borderTop: '1px solid var(--cb-border)', margin: '4px 0' }} />}
+              </div>
+            ))}
           </div>
         </div>
       </div>
