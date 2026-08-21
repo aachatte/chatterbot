@@ -6,10 +6,15 @@ export default function Landing() {
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [parentAlert, setParentAlert] = useState(null);
-  const messagesEndRef = useRef(null);
+  
+  // NEW: Ref targets the container, not the bottom element
+  const chatContainerRef = useRef(null);
 
+  // NEW: Only scrolls the internal chat box, never the whole webpage
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -55,7 +60,6 @@ export default function Landing() {
       setIsTyping(false);
       setMessages(prev => [...prev, { sender: 'bot', text: 'I am so sorry you are feeling this way, but please know you are not alone. Please talk to your parents or call the suicide lifeline at 988 immediately. They can help.' }]);
       
-      // Trigger the dual-sided parent alert simulation
       await delay(500);
       setParentAlert({
         title: "⚠️ Emergency Alert: Self-Harm Keyword Detected",
@@ -64,7 +68,6 @@ export default function Landing() {
     }
   };
 
-  // --- PILLAR STYLING ---
   const getPillarStyle = (colorVar) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -82,7 +85,6 @@ export default function Landing() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--cb-bg)', color: 'var(--cb-text-primary)', overflowX: 'hidden' }}>
       
-      {/* NAVBAR */}
       <nav style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px var(--cb-space-6)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 36, height: 36, borderRadius: 'var(--cb-radius-md)', background: 'var(--cb-primary-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -96,7 +98,6 @@ export default function Landing() {
         </div>
       </nav>
 
-      {/* HERO SECTION */}
       <section style={{ maxWidth: 900, margin: '60px auto', textAlign: 'center', padding: '0 var(--cb-space-4)' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(200, 16, 46, 0.1)', color: 'var(--cb-danger)', padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 700, marginBottom: 24, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
           <span className="pulse-dot"></span> Next-Gen Adolescent Safety Infrastructure
@@ -109,22 +110,18 @@ export default function Landing() {
         </p>
       </section>
 
-      {/* INTERACTIVE DEMO SECTION */}
       <section style={{ maxWidth: 1000, margin: '0 auto 80px auto', padding: '0 var(--cb-space-4)' }}>
         <div className="glass-card" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 40, alignItems: 'center', padding: '40px' }}>
           
-          {/* Left: Phone Mockup */}
           <div style={{ margin: '0 auto', width: '100%', maxWidth: 320, height: 550, background: '#ffffff', borderRadius: 40, border: '12px solid #1e293b', position: 'relative', overflow: 'hidden', boxShadow: 'var(--cb-shadow-lg)', display: 'flex', flexDirection: 'column' }}>
-            {/* Phone Notch */}
             <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 120, height: 24, background: '#1e293b', borderBottomLeftRadius: 16, borderBottomRightRadius: 16, zIndex: 10 }}></div>
             
-            {/* Header */}
             <div style={{ padding: '36px 16px 12px 16px', background: 'var(--cb-bg-muted)', borderBottom: '1px solid var(--cb-border)', textAlign: 'center', fontSize: 15, fontWeight: 700 }}>
               Chatterbot (SMS)
             </div>
 
-            {/* Chat Area */}
-            <div style={{ flex: 1, padding: 16, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 12, background: '#f8fafc' }}>
+            {/* NEW: chatContainerRef added here for internal scrolling */}
+            <div ref={chatContainerRef} style={{ flex: 1, padding: 16, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 12, background: '#f8fafc', scrollBehavior: 'smooth' }}>
               {messages.length === 0 && !isTyping && (
                 <div style={{ textAlign: 'center', color: 'var(--cb-text-tertiary)', fontSize: 13, marginTop: '50%' }}>
                   Select a scenario to start demo
@@ -144,11 +141,9 @@ export default function Landing() {
                   <span style={{ width: 6, height: 6, background: 'var(--cb-text-tertiary)', borderRadius: '50%', animation: 'pulse 1s infinite 0.4s' }}></span>
                 </div>
               )}
-              <div ref={messagesEndRef} />
             </div>
           </div>
 
-          {/* Right: Controls & Alerts */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <div>
               <h2 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12 }}>Experience the Platform</h2>
@@ -166,7 +161,6 @@ export default function Landing() {
               </button>
             </div>
 
-            {/* Parent Alert Banner Simulation */}
             <div style={{ minHeight: 120 }}>
               {parentAlert && (
                 <div style={{ background: 'rgba(200, 16, 46, 0.1)', borderLeft: '6px solid var(--cb-danger)', padding: '16px', borderRadius: 'var(--cb-radius-md)', animation: 'slideDown 0.3s ease-out' }}>
@@ -180,7 +174,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* THREE PILLARS SECTION */}
       <section style={{ maxWidth: 1200, margin: '0 auto 100px auto', padding: '0 var(--cb-space-4)' }}>
         <div style={{ textAlign: 'center', marginBottom: 60 }}>
           <h2 style={{ fontSize: 32, fontWeight: 800, marginBottom: 12, letterSpacing: '-0.5px' }}>The Three Pillars of Chatterbot</h2>
@@ -188,7 +181,6 @@ export default function Landing() {
         </div>
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 32 }}>
-          {/* Pillar 1: Navy */}
           <div style={getPillarStyle('--cb-primary')}>
             <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--cb-bg-muted)', color: 'var(--cb-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>I</div>
             <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cb-primary)' }}>The Core Teen Experience</h3>
@@ -197,7 +189,6 @@ export default function Landing() {
             </p>
           </div>
 
-          {/* Pillar 2: Cardinal Red */}
           <div style={getPillarStyle('--cb-danger')}>
             <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(200, 16, 46, 0.1)', color: 'var(--cb-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>II</div>
             <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cb-danger)' }}>The Guardian Dashboard</h3>
@@ -206,7 +197,6 @@ export default function Landing() {
             </p>
           </div>
 
-          {/* Pillar 3: Navy */}
           <div style={getPillarStyle('--cb-primary')}>
             <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--cb-bg-muted)', color: 'var(--cb-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>III</div>
             <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cb-primary)' }}>Legal & Safety Compliance</h3>
@@ -217,7 +207,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer style={{ borderTop: '1px solid var(--cb-border)', padding: '40px 0', textAlign: 'center', color: 'var(--cb-text-tertiary)', fontSize: 14 }}>
         <p>&copy; {new Date().getFullYear()} Chatterbot Technologies, Inc. All rights reserved.</p>
       </footer>
