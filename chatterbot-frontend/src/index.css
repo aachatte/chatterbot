@@ -1,6 +1,6 @@
 :root {
-  /* Serif Typography Stack */
-  --cb-font: 'Times New Roman', Times, 'Libre Baskerville', Georgia, 'Songti SC', serif;
+/* Clean Sans-Serif Stack */
+  --cb-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   
   /* Dark Health-Tech Backgrounds */
   --cb-bg: #0b120f;                     /* Deep evergreen slate */
