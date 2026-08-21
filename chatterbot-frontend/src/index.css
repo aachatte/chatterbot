@@ -16,10 +16,15 @@
   /* Borders */
   --cb-border: rgba(134, 239, 172, 0.18);
   
-  /* Health & Safety Greens */
-  --cb-primary: #10b981;                /* Emerald health accent */
-  --cb-primary-hover: #059669;
-  --cb-primary-gradient: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
+  /* Accent Action Colors (Contrasts against green backgrounds) */
+  --cb-primary: #4f46e5;                /* Vibrant Indigo */
+  --cb-primary-hover: #4338ca;
+  --cb-primary-gradient: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  
+  /* Alert & Status Tokens (For badges and charts) */
+  --cb-success: #10b981;                /* Clinical Emerald */
+  --cb-warning: #f59e0b;                /* Amber warning */
+  --cb-danger: #e11d48;                 /* Critical Alert Crimson */
   
   /* Alert & Status Tokens */
   --cb-success: #10b981;                /* Active safety badge */
