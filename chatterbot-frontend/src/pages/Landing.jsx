@@ -3,20 +3,20 @@ import { Link } from 'react-router-dom';
 
 export default function Landing() {
   
-  // Custom CSS to make the cards look like classical university pillars
-  const pillarStyle = {
+  // Dynamic CSS to apply specific colors to our Lyceum-style pillars
+  const getPillarStyle = (colorVar) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: '16px',
     background: '#ffffff',
     padding: '32px 24px',
-    borderTop: '10px solid var(--cb-primary)',
-    borderBottom: '16px solid var(--cb-primary)',
+    borderTop: `10px solid var(${colorVar})`,
+    borderBottom: `16px solid var(${colorVar})`,
     borderRadius: '4px',
     boxShadow: '0 12px 30px rgba(0, 32, 91, 0.12)',
     backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 15px, rgba(0, 32, 91, 0.03) 15px, rgba(0, 32, 91, 0.03) 30px)',
     textAlign: 'center'
-  };
+  });
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--cb-bg)', color: 'var(--cb-text-primary)', overflowX: 'hidden' }}>
@@ -65,8 +65,8 @@ export default function Landing() {
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 32 }}>
           
-          {/* Pillar 1 */}
-          <div style={pillarStyle}>
+          {/* Pillar 1: Navy */}
+          <div style={getPillarStyle('--cb-primary')}>
             <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--cb-bg-muted)', color: 'var(--cb-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>
               I
             </div>
@@ -76,23 +76,23 @@ export default function Landing() {
             </p>
           </div>
 
-          {/* Pillar 2 */}
-          <div style={pillarStyle}>
-            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--cb-bg-muted)', color: 'var(--cb-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>
+          {/* Pillar 2: Cardinal Red */}
+          <div style={getPillarStyle('--cb-danger')}>
+            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(200, 16, 46, 0.1)', color: 'var(--cb-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>
               II
             </div>
-            <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cb-primary)' }}>The Guardian Dashboard</h3>
+            <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cb-danger)' }}>The Guardian Dashboard</h3>
             <p style={{ color: 'var(--cb-text-secondary)', lineHeight: 1.6, fontSize: 15 }}>
               Parents access a secure, premium portal designed to provide peace of mind. A secondary analytical pipeline reviews text logs to display high-level behavioral insights and predictive mood trends. We give parents the data they need without ever exposing the exact text messages.
             </p>
           </div>
 
-          {/* Pillar 3 */}
-          <div style={pillarStyle}>
-            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(200, 16, 46, 0.1)', color: 'var(--cb-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>
+          {/* Pillar 3: Navy */}
+          <div style={getPillarStyle('--cb-primary')}>
+            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--cb-bg-muted)', color: 'var(--cb-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>
               III
             </div>
-            <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cb-danger)' }}>Legal & Safety Compliance</h3>
+            <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cb-primary)' }}>Legal & Safety Compliance</h3>
             <p style={{ color: 'var(--cb-text-secondary)', lineHeight: 1.6, fontSize: 15 }}>
               Built from day one with strict COPPA compliance and data encryption. If the system detects critical zero-latency keywords related to self-harm, bullying, or illegal activity, it instantly pushes SMS alerts to parents while providing 988 resources to the teen.
             </p>
