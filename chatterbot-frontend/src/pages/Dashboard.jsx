@@ -14,19 +14,19 @@ const weeklyData = [
 const aiInsights = [
   {
     id: 1,
-    category: "Academic Stress",
+    category: "Academic",
     observation: 'Maya has mentioned feeling "overwhelmed" by a history paper 3 times in the last 48 hours.',
     suggestion: 'Instead of asking "Are you stressed?", try asking: "Would you like me to help you break down your history paper into smaller chunks?"'
   },
   {
     id: 2,
-    category: "Sleep Patterns",
+    category: "Sleep",
     observation: 'Texting patterns indicate Maya is frequently active and responding to messages past 1:30 AM on weeknights.',
     suggestion: 'Consider establishing a "devices in the kitchen by 10 PM" family routine, framing it around wellness rather than punishment.'
   },
   {
     id: 3,
-    category: "Social Dynamics",
+    category: "Social",
     observation: 'Maya used language indicating frustration with her peer group (e.g., "being weird", "icing me out").',
     suggestion: 'Validate her feelings first. Try saying: "Friend drama is really exhausting. Do you want advice, or do you just want to vent?"'
   }
@@ -34,6 +34,8 @@ const aiInsights = [
 
 export default function Dashboard() {
   const [showDemoAlert, setShowDemoAlert] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('All');
+  const filters = ['All', 'Academic', 'Sleep', 'Social'];
 
   const triggerDemoAlert = () => {
     setShowDemoAlert(true);
@@ -43,6 +45,10 @@ export default function Dashboard() {
   const handleExport = () => {
     window.print();
   };
+
+  const filteredInsights = activeFilter === 'All' 
+    ? aiInsights 
+    : aiInsights.filter(insight => insight.category === activeFilter);
 
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto', paddingBottom: 40 }}>
@@ -139,13 +145,38 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* EXPANDED AI INSIGHTS */}
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', maxHeight: 500 }}>
+        {/* EXPANDED AI INSIGHTS WITH INTERACTIVE FILTERS */}
+        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', maxHeight: 600 }}>
           <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: '4px' }}>Coaching Insights</h2>
-          <p style={{ fontSize: 14, color: 'var(--cb-text-tertiary)', marginBottom: 'var(--cb-space-5)' }}>Synthesized from recent conversations.</p>
+          <p style={{ fontSize: 14, color: 'var(--cb-text-tertiary)', marginBottom: 'var(--cb-space-4)' }}>
+            Empathetic scripts based on recent sentiment stressors.
+          </p>
+
+          {/* Category Filters */}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: 'var(--cb-space-5)', flexWrap: 'wrap' }}>
+            {filters.map(filter => (
+              <button
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '20px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  border: activeFilter === filter ? 'none' : '1px solid var(--cb-border)',
+                  background: activeFilter === filter ? 'var(--cb-primary-gradient)' : 'var(--cb-bg-elevated)',
+                  color: activeFilter === filter ? 'white' : 'var(--cb-text-secondary)',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
           
           <div className="insight-scroll" style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 'var(--cb-space-5)', paddingRight: '8px' }}>
-            {aiInsights.map((insight) => (
+            {filteredInsights.map((insight) => (
               <div key={insight.id} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 
                 {/* Observation Block */}
@@ -166,9 +197,15 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Divider */}
-                {insight.id !== aiInsights.length && <hr style={{ border: 'none', borderTop: '1px solid var(--cb-border)', margin: '4px 0' }} />}
+                <hr style={{ border: 'none', borderTop: '1px solid var(--cb-border)', margin: '4px 0' }} />
               </div>
             ))}
+
+            {filteredInsights.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '20px', color: 'var(--cb-text-tertiary)', fontSize: 14 }}>
+                No immediate concerns detected in this category.
+              </div>
+            )}
           </div>
         </div>
       </div>
