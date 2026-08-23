@@ -7,6 +7,7 @@ const navItems = [
   { path: '/dashboard/teens', label: 'Teens', icon: UsersIcon },
   { path: '/dashboard/chat', label: 'Assistant', icon: ChatIcon },
   { path: '/dashboard/alerts', label: 'Alerts', icon: ShieldIcon },
+  { path: '/dashboard/counselor', label: 'District Data', icon: ChartIcon }, // <-- Add this line
   { path: '/dashboard/billing', label: 'Billing', icon: CreditCardIcon },
   { path: '/dashboard/settings', label: 'Settings', icon: SettingsIcon },
 ]
@@ -45,6 +46,16 @@ function ShieldIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  )
+}
+
+function ChartIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="18" y="3" width="4" height="18" />
+      <rect x="10" y="8" width="4" height="13" />
+      <rect x="2" y="13" width="4" height="8" />
     </svg>
   )
 }
