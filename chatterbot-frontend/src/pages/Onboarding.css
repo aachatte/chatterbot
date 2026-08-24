@@ -1,0 +1,173 @@
+.onboarding {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--cb-navy) 0%, #1a3a8f 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+.onboarding__card {
+  background: #fff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 520px;
+  padding: 40px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+}
+
+/* Progress */
+.onboarding__progress {
+  display: flex;
+  align-items: center;
+  margin-bottom: 36px;
+}
+.onboarding__step {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+.onboarding__step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: #999;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s, color 0.2s;
+}
+.onboarding__step--active .onboarding__step-circle {
+  background: var(--cb-red);
+  color: #fff;
+}
+.onboarding__step--done .onboarding__step-circle {
+  background: var(--cb-navy);
+  color: #fff;
+}
+.onboarding__step-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #aaa;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+.onboarding__step--active .onboarding__step-label { color: var(--cb-navy); }
+.onboarding__step--done .onboarding__step-label { color: var(--cb-navy); }
+.onboarding__step-line {
+  flex: 1;
+  height: 2px;
+  background: #e5e7eb;
+  margin: 0 8px;
+}
+
+/* Body */
+.onboarding__heading {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--cb-navy);
+  margin: 0 0 8px;
+}
+.onboarding__desc { color: #666; font-size: 14px; margin: 0 0 24px; line-height: 1.5; }
+.onboarding__error {
+  background: #fff0f0;
+  border: 1px solid #f5c6c6;
+  color: #b00;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+.onboarding__label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 16px;
+}
+.onboarding__input {
+  padding: 12px 14px;
+  border: 1.5px solid #ddd;
+  border-radius: var(--cb-radius-sm);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.onboarding__input:focus { border-color: var(--cb-navy); }
+.onboarding__input--code {
+  letter-spacing: 0.3em;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  max-width: 160px;
+}
+.onboarding__sent-note {
+  font-size: 14px;
+  color: #166534;
+  background: #f0fdf4;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+.onboarding__btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--cb-navy);
+  color: #fff;
+  border: none;
+  border-radius: var(--cb-radius-md);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.15s, transform 0.1s;
+}
+.onboarding__btn:hover:not(:disabled) { background: #001844; }
+.onboarding__btn:active:not(:disabled) { transform: scale(0.98); }
+.onboarding__btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Toggles */
+.onboarding__toggles { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+.onboarding__toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  padding: 14px 16px;
+  border: 1.5px solid #eee;
+  border-radius: var(--cb-radius-sm);
+  transition: border-color 0.15s;
+}
+.onboarding__toggle-row:hover { border-color: var(--cb-navy); }
+.onboarding__toggle-text { flex: 1; }
+.onboarding__toggle-text strong { display: block; font-size: 14px; color: #222; margin-bottom: 2px; }
+.onboarding__toggle-text span { font-size: 12px; color: #888; }
+.onboarding__toggle {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #ccc;
+  flex-shrink: 0;
+  position: relative;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.onboarding__toggle::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.onboarding__toggle--on { background: var(--cb-navy); }
+.onboarding__toggle--on::after { transform: translateX(20px); }

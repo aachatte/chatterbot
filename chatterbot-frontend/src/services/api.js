@@ -110,6 +110,52 @@ export const api = {
     method: 'POST',
     body: data,
   }),
+
+  // Mood tracking
+  getMoodHistory: (teenId) => request(`/teens/${teenId}/mood`),
+  logMood: (teenId, score, note = '') => request(`/teens/${teenId}/mood`, {
+    method: 'POST',
+    body: { score, note },
+  }),
+
+  // Weekly digest
+  sendDigest: () => request('/digest/send', { method: 'POST' }),
+
+  // Check-in schedule
+  getCheckinSchedule: (teenId) => request(`/teens/${teenId}/checkin-schedule`),
+  upsertCheckinSchedule: (teenId, data) => request(`/teens/${teenId}/checkin-schedule`, {
+    method: 'POST',
+    body: data,
+  }),
+
+  // School counselors
+  getCounselors: () => request('/counselors'),
+  addCounselor: (data) => request('/counselors', { method: 'POST', body: data }),
+  deleteCounselor: (id) => request(`/counselors/${id}`, { method: 'DELETE' }),
+
+  // Referrals
+  generateReferral: () => request('/referrals/generate', { method: 'POST' }),
+  getReferrals: () => request('/referrals'),
+  redeemReferral: (code, email) => request('/referrals/redeem', {
+    method: 'POST',
+    body: { code, email },
+  }),
+
+  // Onboarding
+  addTeen: (name, phone) => request('/dashboard/teens', {
+    method: 'POST',
+    body: { name, phone },
+  }),
+  beginPhoneVerification: (teenId) => request(`/dashboard/teens/${teenId}/begin-verification`, {
+    method: 'POST',
+  }),
+  verifyPhone: (teenId, token) => request(`/dashboard/teens/${teenId}/verify-phone`, {
+    method: 'POST',
+    body: { token },
+  }),
+
+  // Conversation summaries (uses mood entries as proxy)
+  getConversationSummaries: (teenId) => request(`/teens/${teenId}/mood`),
 }
 
 export { ApiError }

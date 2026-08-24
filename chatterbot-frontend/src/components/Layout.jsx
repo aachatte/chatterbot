@@ -5,13 +5,14 @@ import { ChatterbotLogo } from './ChatterbotLogo.jsx'
 import './Layout.css'
 
 const navItems = [
-  { path: '/dashboard',          label: 'Dashboard',  icon: DashboardIcon },
-  { path: '/dashboard/teens',    label: 'Teens',      icon: UsersIcon },
-  { path: '/dashboard/chat',     label: 'Assistant',  icon: ChatIcon },
-  { path: '/dashboard/alerts',   label: 'Alerts',     icon: ShieldIcon },
-  { path: '/dashboard/billing',  label: 'Billing',    icon: CreditCardIcon },
-  { path: '/dashboard/settings', label: 'Settings',   icon: SettingsIcon },
-  { path: '/dashboard/support',  label: 'Support',    icon: SupportIcon },
+  { path: '/dashboard',            label: 'Dashboard',  icon: DashboardIcon },
+  { path: '/dashboard/teens',      label: 'Teens',      icon: UsersIcon },
+  { path: '/dashboard/chat',       label: 'Assistant',  icon: ChatIcon },
+  { path: '/dashboard/alerts',     label: 'Alerts',     icon: ShieldIcon },
+  { path: '/dashboard/analytics',  label: 'Analytics',  icon: AnalyticsIcon },
+  { path: '/dashboard/billing',    label: 'Billing',    icon: CreditCardIcon },
+  { path: '/dashboard/settings',   label: 'Settings',   icon: SettingsIcon },
+  { path: '/dashboard/support',    label: 'Support',    icon: SupportIcon },
 ]
 
 function ChatIcon() {
@@ -34,6 +35,9 @@ function SettingsIcon() {
 }
 function SupportIcon() {
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+}
+function AnalyticsIcon() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
 }
 function LogoutIcon() {
   return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>

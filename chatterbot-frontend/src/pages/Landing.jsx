@@ -296,6 +296,70 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ── FOR TEENS ── */}
+      <section className="landing-teens">
+        <div className="landing-teens__inner">
+          <div className="landing-teens__content">
+            <p className="landing-section-eyebrow" style={{ color: 'var(--cb-red)' }}>Built for kids too</p>
+            <h2 className="landing-section-heading" style={{ color: 'var(--cb-navy)' }}>
+              A smarter AI for younger minds.
+            </h2>
+            <p className="landing-section-body" style={{ color: '#444' }}>
+              ChatGPT and Google are powerful — but they weren't designed for a 13-year-old wondering
+              about anxiety, social pressure, or puberty. Chatterbot speaks at <strong>their level</strong>,
+              in plain language, with age-appropriate context, no judgment, and guardrails that keep
+              the conversation safe.
+            </p>
+            <ul className="landing-teens__list">
+              {[
+                { icon: '🧠', title: 'Age-calibrated answers', body: 'Responses are tuned to the teen\'s age — not a generic adult AI dump.' },
+                { icon: '💬', title: 'Text, don\'t type an essay', body: 'No long prompts. Just text "I\'m stressed about school" and get real help.' },
+                { icon: '🔒', title: 'Private from peers, visible to parents', body: 'Teens get a safe space. Guardians see summaries, not screenshots.' },
+                { icon: '🚨', title: 'Knows when to escalate', body: 'If a conversation turns serious, Chatterbot alerts a guardian and suggests 988.' },
+              ].map(item => (
+                <li key={item.title} className="landing-teens__item">
+                  <span className="landing-teens__item-icon">{item.icon}</span>
+                  <div>
+                    <strong className="landing-teens__item-title">{item.title}</strong>
+                    <p className="landing-teens__item-body">{item.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="landing-teens__visual">
+            <div className="landing-teens__phone">
+              <div className="landing-teens__phone-notch" />
+              <div className="landing-teens__phone-screen">
+                <div className="landing-teens__phone-label">Chatterbot</div>
+                {[
+                  { from: 'teen', text: 'why do i always feel nervous around people' },
+                  { from: 'bot', text: 'That\'s social anxiety — it\'s really common for teens. Your brain is learning how to read social situations, which can feel overwhelming. Want some quick tips that actually work?' },
+                  { from: 'teen', text: 'yeah please' },
+                  { from: 'bot', text: '✅ Box breathing: inhale 4 sec, hold 4, exhale 4. \n✅ Pick one person to talk to, not the whole room. \n✅ Remember: most people are thinking about themselves, not judging you.' },
+                ].map((msg, i) => (
+                  <div key={i} className={`landing-teens__bubble landing-teens__bubble--${msg.from}`}>
+                    {msg.text}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="landing-teens__vs">
+              <div className="landing-teens__vs-card landing-teens__vs-card--bad">
+                <div className="landing-teens__vs-label">Generic AI</div>
+                <p className="landing-teens__vs-text">"Social anxiety disorder (SAD) is characterized by intense fear of social situations and may require CBT, SSRIs, or exposure therapy as outlined in DSM-5 criteria..."</p>
+                <div className="landing-teens__vs-tag landing-teens__vs-tag--bad">Not built for teens</div>
+              </div>
+              <div className="landing-teens__vs-card landing-teens__vs-card--good">
+                <div className="landing-teens__vs-label">Chatterbot</div>
+                <p className="landing-teens__vs-text">"That feeling is super normal. Here's what helps most teens..."</p>
+                <div className="landing-teens__vs-tag landing-teens__vs-tag--good">Age-appropriate ✓</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── SOCIAL PROOF / PRESS ── */}
       <section className="landing-press">
         <div className="landing-press__inner">
@@ -328,30 +392,89 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ── */}
-      <section className="landing-testimonials">
-        <div className="landing-testimonials__inner">
-          <p className="landing-section-eyebrow">What families say</p>
-          <h2 className="landing-section-heading">Parents sleep better.<br/>Teens feel heard.</h2>
-          <div className="landing-testimonials__grid">
+      <section className="landing-resources">
+        <div className="landing-resources__inner">
+          <p className="landing-section-eyebrow">Free resources</p>
+          <h2 className="landing-section-heading">Help is always one text away.</h2>
+          <p className="landing-section-body" style={{ textAlign: 'center', marginBottom: 48 }}>
+            Every Chatterbot subscription includes access to a curated library of age-appropriate mental health resources, hotlines, and self-help tools.
+          </p>
+          <div className="landing-resources__grid">
             {[
-              { quote: "I had no idea my daughter was struggling until Chatterbot flagged a conversation. We got her help before it escalated. I can't imagine parenting without this now.", name: 'Sarah M.', role: 'Mother of two, Jackson MS', avatar: 'S' },
-              { quote: "My son actually texts back more now. He says the AI 'gets him.' As a parent I get summaries, not surveillance—that's exactly the right balance.", name: 'Marcus T.', role: 'Father, Oxford MS', avatar: 'M' },
-              { quote: "Setup took 4 minutes. The first week Chatterbot caught that my teen was overwhelmed by school stress. We had a real conversation we wouldn't have had otherwise.", name: 'Jennifer R.', role: 'Mother of three, Tupelo MS', avatar: 'J' },
-            ].map(t => (
-              <div key={t.name} className="landing-testimonial">
-                <div className="landing-testimonial__stars">★★★★★</div>
-                <p className="landing-testimonial__quote">"{t.quote}"</p>
-                <div className="landing-testimonial__author">
-                  <div className="landing-testimonial__avatar">{t.avatar}</div>
-                  <div>
-                    <div className="landing-testimonial__name">{t.name}</div>
-                    <div className="landing-testimonial__role">{t.role}</div>
-                  </div>
+              { icon: '📞', title: '988 Suicide & Crisis Lifeline', body: '24/7 call or text. Free, confidential.' },
+              { icon: '🗣️', title: 'Crisis Text Line', body: 'Text HOME to 741741 for immediate support.' },
+              { icon: '🧠', title: 'Teen Mental Health', body: 'Articles on anxiety, depression, and stress written for teens.' },
+              { icon: '😴', title: 'Sleep Foundation Teen Guide', body: 'Science-backed sleep tips for 13–17 year olds.' },
+              { icon: '🤝', title: 'Anti-Bullying Resources', body: 'PACER Center resources for teens experiencing bullying.' },
+              { icon: '🏫', title: 'School Support', body: 'How to talk to your school counselor. Guided scripts for teens.' },
+            ].map((resource) => (
+              <article key={resource.title} className="landing-resources__card">
+                <div className="landing-resources__title-wrap">
+                  <span className="landing-resources__icon" aria-hidden="true">{resource.icon}</span>
+                  <h3 className="landing-resources__title">{resource.title}</h3>
                 </div>
+                <p className="landing-resources__body">{resource.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-school">
+        <div className="landing-school__inner">
+          <div className="landing-school__content">
+            <p className="landing-section-eyebrow">For schools & institutions</p>
+            <h2 className="landing-section-heading">Bring Chatterbot to your district.</h2>
+            <p className="landing-section-body">
+              Schools and counselors can partner with Chatterbot to extend mental health support beyond office hours. Counselors get opt-in crisis alert CC, and students get 24/7 support that complements — not replaces — professional care.
+            </p>
+            <a href="mailto:schools@chatterbot.ai" className="btn btn--primary btn--lg">Contact us for school pricing</a>
+          </div>
+          <div className="landing-school__features-card">
+            <ul className="landing-school__features">
+              {[
+                'Counselor opt-in crisis CC',
+                'FERPA-compliant data handling',
+                'Bulk guardian enrollment',
+                'District analytics dashboard',
+                'Dedicated onboarding support',
+              ].map((feature) => (
+                <li key={feature} className="landing-school__feature">
+                  <span className="landing-school__check" aria-hidden="true">✅</span>
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-referral">
+        <div className="landing-referral__inner">
+          <p className="landing-section-eyebrow">Refer a family</p>
+          <h2 className="landing-section-heading">Share Chatterbot. Get a free month.</h2>
+          <p className="landing-section-body" style={{ textAlign: 'center' }}>
+            For every family you refer who signs up, you both get one month free. No limits.
+          </p>
+          <div className="landing-referral__card">
+            <div className="landing-referral__code-box">XXXXXXXX</div>
+            <button type="button" className="btn btn--outline-navy landing-referral__copy-btn">Copy link</button>
+            <p className="landing-referral__share-text">Share your unique link with other parents</p>
+          </div>
+          <div className="landing-referral__steps">
+            {[
+              'Share your link with a parent',
+              'They sign up for Chatterbot',
+              'You both get a free month',
+            ].map((step, index) => (
+              <div key={step} className="landing-referral__step">
+                <div className="landing-referral__step-icon" aria-hidden="true">🔗</div>
+                <div className="landing-referral__step-number">{index + 1}</div>
+                <p className="landing-referral__step-text">{step}</p>
               </div>
             ))}
           </div>
+          <Link to="/dashboard" className="btn btn--primary btn--lg">Get my referral link</Link>
         </div>
       </section>
 

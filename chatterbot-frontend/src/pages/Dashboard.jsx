@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../services/api.js'
 import '../components/Dashboard.css'
 
@@ -23,10 +23,17 @@ const activityFeed = [
 export default function Dashboard() {
   const [overview, setOverview] = useState(null)
   const [error, setError] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     api.getOverview()
-      .then(setOverview)
+      .then((data) => {
+        setOverview(data)
+        // Redirect new users with no teens to onboarding
+        if (data?.teens?.length === 0) {
+          navigate('/dashboard/onboarding')
+        }
+      })
       .catch((e) => setError(e.data?.error || 'Dashboard data is unavailable. Please try again.'))
   }, [])
 
