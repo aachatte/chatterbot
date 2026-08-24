@@ -1,5 +1,8 @@
 """Teen user model — the end-user Chatterbot texts."""
-from datetime import datetime
+import hashlib
+import hmac
+import secrets
+from datetime import datetime, timedelta
 from app import db
 
 
@@ -29,8 +32,15 @@ class Teen(db.Model):
 
     # Status
     is_active = db.Column(db.Boolean, default=True)
-    consent_verified = db.Column(db.Boolean, default=False)  # Parental consent for COPPA
+    consent_verified = db.Column(db.Boolean, default=False)
     consent_verified_at = db.Column(db.DateTime, nullable=True)
+    consent_status = db.Column(db.String(30), default="pending", nullable=False, index=True)
+    phone_verification_status = db.Column(
+        db.String(30), default="unverified", nullable=False, index=True
+    )
+    phone_verification_token_hash = db.Column(db.String(64), nullable=True)
+    phone_verification_expires_at = db.Column(db.DateTime, nullable=True)
+    phone_verified_at = db.Column(db.DateTime, nullable=True)
 
     # Analytics
     last_interaction_at = db.Column(db.DateTime, nullable=True)
@@ -57,11 +67,73 @@ class Teen(db.Model):
             "interests": self.interests or [],
             "is_active": self.is_active,
             "consent_verified": self.consent_verified,
+            "consent_status": self.consent_status,
+            "consent_verified_at": (
+                self.consent_verified_at.isoformat()
+                if self.consent_verified_at
+                else None
+            ),
+            "phone_verification_status": self.phone_verification_status,
+            "phone_verified_at": (
+                self.phone_verified_at.isoformat() if self.phone_verified_at else None
+            ),
             "last_interaction_at": self.last_interaction_at.isoformat() if self.last_interaction_at else None,
             "message_count": self.message_count,
             "crisis_alert_count": self.crisis_alert_count,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
+
+    def enrollment_to_dict(self):
+        """Return guardian-visible enrollment state without exposing verification secrets."""
+        return {
+            "consent_verified": self.consent_verified,
+            "consent_status": self.consent_status,
+            "consent_verified_at": (
+                self.consent_verified_at.isoformat()
+                if self.consent_verified_at
+                else None
+            ),
+            "phone_verification_status": self.phone_verification_status,
+            "phone_verified_at": (
+                self.phone_verified_at.isoformat() if self.phone_verified_at else None
+            ),
+            "phone_verification_expires_at": (
+                self.phone_verification_expires_at.isoformat()
+                if self.phone_verification_expires_at
+                else None
+            ),
+        }
+
+    def begin_phone_verification(self, expires_in: timedelta = timedelta(minutes=15)) -> str:
+        """Create a short-lived verification token, retaining only its digest."""
+        token = secrets.token_urlsafe(32)
+        self.phone_verification_token_hash = hashlib.sha256(
+            token.encode("utf-8")
+        ).hexdigest()
+        self.phone_verification_status = "pending"
+        self.phone_verification_expires_at = datetime.utcnow() + expires_in
+        self.phone_verified_at = None
+        return token
+
+    def verify_phone_token(self, token: str) -> bool:
+        """Verify a pending phone-verification token and clear its stored digest."""
+        if (
+            not isinstance(token, str)
+            or not self.phone_verification_token_hash
+            or not self.phone_verification_expires_at
+            or self.phone_verification_expires_at < datetime.utcnow()
+        ):
+            return False
+
+        token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
+        if not hmac.compare_digest(token_hash, self.phone_verification_token_hash):
+            return False
+
+        self.phone_verification_status = "verified"
+        self.phone_verified_at = datetime.utcnow()
+        self.phone_verification_token_hash = None
+        self.phone_verification_expires_at = None
+        return True
 
     def to_dashboard_summary(self):
         """Privacy-safe summary for parent dashboard."""
@@ -69,7 +141,7 @@ class Teen(db.Model):
         from app.models.conversation import Message
         recent_msgs = Message.query.filter(
             Message.conversation.has(teen_id=self.id),
-            Message.created_at >= datetime.utcnow().replace(day=datetime.utcnow().day - 7)
+            Message.created_at >= datetime.utcnow() - timedelta(days=7)
         ).order_by(Message.created_at.desc()).limit(50).all()
 
         # Simple sentiment heuristic

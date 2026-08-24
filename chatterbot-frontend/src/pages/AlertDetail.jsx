@@ -21,12 +21,13 @@ export default function AlertDetail() {
   const [alert, setAlert] = useState(null)
   const [loading, setLoading] = useState(true)
   const [resolving, setResolving] = useState(false)
+  const [acknowledging, setAcknowledging] = useState(false)
   const [notes, setNotes] = useState('')
 
   useEffect(() => {
     api.getAlert(id)
       .then(data => setAlert(data.alert))
-      .catch(() => setAlert(MOCK_ALERT))
+      .catch(() => setAlert(null))
       .finally(() => setLoading(false))
   }, [id])
 
@@ -38,6 +39,18 @@ export default function AlertDetail() {
     } catch (err) {
       alert(err.data?.error || 'Failed to resolve')
     }
+
+    const handleAcknowledge = async () => {
+      setAcknowledging(true)
+      try {
+        const data = await api.acknowledgeAlert(id, notes)
+        setAlert(data.alert)
+      } catch (err) {
+        alert(err.data?.error || 'Failed to acknowledge alert')
+      } finally {
+        setAcknowledging(false)
+      }
+    }
     setResolving(false)
   }
 
@@ -48,7 +61,7 @@ export default function AlertDetail() {
 
   return (
     <div style={{ maxWidth: 700, margin: '0 auto' }}>
-      <button onClick={() => navigate('/alerts')} style={{
+      <button onClick={() => navigate('/dashboard/alerts')} style={{
         fontSize: 14, color: 'var(--cb-text-secondary)', marginBottom: 'var(--cb-space-4)',
         display: 'flex', alignItems: 'center', gap: 'var(--cb-space-2)',
       }}>
@@ -174,6 +187,22 @@ export default function AlertDetail() {
                 outline: 'none',
               }}
             />
+            <div style={{ display: 'flex', gap: 'var(--cb-space-3)', flexWrap: 'wrap' }}>
+            {alert.status !== 'acknowledged' && <button
+              onClick={handleAcknowledge}
+              disabled={acknowledging}
+              style={{
+                padding: '10px 20px',
+                borderRadius: 'var(--cb-radius-lg)',
+                background: 'var(--cb-primary)',
+                color: 'white',
+                fontSize: 14,
+                fontWeight: 500,
+                border: 'none',
+              }}
+            >
+              {acknowledging ? 'Acknowledging...' : 'Acknowledge alert'}
+            </button>}
             <button
               onClick={handleResolve}
               disabled={resolving}
@@ -191,6 +220,7 @@ export default function AlertDetail() {
             >
               {resolving ? 'Resolving...' : 'Mark as resolved'}
             </button>
+            </div>
           </div>
         )}
 

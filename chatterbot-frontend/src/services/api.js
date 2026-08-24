@@ -1,10 +1,9 @@
-/* API service layer for Chatterbot backend */
-
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 class ApiError extends Error {
   constructor(message, status, data) {
     super(message)
+    this.name = 'ApiError'
     this.status = status
     this.data = data
   }
@@ -12,93 +11,104 @@ class ApiError extends Error {
 
 async function request(path, options = {}) {
   const token = localStorage.getItem('cb_token')
-  const url = `${API_BASE}${path}`
-
-  const config = {
+  const response = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
+    body: options.body && typeof options.body === 'object'
+      ? JSON.stringify(options.body)
+      : options.body,
+  }).catch((error) => {
+    throw new ApiError(error.message || 'Network error', 0, {})
+  })
+
+  const data = await response.json().catch(() => ({}))
+  if (!response.ok) {
+    throw new ApiError(data.error || 'Request failed', response.status, data)
   }
 
-  if (options.body && typeof options.body === 'object') {
-    config.body = JSON.stringify(options.body)
-  }
-
-  try {
-    const res = await fetch(url, config)
-    const data = await res.json().catch(() => ({}))
-
-    if (!res.ok) {
-      throw new ApiError(data.error || 'Request failed', res.status, data)
-    }
-
-    return data
-  } catch (err) {
-    if (err instanceof ApiError) throw err
-    throw new ApiError(err.message || 'Network error', 0, {})
-  }
+  return data
 }
 
 export const api = {
-  // Auth
   login: (email, password) => request('/auth/login', {
     method: 'POST',
-    body: { email, password }
+    body: { email, password },
   }),
-
   register: (data) => request('/auth/register', {
     method: 'POST',
-    body: data
+    body: data,
   }),
-
   getMe: () => request('/auth/me'),
-
   updateMe: (data) => request('/auth/me', {
     method: 'PUT',
-    body: data
+    body: data,
   }),
-
   changePassword: (data) => request('/auth/change-password', {
     method: 'POST',
-    body: data
+    body: data,
   }),
-
-  // Dashboard
   getOverview: () => request('/dashboard/overview'),
-
-  // Teens
   getTeens: () => request('/dashboard/teens'),
   createTeen: (data) => request('/dashboard/teens', {
     method: 'POST',
-    body: data
+    body: data,
   }),
   getTeen: (id) => request(`/dashboard/teens/${id}`),
   updateTeen: (id, data) => request(`/dashboard/teens/${id}`, {
     method: 'PUT',
-    body: data
+    body: data,
+  }),
+  getEnrollment: (id) => request(`/dashboard/teens/${id}/enrollment`),
+  confirmGuardianConsent: (id) => request(`/dashboard/teens/${id}/consent`, {
+    method: 'POST',
+    body: { guardian_confirmation: true },
+  }),
+  requestPhoneVerification: (id) => request(`/dashboard/teens/${id}/phone-verification/request`, {
+    method: 'POST',
+  }),
+  confirmPhoneVerification: (id, token) => request(`/dashboard/teens/${id}/phone-verification/confirm`, {
+    method: 'POST',
+    body: { token },
+  }),
+  updateGuardianPreferences: (data) => request('/dashboard/preferences', {
+    method: 'PUT',
+    body: data,
+  }),
+  updateTeenPreferences: (id, data) => request(`/dashboard/teens/${id}/preferences`, {
+    method: 'PUT',
+    body: data,
   }),
   deleteTeen: (id) => request(`/dashboard/teens/${id}`, {
-    method: 'DELETE'
+    method: 'DELETE',
   }),
-
-  // Alerts
   getAlerts: (params = {}) => {
-    const qs = new URLSearchParams(params).toString()
-    return request(`/dashboard/alerts${qs ? `?${qs}` : ''}`)
+    const query = new URLSearchParams(params).toString()
+    return request(`/dashboard/alerts${query ? `?${query}` : ''}`)
   },
   getAlert: (id) => request(`/dashboard/alerts/${id}`),
   resolveAlert: (id, notes = '') => request(`/dashboard/alerts/${id}/resolve`, {
     method: 'POST',
-    body: { notes }
+    body: { notes },
   }),
-
-  // SMS
+  acknowledgeAlert: (id, notes = '') => request(`/dashboard/alerts/${id}/acknowledge`, {
+    method: 'POST',
+    body: { notes },
+  }),
   sendNudge: (teenId, message) => request(`/sms/nudge/${teenId}`, {
     method: 'POST',
-    body: { message }
+    body: { message },
+  }),
+  sendDashboardChat: (message) => request('/dashboard-chat/', {
+    method: 'POST',
+    body: { message },
+  }),
+  createSupportRequest: (data) => request('/support/contact', {
+    method: 'POST',
+    body: data,
   }),
 }
 

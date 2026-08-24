@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     app_name: str = "Chatterbot"
     app_url: str = "http://localhost:5000"
     flask_env: str = "development"
-    flask_debug: bool = True
+    flask_debug: bool = False
     secret_key: str = "dev-secret-key-change-in-production"
 
     # Database
@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     # JWT
     jwt_secret_key: str = "jwt-dev-secret"
     jwt_access_token_expires: int = 3600  # 1 hour
+
+    # Administration
+    admin_api_key: str = ""
 
     # Twilio
     twilio_account_sid: str = ""
@@ -60,6 +63,27 @@ class Settings(BaseSettings):
                     f'Production environment requires secure secrets '
                     f'(minimum 32 characters, no "dev-" prefix)'
                 )
+        return v
+
+    @validator('flask_debug')
+    def validate_production_debug(cls, v, values):
+        """Prevent Flask's interactive debugger from being enabled in production."""
+        if values.get('flask_env', 'development') == 'production' and v:
+            raise ValueError('FLASK_DEBUG must be disabled in production')
+        return v
+
+    @validator('jwt_access_token_expires')
+    def validate_jwt_expiry(cls, v):
+        """Require a positive access-token lifetime."""
+        if v <= 0:
+            raise ValueError('JWT_ACCESS_TOKEN_EXPIRES must be greater than zero')
+        return v
+
+    @validator('admin_api_key')
+    def validate_production_admin_key(cls, v, values):
+        """Require a non-default administrative credential in production."""
+        if values.get('flask_env', 'development') == 'production' and len(v) < 32:
+            raise ValueError('Production requires an ADMIN_API_KEY of at least 32 characters')
         return v
 
     @validator('openai_api_key')

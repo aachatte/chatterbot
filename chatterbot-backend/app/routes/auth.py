@@ -9,33 +9,49 @@ import re
 auth_bp = Blueprint("auth", __name__)
 
 
+def _get_json_object():
+    """Return a JSON object request body, if one was supplied."""
+    data = request.get_json(silent=True)
+    return data if isinstance(data, dict) else None
+
+
 @auth_bp.route("/register", methods=["POST"])
 def register():
     """Register a new parent account."""
-    data = request.get_json()
+    data = _get_json_object()
+    if data is None:
+        return jsonify({"error": "Request body must be a JSON object"}), 400
 
     # Validation
     required = ["email", "password", "first_name", "last_name"]
     for field in required:
-        if not data.get(field):
+        if not isinstance(data.get(field), str) or not data[field].strip():
             return jsonify({"error": f"{field} is required"}), 400
 
-    if len(data["password"]) < 8:
+    email = data["email"].strip().lower()
+    password = data["password"]
+    first_name = data["first_name"].strip()
+    last_name = data["last_name"].strip()
+    phone = data.get("phone")
+    if phone is not None and not isinstance(phone, str):
+        return jsonify({"error": "phone must be a string"}), 400
+
+    if len(password) < 8:
         return jsonify({"error": "Password must be at least 8 characters"}), 400
 
-    if not re.match(r"^[^@]+@[^@]+\.[^@]+$", data["email"]):
+    if not re.match(r"^[^@]+@[^@]+\.[^@]+$", email):
         return jsonify({"error": "Invalid email format"}), 400
 
-    if User.query.filter_by(email=data["email"].lower()).first():
+    if User.query.filter_by(email=email).first():
         return jsonify({"error": "Email already registered"}), 409
 
     user = User(
-        email=data["email"].lower(),
-        first_name=data["first_name"],
-        last_name=data["last_name"],
-        phone=data.get("phone"),
+        email=email,
+        first_name=first_name,
+        last_name=last_name,
+        phone=phone.strip() if phone else None,
     )
-    user.set_password(data["password"])
+    user.set_password(password)
 
     db.session.add(user)
     db.session.commit()
@@ -62,13 +78,16 @@ def register():
 @auth_bp.route("/login", methods=["POST"])
 def login():
     """Login and receive JWT token."""
-    data = request.get_json()
+    data = _get_json_object()
+    if data is None:
+        return jsonify({"error": "Request body must be a JSON object"}), 400
 
-    email = data.get("email", "").lower()
+    email = data.get("email", "")
     password = data.get("password", "")
 
-    if not email or not password:
+    if not isinstance(email, str) or not isinstance(password, str) or not email.strip() or not password:
         return jsonify({"error": "Email and password are required"}), 400
+    email = email.strip().lower()
 
     user = User.query.filter_by(email=email).first()
 
@@ -110,14 +129,22 @@ def update_current_user():
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    data = request.get_json()
+    data = _get_json_object()
+    if data is None:
+        return jsonify({"error": "Request body must be a JSON object"}), 400
 
     if "first_name" in data:
-        user.first_name = data["first_name"]
+        if not isinstance(data["first_name"], str) or not data["first_name"].strip():
+            return jsonify({"error": "first_name must be a non-empty string"}), 400
+        user.first_name = data["first_name"].strip()
     if "last_name" in data:
-        user.last_name = data["last_name"]
+        if not isinstance(data["last_name"], str) or not data["last_name"].strip():
+            return jsonify({"error": "last_name must be a non-empty string"}), 400
+        user.last_name = data["last_name"].strip()
     if "phone" in data:
-        user.phone = data["phone"]
+        if data["phone"] is not None and not isinstance(data["phone"], str):
+            return jsonify({"error": "phone must be a string"}), 400
+        user.phone = data["phone"].strip() if data["phone"] else None
 
     db.session.commit()
 
@@ -134,9 +161,14 @@ def change_password():
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    data = request.get_json()
+    data = _get_json_object()
+    if data is None:
+        return jsonify({"error": "Request body must be a JSON object"}), 400
     current = data.get("current_password", "")
     new = data.get("new_password", "")
+
+    if not isinstance(current, str) or not isinstance(new, str):
+        return jsonify({"error": "Passwords must be strings"}), 400
 
     if not user.check_password(current):
         return jsonify({"error": "Current password is incorrect"}), 401

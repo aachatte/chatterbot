@@ -144,7 +144,11 @@ class CrisisDetectionService:
         """Send notification to parent via SMS and/or email."""
         parent = teen.parent
 
-        if parent.phone:
+        if not parent.crisis_alerts_enabled:
+            logger.info("Crisis notifications disabled for guardian %s", parent.id)
+            return
+
+        if parent.crisis_alert_sms_enabled and parent.phone:
             result = self.twilio.send_crisis_alert(
                 parent_phone=parent.phone,
                 teen_name=teen.first_name,
@@ -167,7 +171,7 @@ class CrisisDetectionService:
 
     def resolve_alert(self, alert_id: int, user_id: int, notes: str = "") -> bool:
         """Mark a crisis alert as resolved."""
-        alert = CrisisAlert.query.get(alert_id)
+        alert = db.session.get(CrisisAlert, alert_id)
         if not alert:
             return False
 

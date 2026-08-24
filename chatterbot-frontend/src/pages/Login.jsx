@@ -9,7 +9,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   
   const navigate = useNavigate()
-  const { login, loginAsDemo } = useAuth()
+  const { login } = useAuth()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -22,11 +22,6 @@ export default function Login() {
       setError(err.data?.error || 'Login failed')
     }
     setLoading(false)
-  }
-
-  const handleDemoBypass = () => {
-    loginAsDemo()
-    navigate('/dashboard')
   }
 
   return (
@@ -111,27 +106,6 @@ export default function Login() {
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
 
-          {/* Render Offline Demo Bypass Button */}
-          <button 
-            type="button" 
-            onClick={handleDemoBypass}
-            style={{ 
-              padding: '12px', 
-              borderRadius: 'var(--cb-radius-md)', 
-              background: 'transparent', 
-              color: 'var(--cb-text-secondary)', 
-              border: '1px dashed var(--cb-border)', 
-              fontWeight: 500, 
-              fontSize: 14, 
-              cursor: 'pointer',
-              width: '100%',
-              transition: 'background 0.1s'
-            }}
-            onMouseEnter={e => e.currentTarget.style.background = 'var(--cb-bg-elevated)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-          >
-            ⚡ Bypass Login (Render Offline Demo)
-          </button>
         </form>
 
         <div style={{ marginTop: 'var(--cb-space-6)', textAlign: 'center', fontSize: 14, color: 'var(--cb-text-secondary)' }}>

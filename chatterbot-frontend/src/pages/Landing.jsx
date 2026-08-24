@@ -159,19 +159,20 @@ export default function Landing() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--cb-space-4)' }}>
           <Link to="/login" style={{ color: 'var(--cb-text-secondary)', textDecoration: 'none', fontWeight: 600, fontSize: 15 }}>Sign in</Link>
+          <Link to="/demo" style={{ color: 'var(--cb-primary)', textDecoration: 'none', fontWeight: 600, fontSize: 15 }}>View demo</Link>
           <Link to="/register" style={{ background: 'var(--cb-danger)', color: 'white', padding: '10px 20px', borderRadius: 'var(--cb-radius-md)', textDecoration: 'none', fontWeight: 700, fontSize: 15, boxShadow: 'var(--cb-shadow-glow)' }}>Get Started</Link>
         </div>
       </nav>
 
       <section style={{ maxWidth: 900, margin: '60px auto', textAlign: 'center', padding: '0 var(--cb-space-4)' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(200, 16, 46, 0.1)', color: 'var(--cb-danger)', padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 700, marginBottom: 24, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-          <span className="pulse-dot"></span> Next-Gen Adolescent Safety Infrastructure
+          <span className="pulse-dot"></span> Proactive adolescent support
         </div>
         <h1 style={{ fontSize: 'clamp(40px, 6vw, 64px)', fontWeight: 800, marginBottom: 24, lineHeight: 1.1, letterSpacing: '-1.5px' }}>
-          Predictive mental health for the <span style={{ color: 'var(--cb-danger)' }}>digital generation.</span>
+          Support for the <span style={{ color: 'var(--cb-danger)' }}>digital generation.</span>
         </h1>
         <p style={{ fontSize: 'clamp(16px, 2vw, 20px)', color: 'var(--cb-text-secondary)', marginBottom: 40, lineHeight: 1.6, maxWidth: 700, margin: '0 auto 40px auto' }}>
-          Chatterbot builds deep trust through daily SMS check-ins, monitoring sentiment patterns and providing automated safety interventions before a crisis occurs.
+          Chatterbot supports daily SMS check-ins, guardian-configured boundaries, and safety notifications when concerning language is detected.
         </p>
       </section>
 
@@ -210,8 +211,8 @@ export default function Landing() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <div>
-              <h2 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12 }}>Experience the Platform</h2>
-              <p style={{ color: 'var(--cb-text-secondary)', fontSize: 16 }}>Watch how Chatterbot extracts context, builds rapport across different topics, and triggers a graduated response during crises.</p>
+              <h2 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12 }}>Explore a simulated conversation</h2>
+              <p style={{ color: 'var(--cb-text-secondary)', fontSize: 16 }}>These examples are illustrative only and do not represent live monitoring or emergency services.</p>
             </div>
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -223,9 +224,6 @@ export default function Landing() {
               </button>
               <button onClick={() => playDemo('boredom')} style={{ background: 'var(--cb-bg-elevated)', color: 'var(--cb-primary)', border: '2px solid var(--cb-primary)', padding: '14px', borderRadius: 'var(--cb-radius-md)', fontWeight: 700, fontSize: 14, cursor: 'pointer', textAlign: 'left' }}>
                 🥱 Teen Boredom
-              </button>
-              <button onClick={() => playDemo('crisis')} style={{ background: 'var(--cb-danger)', color: '#ffffff', border: '2px solid var(--cb-danger)', padding: '14px', borderRadius: 'var(--cb-radius-md)', fontWeight: 700, fontSize: 14, cursor: 'pointer', textAlign: 'left' }}>
-                🚨 Crisis Pipeline
               </button>
             </div>
 
@@ -261,7 +259,7 @@ export default function Landing() {
             <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(200, 16, 46, 0.1)', color: 'var(--cb-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>II</div>
             <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cb-danger)' }}>The Guardian Dashboard</h3>
             <p style={{ color: 'var(--cb-text-secondary)', lineHeight: 1.6, fontSize: 15 }}>
-              Parents access a secure, premium portal designed to provide peace of mind. A secondary analytical pipeline reviews text logs to display high-level behavioral insights and predictive mood trends without exposing exact messages.
+              Guardians access a privacy-conscious portal with high-level activity summaries and safety notifications without exposing full conversation transcripts.
             </p>
           </div>
 
@@ -269,13 +267,19 @@ export default function Landing() {
             <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--cb-bg-muted)', color: 'var(--cb-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>III</div>
             <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cb-primary)' }}>Legal & Safety Compliance</h3>
             <p style={{ color: 'var(--cb-text-secondary)', lineHeight: 1.6, fontSize: 15 }}>
-              Built from day one with strict COPPA compliance and data encryption. If the system detects critical keywords related to self-harm, bullying, or illegal activity, it instantly pushes alerts to parents and provides 988 resources.
+              Chatterbot is designed around guardian consent, minimal data exposure, and timely safety notifications. Product safeguards and privacy practices should be reviewed before enrollment.
             </p>
           </div>
         </div>
       </section>
 
-      <footer style={{ borderTop: '1px solid var(--cb-border)', padding: '40px 0', textAlign: 'center', color: 'var(--cb-text-tertiary)', fontSize: 14 }}>
+      <footer style={{ borderTop: '1px solid var(--cb-border)', padding: '40px var(--cb-space-4)', textAlign: 'center', color: 'var(--cb-text-tertiary)', fontSize: 14 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--cb-space-4)', flexWrap: 'wrap', marginBottom: 'var(--cb-space-3)' }}>
+          <Link to="/privacy" style={{ color: 'var(--cb-primary)' }}>Privacy</Link>
+          <Link to="/terms" style={{ color: 'var(--cb-primary)' }}>Terms</Link>
+          <Link to="/safety" style={{ color: 'var(--cb-primary)' }}>Safety</Link>
+          <Link to="/support" style={{ color: 'var(--cb-primary)' }}>Support</Link>
+        </div>
         <p>&copy; {new Date().getFullYear()} Chatterbot Technologies, Inc. All rights reserved.</p>
       </footer>
     </div>

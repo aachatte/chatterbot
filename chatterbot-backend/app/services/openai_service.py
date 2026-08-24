@@ -146,19 +146,25 @@ Respond with ONLY valid JSON, no markdown."""
             return max(-1.0, min(1.0, score))
         except Exception:
             return 0.0
-def generate_parent_reply(self, message):
+    def generate_parent_reply(self, message: str) -> str:
+        """Generate a dashboard-assistant response for an authenticated parent."""
         try:
             response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
+                model=self.model,
                 messages=[
                     {
-                        "role": "system", 
-                        "content": "You are the Chatterbot administrative AI assistant. You help parents understand how to use the dashboard, interpret their teen's mood trends, and offer general advice on navigating teen stress and digital safety."
+                        "role": "system",
+                        "content": (
+                            "You are the Chatterbot administrative AI assistant. You help "
+                            "parents understand how to use the dashboard, interpret their "
+                            "teen's mood trends, and offer general advice on navigating teen "
+                            "stress and digital safety."
+                        ),
                     },
-                    {"role": "user", "content": message}
-                ]
+                    {"role": "user", "content": message},
+                ],
             )
             return response.choices[0].message.content
-        except Exception as e:
-            print(f"OpenAI error: {e}")
-            return "I'm having trouble connecting to my AI brain right now. Please check the API keys."
+        except Exception as exc:
+            logger.error("OpenAI parent-assistant error: %s", exc)
+            return "I'm having trouble responding right now. Please try again shortly."

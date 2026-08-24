@@ -7,6 +7,7 @@ from app import db
 class CrisisStatus(PyEnum):
     TRIGGERED = "triggered"
     PARENT_NOTIFIED = "parent_notified"
+    ACKNOWLEDGED = "acknowledged"
     AUTHORITY_NOTIFIED = "authority_notified"
     RESOLVED = "resolved"
     FALSE_POSITIVE = "false_positive"
@@ -32,6 +33,11 @@ class CrisisAlert(db.Model):
     parent_notification_method = db.Column(db.String(50), nullable=True)  # sms, email, push
     authority_notified_at = db.Column(db.DateTime, nullable=True)
 
+    # Guardian acknowledgement
+    acknowledged_at = db.Column(db.DateTime, nullable=True)
+    acknowledged_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    acknowledgement_notes = db.Column(db.Text, nullable=True)
+
     # Resolution
     resolved_at = db.Column(db.DateTime, nullable=True)
     resolved_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
@@ -51,6 +57,11 @@ class CrisisAlert(db.Model):
             "keywords_matched": self.keywords_matched or [],
             "context_summary": self.context_summary,
             "parent_notified_at": self.parent_notified_at.isoformat() if self.parent_notified_at else None,
+            "acknowledged_at": self.acknowledged_at.isoformat() if self.acknowledged_at else None,
+            "acknowledged_by": self.acknowledged_by,
+            "acknowledgement_notes": self.acknowledgement_notes,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "resolved_at": self.resolved_at.isoformat() if self.resolved_at else None,
+            "resolved_by": self.resolved_by,
+            "resolution_notes": self.resolution_notes,
         }

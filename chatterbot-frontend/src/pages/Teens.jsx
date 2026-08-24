@@ -17,7 +17,7 @@ export default function Teens() {
   useEffect(() => {
     api.getTeens()
       .then(data => setTeens(data.teens))
-      .catch(() => setTeens(MOCK_TEENS))
+      .catch(() => setTeens([]))
       .finally(() => setLoading(false))
   }, [])
 
@@ -116,7 +116,7 @@ export default function Teens() {
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--cb-space-2)' }}>
-              <Link to={`/teens/${teen.id}`} style={{
+              <Link to={`/dashboard/teens/${teen.id}`} style={{
                 padding: '8px 14px',
                 borderRadius: 'var(--cb-radius-md)',
                 border: '1px solid var(--cb-border)',
@@ -136,9 +136,8 @@ export default function Teens() {
                   opacity: 0,
                   transition: 'opacity 0.15s',
                 }}
-                onMouseEnter={e => e.currentTarget.style.opacity = 1}
-                onMouseLeave={e => e.currentTarget.style.opacity = 0}
                 title="Delete teen and all data"
+                aria-label={`Delete ${teen.first_name} and all associated data`}
               >
                 <TrashIcon />
               </button>
