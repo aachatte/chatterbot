@@ -6,6 +6,7 @@ from app.models.crisis_alert import CrisisAlert
 from app.models.subscription import Subscription
 from app.models.context_memory import ContextMemory
 from app.models.scheduled_nudge import ScheduledNudge
+from app.models.support_request import SupportRequest
 
 __all__ = [
     "User",
@@ -16,4 +17,5 @@ __all__ = [
     "Subscription",
     "ContextMemory",
     "ScheduledNudge",
+    "SupportRequest",
 ]

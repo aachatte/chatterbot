@@ -1,5 +1,6 @@
 """Chatterbot Flask application factory."""
 import logging
+from datetime import timedelta
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -7,6 +8,7 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from sqlalchemy import text
 from config import settings
 
 # Setup logging
@@ -41,7 +43,10 @@ def create_app(config_override=None):
     app.config["SQLALCHEMY_DATABASE_URI"] = settings.database_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_SECRET_KEY"] = settings.jwt_secret_key
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = settings.jwt_access_token_expires
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(
+        seconds=settings.jwt_access_token_expires
+    )
+    app.config["DEBUG"] = settings.flask_debug
     app.config["JSON_SORT_KEYS"] = False
     
     # Set CORS based on environment
@@ -74,6 +79,7 @@ def create_app(config_override=None):
     from app.routes.dashboard import dashboard_bp
     from app.routes.webhook import webhook_bp
     from app.routes.admin import admin_bp
+    from app.routes.support import support_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(sms_bp, url_prefix="/api/sms")
@@ -81,6 +87,7 @@ def create_app(config_override=None):
     app.register_blueprint(dashboard_bp, url_prefix="/api/dashboard")
     app.register_blueprint(webhook_bp, url_prefix="/api/webhooks")
     app.register_blueprint(admin_bp, url_prefix="/api/admin")
+    app.register_blueprint(support_bp, url_prefix="/api/support")
 
     # Error handlers
     @app.errorhandler(400)
@@ -120,7 +127,7 @@ def create_app(config_override=None):
         """Health check endpoint for load balancers and monitoring."""
         try:
             # Test database connection
-            db.session.execute("SELECT 1")
+            db.session.execute(text("SELECT 1"))
             db.session.close()
             return {
                 "status": "healthy",

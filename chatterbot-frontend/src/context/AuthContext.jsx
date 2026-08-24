@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
+import { api } from '../services/api.js'
 
 const AuthContext = createContext(null)
 
@@ -7,39 +8,47 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const demoMode = localStorage.getItem('cb_demo')
-    const token = localStorage.getItem('cb_token')
+    const restoreSession = async () => {
+      if (!localStorage.getItem('cb_token')) {
+        setLoading(false)
+        return
+      }
 
-    if (demoMode === 'true') {
-      setUser({ first_name: 'Demo', last_name: 'Parent', email: 'demo@chatterbot.com' })
-    } else if (token) {
-      // Keep existing token session handling if needed
-      setUser({ first_name: 'User', last_name: '', email: 'user@chatterbot.com' })
+      try {
+        const data = await api.getMe()
+        setUser(data.user)
+      } catch {
+        localStorage.removeItem('cb_token')
+      } finally {
+        setLoading(false)
+      }
     }
-    setLoading(false)
+
+    restoreSession()
   }, [])
 
-  const login = async (email, password) => {
-    // Regular login flow simulation or real API call
-    localStorage.setItem('cb_token', 'mock_token')
-    setUser({ first_name: 'User', last_name: '', email })
+  const setSession = (data) => {
+    localStorage.setItem('cb_token', data.access_token)
+    setUser(data.user)
   }
 
-  const loginAsDemo = () => {
-    localStorage.setItem('cb_demo', 'true')
-    setUser({ first_name: 'Demo', last_name: 'Parent', email: 'demo@chatterbot.com' })
+  const login = async (email, password) => {
+    const data = await api.login(email, password)
+    setSession(data)
+  }
+
+  const register = async (registration) => {
+    const data = await api.register(registration)
+    setSession(data)
   }
 
   const logout = () => {
     localStorage.removeItem('cb_token')
-    localStorage.removeItem('cb_demo')
     setUser(null)
   }
 
-  const isAuthenticated = !!user
-
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, loginAsDemo, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: Boolean(user), loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   )

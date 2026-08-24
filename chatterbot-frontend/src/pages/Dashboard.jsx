@@ -1,214 +1,98 @@
-import React, { useState } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { api } from '../services/api.js'
 
-const weeklyData = [
-  { day: 'Mon', mood: 0.8, messages: 24 },
-  { day: 'Tue', mood: 0.6, messages: 18 },
-  { day: 'Wed', mood: 0.9, messages: 32 },
-  { day: 'Thu', mood: -0.2, messages: 14 }, 
-  { day: 'Fri', mood: -0.8, messages: 5 },  
-  { day: 'Sat', mood: 0.5, messages: 28 },  
-  { day: 'Sun', mood: 0.8, messages: 20 },
-];
-
-const aiInsights = [
-  {
-    id: 1,
-    category: "Academic",
-    observation: 'Maya has mentioned feeling "overwhelmed" by a history paper 3 times in the last 48 hours.',
-    suggestion: 'Instead of asking "Are you stressed?", try asking: "Would you like me to help you break down your history paper into smaller chunks?"'
-  },
-  {
-    id: 2,
-    category: "Sleep",
-    observation: 'Texting patterns indicate Maya is frequently active and responding to messages past 1:30 AM on weeknights.',
-    suggestion: 'Consider establishing a "devices in the kitchen by 10 PM" family routine, framing it around wellness rather than punishment.'
-  },
-  {
-    id: 3,
-    category: "Social",
-    observation: 'Maya used language indicating frustration with her peer group (e.g., "being weird", "icing me out").',
-    suggestion: 'Validate her feelings first. Try saying: "Friend drama is really exhausting. Do you want advice, or do you just want to vent?"'
-  }
-];
+function formatDate(value) {
+  return value ? new Date(value).toLocaleString() : 'No recent activity'
+}
 
 export default function Dashboard() {
-  const [showDemoAlert, setShowDemoAlert] = useState(false);
-  const [activeFilter, setActiveFilter] = useState('All');
-  const filters = ['All', 'Academic', 'Sleep', 'Social'];
+  const [overview, setOverview] = useState(null)
+  const [error, setError] = useState('')
 
-  const triggerDemoAlert = () => {
-    setShowDemoAlert(true);
-    setTimeout(() => setShowDemoAlert(false), 10000);
-  };
+  useEffect(() => {
+    api.getOverview()
+      .then(setOverview)
+      .catch((requestError) => setError(requestError.data?.error || 'Dashboard data is unavailable. Please try again.'))
+  }, [])
 
-  const handleExport = () => {
-    window.print();
-  };
+  if (error) {
+    return <div className="glass-card" role="alert">{error}</div>
+  }
 
-  const filteredInsights = activeFilter === 'All' 
-    ? aiInsights 
-    : aiInsights.filter(insight => insight.category === activeFilter);
+  if (!overview) {
+    return <div className="page-loading" role="status">Loading dashboard...</div>
+  }
+
+  const { summary, teens, recent_alerts: recentAlerts } = overview
+  const stats = [
+    ['Active teens', summary.teen_count],
+    ['Messages in the last 7 days', summary.total_messages_7d],
+    ['Active safety alerts', summary.active_alerts],
+    ['Total safety alerts', summary.total_crisis_alerts],
+  ]
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', paddingBottom: 40 }}>
-      
-      <style>{`
-        .dashboard-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--cb-space-6); }
-        .dashboard-buttons { display: flex; gap: 12px; }
-        .dashboard-grid { display: grid; grid-template-columns: 2fr 1.2fr; gap: var(--cb-space-6); }
-        .insight-scroll::-webkit-scrollbar { width: 6px; }
-        .insight-scroll::-webkit-scrollbar-thumb { background: var(--cb-border); border-radius: 10px; }
-        
-        @media (max-width: 900px) {
-          .dashboard-grid { grid-template-columns: 1fr; }
-          .dashboard-header { flex-direction: column; gap: 20px; }
-          .dashboard-buttons { width: 100%; }
-          .dashboard-buttons button { flex: 1; padding: 12px 8px !important; font-size: 14px !important; }
-        }
-      `}</style>
+    <div style={{ maxWidth: 1100, margin: '0 auto', paddingBottom: 'var(--cb-space-8)' }}>
+      <header style={{ marginBottom: 'var(--cb-space-6)' }}>
+        <h1 style={{ fontSize: 32, fontWeight: 700, marginBottom: 'var(--cb-space-2)' }}>Guardian dashboard</h1>
+        <p style={{ color: 'var(--cb-text-secondary)', fontSize: 16 }}>
+          Privacy-preserving activity summaries and safety alerts for your family.
+        </p>
+      </header>
 
-      {/* HEADER ROW */}
-      <div className="dashboard-header">
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8, flexWrap: 'wrap' }}>
-            <h1 style={{ fontSize: 32, fontWeight: 700, margin: 0, letterSpacing: '-0.5px' }}>Command Center</h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--cb-bg-muted)', color: 'var(--cb-primary)', padding: '4px 10px', borderRadius: 20, fontSize: 13, fontWeight: 600 }}>
-              <div className="pulse-dot"></div> System Active
-            </div>
-          </div>
-          <p style={{ color: 'var(--cb-text-secondary)', fontSize: 16 }}>Real-time analytics and predictive safety insights.</p>
-        </div>
-        
-        <div className="dashboard-buttons no-print">
-          <button onClick={handleExport} style={{ padding: '12px 20px', background: 'var(--cb-bg-elevated)', color: 'var(--cb-text-primary)', border: '1px solid var(--cb-border)', borderRadius: 'var(--cb-radius-lg)', fontWeight: 600, cursor: 'pointer', boxShadow: 'var(--cb-shadow-sm)' }}>
-            📄 Export Report
-          </button>
-          <button onClick={triggerDemoAlert} style={{ padding: '12px 20px', background: 'var(--cb-danger)', color: 'white', border: 'none', borderRadius: 'var(--cb-radius-lg)', fontWeight: 600, cursor: 'pointer', boxShadow: 'var(--cb-shadow-glow)', transition: 'transform 0.1s' }} onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'} onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}>
-            🚨 Simulate Crisis
-          </button>
-        </div>
-      </div>
-
-      {/* DEMO CRISIS BANNER */}
-      {showDemoAlert && (
-        <div className="glass-card" style={{ background: 'rgba(200, 16, 46, 0.08)', borderLeft: '6px solid var(--cb-danger)', marginBottom: 'var(--cb-space-6)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', animation: 'slideDown 0.3s ease-out' }}>
-          <div>
-            <h3 style={{ color: 'var(--cb-danger)', margin: 0, fontSize: 20, display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700 }}>
-              ⚠️ Emergency Alert: Self-Harm Keyword Detected
-            </h3>
-            <p style={{ color: 'var(--cb-text-primary)', margin: '8px 0 0 0', fontSize: 16 }}>
-              <strong>Maya (16)</strong> used high-risk language indicating severe distress in a recent text. An automatic SMS has been sent to the parent, and 988 resources were provided.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* TOP STATS */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--cb-space-4)', marginBottom: 'var(--cb-space-6)' }}>
-        {[
-          { label: 'Active Teens', value: '2', color: 'var(--cb-text-primary)' },
-          { label: 'Messages Processed', value: '141', color: 'var(--cb-text-primary)' },
-          { label: 'Avg Sentiment', value: '+0.4', color: 'var(--cb-primary)' },
-          { label: 'Interventions', value: '1', color: 'var(--cb-danger)' }
-        ].map(stat => (
-          <div key={stat.label} className="glass-card" style={{ padding: '24px' }}>
-            <div style={{ fontSize: 14, color: 'var(--cb-text-secondary)', marginBottom: 12, fontWeight: 500 }}>{stat.label}</div>
-            <div style={{ fontSize: 36, fontWeight: 700, color: stat.color, letterSpacing: '-1px' }}>{stat.value}</div>
+      <section aria-label="Dashboard summary" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--cb-space-4)', marginBottom: 'var(--cb-space-6)' }}>
+        {stats.map(([label, value]) => (
+          <div key={label} className="glass-card" style={{ padding: 'var(--cb-space-5)' }}>
+            <div style={{ color: 'var(--cb-text-secondary)', fontSize: 14, marginBottom: 'var(--cb-space-2)' }}>{label}</div>
+            <div style={{ color: label.includes('Active safety') && value > 0 ? 'var(--cb-danger)' : 'var(--cb-text-primary)', fontSize: 32, fontWeight: 700 }}>{value}</div>
           </div>
         ))}
-      </div>
+      </section>
 
-      <div className="dashboard-grid">
-        {/* GRAPH */}
-        <div className="glass-card" style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-          <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: '4px' }}>Predictive Sentiment Trend</h2>
-          <p style={{ fontSize: 14, color: 'var(--cb-text-tertiary)', marginBottom: 'var(--cb-space-5)' }}>
-            Scores below 0.0 indicate distress. Early detection prevents crises. Notice the predictive dip prior to the Friday alert.
-          </p>
-          <div style={{ flex: 1, minHeight: 320, width: '100%', minWidth: 0 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={weeklyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorMood" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#00205B" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#00205B" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--cb-border)" />
-                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 13, fill: 'var(--cb-text-tertiary)', fontWeight: 500 }} dy={10} />
-                <YAxis domain={[-1, 1]} axisLine={false} tickLine={false} tick={{ fontSize: 13, fill: 'var(--cb-text-tertiary)' }} />
-                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', background: 'var(--cb-bg-elevated)', color: 'var(--cb-text-primary)', boxShadow: 'var(--cb-shadow-lg)' }} labelStyle={{ fontWeight: 'bold' }} />
-                <Area type="monotone" dataKey="mood" stroke="#00205B" strokeWidth={4} fillOpacity={1} fill="url(#colorMood)" />
-              </AreaChart>
-            </ResponsiveContainer>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'var(--cb-space-6)' }}>
+        <section className="glass-card" aria-labelledby="teens-heading">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--cb-space-4)' }}>
+            <h2 id="teens-heading" style={{ fontSize: 20 }}>Teen activity</h2>
+            <Link to="/dashboard/teens" style={{ color: 'var(--cb-primary)', fontWeight: 600 }}>Manage teens</Link>
           </div>
-        </div>
-
-        {/* EXPANDED AI INSIGHTS WITH INTERACTIVE FILTERS */}
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', maxHeight: 600 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: '4px' }}>Coaching Insights</h2>
-          <p style={{ fontSize: 14, color: 'var(--cb-text-tertiary)', marginBottom: 'var(--cb-space-4)' }}>
-            Empathetic scripts based on recent sentiment stressors.
-          </p>
-
-          {/* Category Filters */}
-          <div style={{ display: 'flex', gap: '8px', marginBottom: 'var(--cb-space-5)', flexWrap: 'wrap' }}>
-            {filters.map(filter => (
-              <button
-                key={filter}
-                onClick={() => setActiveFilter(filter)}
-                style={{
-                  padding: '6px 14px',
-                  borderRadius: '20px',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  border: activeFilter === filter ? 'none' : '1px solid var(--cb-border)',
-                  background: activeFilter === filter ? 'var(--cb-primary-gradient)' : 'var(--cb-bg-elevated)',
-                  color: activeFilter === filter ? 'white' : 'var(--cb-text-secondary)',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                {filter}
-              </button>
-            ))}
-          </div>
-          
-          <div className="insight-scroll" style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 'var(--cb-space-5)', paddingRight: '8px' }}>
-            {filteredInsights.map((insight) => (
-              <div key={insight.id} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                
-                {/* Observation Block */}
-                <div style={{ background: 'var(--cb-bg-muted)', border: '1px solid var(--cb-border)', padding: 16, borderRadius: 'var(--cb-radius-md)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--cb-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Observation</div>
-                    <div style={{ fontSize: 11, fontWeight: 600, background: 'var(--cb-bg)', padding: '2px 8px', borderRadius: 12, color: 'var(--cb-text-secondary)' }}>{insight.category}</div>
+          {teens.length === 0 ? (
+            <p style={{ color: 'var(--cb-text-secondary)' }}>Add a teen after completing consent verification to begin.</p>
+          ) : (
+            <div style={{ display: 'grid', gap: 'var(--cb-space-3)' }}>
+              {teens.map((teen) => (
+                <Link key={teen.id} to={`/dashboard/teens/${teen.id}`} style={{ border: '1px solid var(--cb-border)', borderRadius: 'var(--cb-radius-lg)', color: 'inherit', padding: 'var(--cb-space-4)', textDecoration: 'none' }}>
+                  <strong>{teen.first_name}</strong>
+                  <div style={{ color: 'var(--cb-text-secondary)', fontSize: 14, marginTop: 'var(--cb-space-1)' }}>
+                    {teen.message_count_7d} messages in the last 7 days · {teen.mood_label} activity
                   </div>
-                  <p style={{ fontSize: 14, color: 'var(--cb-text-primary)', lineHeight: 1.5 }}>{insight.observation}</p>
-                </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
 
-                {/* Suggestion Block */}
-                <div style={{ background: 'var(--cb-bg-elevated)', border: '1px dashed var(--cb-border)', padding: 16, borderRadius: 'var(--cb-radius-md)' }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--cb-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Suggested Approach</div>
-                  <p style={{ fontSize: 14, color: 'var(--cb-text-secondary)', lineHeight: 1.5 }}>
-                    {insight.suggestion.split('"').map((text, i) => i % 2 !== 0 ? <em key={i} style={{ color: 'var(--cb-text-primary)', fontWeight: 500 }}>"{text}"</em> : text )}
-                  </p>
-                </div>
-                
-                {/* Divider */}
-                <hr style={{ border: 'none', borderTop: '1px solid var(--cb-border)', margin: '4px 0' }} />
-              </div>
-            ))}
-
-            {filteredInsights.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '20px', color: 'var(--cb-text-tertiary)', fontSize: 14 }}>
-                No immediate concerns detected in this category.
-              </div>
-            )}
+        <section className="glass-card" aria-labelledby="alerts-heading">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--cb-space-4)' }}>
+            <h2 id="alerts-heading" style={{ fontSize: 20 }}>Recent safety alerts</h2>
+            <Link to="/dashboard/alerts" style={{ color: 'var(--cb-primary)', fontWeight: 600 }}>View all</Link>
           </div>
-        </div>
+          {recentAlerts.length === 0 ? (
+            <p style={{ color: 'var(--cb-text-secondary)' }}>No safety alerts have been recorded.</p>
+          ) : (
+            <div style={{ display: 'grid', gap: 'var(--cb-space-3)' }}>
+              {recentAlerts.map((alert) => (
+                <Link key={alert.id} to={`/dashboard/alerts/${alert.id}`} style={{ borderLeft: '4px solid var(--cb-danger)', background: 'var(--cb-danger-soft)', borderRadius: 'var(--cb-radius-md)', color: 'inherit', padding: 'var(--cb-space-4)', textDecoration: 'none' }}>
+                  <strong>{alert.severity} safety alert</strong>
+                  <div style={{ color: 'var(--cb-text-secondary)', fontSize: 14, marginTop: 'var(--cb-space-1)' }}>
+                    {formatDate(alert.created_at)}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
       </div>
     </div>
-  );
+  )
 }

@@ -1,0 +1,7 @@
+chatterbot-frontend/node_modules/
+chatterbot-frontend/dist/
+node_modules/
+chatterbot-backend/.venv/
+**/__pycache__/
+*.pyc
+*.pyo

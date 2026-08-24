@@ -4,14 +4,18 @@
   
   /* Bright Academic Backgrounds */
   --cb-bg: #f4f6f8;                     
+  --cb-bg-primary: #f4f6f8;
+  --cb-bg-secondary: #e8edf3;
   --cb-bg-elevated: #ffffff;            
   --cb-bg-glass: rgba(255, 255, 255, 0.95); 
   --cb-bg-muted: rgba(0, 32, 91, 0.06);
+  --cb-bg-strong: #dbe5f0;
 
   /* Navy Text Tokens */
   --cb-text-primary: #00205B;           /* Official Ole Miss Navy */
   --cb-text-secondary: #334155;         
   --cb-text-tertiary: #64748b;          
+  --cb-text-quaternary: #94a3b8;
   
   /* Borders */
   --cb-border: rgba(0, 32, 91, 0.15);
@@ -23,8 +27,12 @@
   
   /* Alert & Status Tokens */
   --cb-success: #00205B;                /* Navy for active states */
+  --cb-positive: #176b45;
+  --cb-positive-soft: rgba(23, 107, 69, 0.12);
   --cb-warning: #eab308;                
+  --cb-warning-soft: rgba(234, 179, 8, 0.14);
   --cb-danger: #C8102E;                 /* Official Ole Miss Cardinal Red */
+  --cb-danger-soft: rgba(200, 16, 46, 0.12);
 
   /* Layout & Spacing */
   --cb-space-1: 4px; 
@@ -33,16 +41,21 @@
   --cb-space-4: 16px; 
   --cb-space-5: 24px; 
   --cb-space-6: 32px;
+  --cb-space-8: 48px;
+  --cb-space-10: 64px;
   
   --cb-radius-sm: 6px; 
   --cb-radius-md: 10px; 
   --cb-radius-lg: 14px; 
   --cb-radius-xl: 20px;
+  --cb-radius-full: 9999px;
   
   /* Shadows */
   --cb-shadow-sm: 0 2px 8px rgba(0, 32, 91, 0.08);
   --cb-shadow-lg: 0 12px 36px -8px rgba(0, 32, 91, 0.15);
+  --cb-shadow-md: 0 6px 18px rgba(0, 32, 91, 0.12);
   --cb-shadow-glow: 0 8px 24px -4px rgba(200, 16, 46, 0.25); /* Subtle red glow for main buttons */
+  --cb-transition-fast: 0.15s ease;
 }
 
 * { 
@@ -57,6 +70,51 @@ body {
   color: var(--cb-text-primary);
   letter-spacing: 0.01em;
   -webkit-font-smoothing: antialiased;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+button:not(:disabled), [role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid rgba(200, 16, 46, 0.45);
+  outline-offset: 2px;
+}
+
+.page-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--cb-space-3);
+  color: var(--cb-text-secondary);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--cb-bg-strong);
+  border-top-color: var(--cb-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Crisp White Cards */

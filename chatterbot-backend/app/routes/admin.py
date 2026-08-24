@@ -1,9 +1,13 @@
 """Admin routes for internal operations."""
+import hmac
+from datetime import datetime
+
 from flask import Blueprint, request, jsonify
+from sqlalchemy import text
+from config import settings
 from app import db
 from app.models.user import User
 from app.models.teen import Teen
-from datetime import datetime
 from app.models.conversation import Conversation, Message
 from app.models.crisis_alert import CrisisAlert
 from app.models.subscription import Subscription
@@ -14,16 +18,12 @@ import logging
 admin_bp = Blueprint("admin", __name__)
 logger = logging.getLogger(__name__)
 
-# Simple API key auth for admin routes
-ADMIN_API_KEY = "admin-secret-key-change-in-production"
-
-
 def _check_admin_auth():
     """Check admin API key."""
     auth_header = request.headers.get("X-Admin-API-Key", "")
-    if auth_header != ADMIN_API_KEY:
-        return False
-    return True
+    return bool(settings.admin_api_key) and hmac.compare_digest(
+        auth_header, settings.admin_api_key
+    )
 
 
 @admin_bp.before_request
@@ -186,7 +186,7 @@ def send_broadcast():
 def admin_health():
     """Extended health check with DB connectivity."""
     try:
-        db.session.execute("SELECT 1")
+        db.session.execute(text("SELECT 1"))
         db_status = "connected"
     except Exception as e:
         db_status = f"error: {str(e)}"

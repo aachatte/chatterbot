@@ -20,7 +20,7 @@ export default function Billing() {
   useEffect(() => {
     api.getOverview()
       .then(data => setSub(data.subscription))
-      .catch(() => setSub(MOCK_SUB))
+      .catch(() => setSub(null))
       .finally(() => setLoading(false))
   }, [])
 
@@ -94,19 +94,9 @@ export default function Billing() {
           </div>
         )}
 
-        <button style={{
-          width: '100%',
-          padding: '12px',
-          borderRadius: 'var(--cb-radius-lg)',
-          background: isPremium ? 'transparent' : 'var(--cb-text-primary)',
-          color: isPremium ? 'var(--cb-danger)' : 'var(--cb-bg-elevated)',
-          fontSize: 15,
-          fontWeight: 500,
-          border: isPremium ? '1px solid var(--cb-border)' : 'none',
-          cursor: 'pointer',
-        }}>
-          {isPremium ? 'Cancel subscription' : 'Upgrade to Premium — $14.99/mo'}
-        </button>
+        <p style={{ fontSize: 14, color: 'var(--cb-text-secondary)', lineHeight: 1.5 }}>
+          Subscription changes are not available in the dashboard yet. Please contact support for billing assistance.
+        </p>
       </div>
 
       {/* Features comparison */}

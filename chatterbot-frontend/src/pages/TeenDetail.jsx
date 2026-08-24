@@ -20,11 +20,18 @@ export default function TeenDetail() {
   const [saving, setSaving] = useState(false)
   const [nudgeMsg, setNudgeMsg] = useState('')
   const [sendingNudge, setSendingNudge] = useState(false)
+  const [enrollment, setEnrollment] = useState(null)
+  const [verificationToken, setVerificationToken] = useState('')
+  const [enrollmentMessage, setEnrollmentMessage] = useState('')
+  const [enrollmentBusy, setEnrollmentBusy] = useState(false)
 
   useEffect(() => {
-    api.getTeen(id)
-      .then(setData)
-      .catch(() => setData(MOCK_TEEN_DETAIL))
+    Promise.all([api.getTeen(id), api.getEnrollment(id)])
+      .then(([detail, enrollmentData]) => {
+        setData(detail)
+        setEnrollment(enrollmentData.enrollment)
+      })
+      .catch(() => setData(null))
       .finally(() => setLoading(false))
   }, [id])
 
@@ -49,6 +56,20 @@ export default function TeenDetail() {
     } catch (err) {
       alert(err.data?.error || 'Failed to send nudge')
     }
+
+    const updateEnrollment = async (action) => {
+      setEnrollmentBusy(true)
+      setEnrollmentMessage('')
+      try {
+        const result = await action()
+        setEnrollment(result.enrollment)
+        setEnrollmentMessage('Enrollment status updated.')
+      } catch (err) {
+        setEnrollmentMessage(err.data?.error || 'Enrollment update failed.')
+      } finally {
+        setEnrollmentBusy(false)
+      }
+    }
     setSendingNudge(false)
   }
 
@@ -60,7 +81,7 @@ export default function TeenDetail() {
 
   return (
     <div style={{ maxWidth: 800, margin: '0 auto' }}>
-      <button onClick={() => navigate('/teens')} style={{
+      <button onClick={() => navigate('/dashboard/teens')} style={{
         fontSize: 14,
         color: 'var(--cb-text-secondary)',
         marginBottom: 'var(--cb-space-4)',
@@ -72,6 +93,73 @@ export default function TeenDetail() {
       </button>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--cb-space-4)', marginBottom: 'var(--cb-space-6)' }}>
+        <section style={{
+          background: 'var(--cb-bg-elevated)',
+          border: '1px solid var(--cb-border)',
+          borderRadius: 'var(--cb-radius-xl)',
+          padding: 'var(--cb-space-5)',
+          marginBottom: 'var(--cb-space-5)',
+        }}>
+          <h2 style={{ fontSize: 18, marginBottom: 'var(--cb-space-2)' }}>Enrollment and consent</h2>
+          <p style={{ color: 'var(--cb-text-secondary)', fontSize: 14, lineHeight: 1.5, marginBottom: 'var(--cb-space-4)' }}>
+            Confirm guardian authority and verify the enrolled phone number before relying on messaging or monitoring.
+          </p>
+          <div style={{ display: 'flex', gap: 'var(--cb-space-2)', flexWrap: 'wrap', marginBottom: 'var(--cb-space-4)' }}>
+            <span style={{ background: enrollment?.consent_verified ? 'var(--cb-positive-soft)' : 'var(--cb-warning-soft)', borderRadius: 'var(--cb-radius-full)', padding: '6px 10px', fontSize: 13 }}>
+              Consent: {enrollment?.consent_verified ? 'verified' : enrollment?.consent_status || 'pending'}
+            </span>
+            <span style={{ background: enrollment?.phone_verification_status === 'verified' ? 'var(--cb-positive-soft)' : 'var(--cb-warning-soft)', borderRadius: 'var(--cb-radius-full)', padding: '6px 10px', fontSize: 13 }}>
+              Phone: {enrollment?.phone_verification_status || 'unverified'}
+            </span>
+          </div>
+          {!enrollment?.consent_verified && (
+            <button type="button" disabled={enrollmentBusy} onClick={() => updateEnrollment(() => api.confirmGuardianConsent(id))} style={primaryButtonStyle}>
+              Confirm guardian authority
+            </button>
+          )}
+          {enrollment?.phone_verification_status !== 'verified' && (
+            <div style={{ marginTop: 'var(--cb-space-3)' }}>
+              <button type="button" disabled={enrollmentBusy} onClick={() => updateEnrollment(() => api.requestPhoneVerification(id))} style={secondaryButtonStyle}>
+                Send phone verification
+              </button>
+              <form onSubmit={(event) => {
+                event.preventDefault()
+                updateEnrollment(() => api.confirmPhoneVerification(id, verificationToken))
+              }} style={{ display: 'flex', gap: 'var(--cb-space-2)', marginTop: 'var(--cb-space-3)' }}>
+                <input value={verificationToken} onChange={(event) => setVerificationToken(event.target.value)} placeholder="Verification code or token" aria-label="Phone verification code or token" style={{ flex: 1, padding: '10px 12px', border: '1px solid var(--cb-border)', borderRadius: 'var(--cb-radius-md)' }} />
+                <button type="submit" disabled={enrollmentBusy || !verificationToken.trim()} style={primaryButtonStyle}>Verify</button>
+              </form>
+            </div>
+          )}
+          {enrollmentMessage && <p role="status" style={{ color: 'var(--cb-text-secondary)', fontSize: 13, marginTop: 'var(--cb-space-3)' }}>{enrollmentMessage}</p>}
+        </section>
+
+        {teen.consent_verified ? (
+          <div style={{
+            background: 'var(--cb-positive-soft)',
+            border: '1px solid var(--cb-positive)',
+            borderRadius: 'var(--cb-radius-lg)',
+            color: 'var(--cb-positive)',
+            fontSize: 14,
+            padding: 'var(--cb-space-4)',
+            marginBottom: 'var(--cb-space-5)',
+          }}>
+            Consent is verified for this profile.
+          </div>
+        ) : (
+          <div style={{
+            background: 'var(--cb-warning-soft)',
+            border: '1px solid var(--cb-warning)',
+            borderRadius: 'var(--cb-radius-lg)',
+            color: 'var(--cb-text-primary)',
+            fontSize: 14,
+            padding: 'var(--cb-space-4)',
+            marginBottom: 'var(--cb-space-5)',
+          }}>
+            Consent verification is pending. Messaging and monitoring should remain paused until it is complete.
+          </div>
+        )}
+
         <div style={{
           width: 56,
           height: 56,
@@ -285,6 +373,9 @@ function Toggle({ checked, onChange }) {
     <button
       type="button"
       onClick={onChange}
+      role="switch"
+      aria-checked={checked}
+      aria-label={checked ? 'Disable setting' : 'Enable setting'}
       style={{
         width: 44,
         height: 24,
@@ -318,4 +409,24 @@ function ArrowLeft() {
       <polyline points="12 19 5 12 12 5" />
     </svg>
   )
+}
+
+const primaryButtonStyle = {
+  background: 'var(--cb-primary)',
+  border: 'none',
+  borderRadius: 'var(--cb-radius-md)',
+  color: 'white',
+  fontSize: 14,
+  fontWeight: 600,
+  padding: '10px 14px',
+}
+
+const secondaryButtonStyle = {
+  background: 'var(--cb-bg-elevated)',
+  border: '1px solid var(--cb-border)',
+  borderRadius: 'var(--cb-radius-md)',
+  color: 'var(--cb-primary)',
+  fontSize: 14,
+  fontWeight: 600,
+  padding: '10px 14px',
 }

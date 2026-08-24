@@ -15,6 +15,8 @@ class User(db.Model):
     phone = db.Column(db.String(20), nullable=True)
     is_active = db.Column(db.Boolean, default=True)
     is_verified = db.Column(db.Boolean, default=False)
+    crisis_alerts_enabled = db.Column(db.Boolean, default=True, nullable=False)
+    crisis_alert_sms_enabled = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -45,6 +47,8 @@ class User(db.Model):
             "phone": self.phone,
             "is_active": self.is_active,
             "is_verified": self.is_verified,
+            "crisis_alerts_enabled": self.crisis_alerts_enabled,
+            "crisis_alert_sms_enabled": self.crisis_alert_sms_enabled,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "teen_count": self.teens.count(),
         }

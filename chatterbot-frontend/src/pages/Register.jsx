@@ -11,27 +11,24 @@ export default function Register() {
   const [loading, setLoading] = useState(false)
   
   const navigate = useNavigate()
-  // Import loginAsDemo from your AuthContext
-  const { loginAsDemo } = useAuth()
+  const { register } = useAuth()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setLoading(true)
     try {
-      // Normal registration logic would go here
-      // await api.register(...)
+      await register({
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        password,
+      })
       navigate('/dashboard')
     } catch (err) {
       setError(err.data?.error || 'Registration failed')
     }
     setLoading(false)
-  }
-
-  // Instant bypass function for investors/demos
-  const handleDemoBypass = () => {
-    loginAsDemo()
-    navigate('/dashboard')
   }
 
   return (
@@ -101,24 +98,6 @@ export default function Register() {
             {loading ? 'Creating account...' : 'Create account'}
           </button>
 
-          {/* Instant Demo Bypass Button */}
-          <button 
-            type="button" 
-            onClick={handleDemoBypass}
-            style={{ 
-              padding: '12px', 
-              borderRadius: 'var(--cb-radius-md)', 
-              background: 'transparent', 
-              color: 'var(--cb-primary)', 
-              border: '2px dashed var(--cb-primary)', 
-              fontWeight: 700, 
-              fontSize: 14, 
-              cursor: 'pointer',
-              width: '100%'
-            }}
-          >
-            ⚡ Access Demo Dashboard
-          </button>
         </form>
 
         <div style={{ marginTop: 'var(--cb-space-5)', textAlign: 'center', fontSize: 14, color: 'var(--cb-text-secondary)' }}>

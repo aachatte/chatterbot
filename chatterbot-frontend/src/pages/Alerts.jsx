@@ -24,7 +24,7 @@ export default function Alerts() {
   useEffect(() => {
     api.getAlerts()
       .then(data => setAlerts(data.alerts))
-      .catch(() => setAlerts(MOCK_ALERTS))
+      .catch(() => setAlerts([]))
       .finally(() => setLoading(false))
   }, [])
 
@@ -105,7 +105,7 @@ export default function Alerts() {
           {filtered.map(alert => (
             <Link
               key={alert.id}
-              to={`/alerts/${alert.id}`}
+              to={`/dashboard/alerts/${alert.id}`}
               style={{
                 background: 'var(--cb-bg-elevated)',
                 border: '1px solid var(--cb-border)',

@@ -9,11 +9,19 @@ logger = logging.getLogger(__name__)
 
 class TwilioService:
     def __init__(self):
-        self.client = Client(settings.twilio_account_sid, settings.twilio_auth_token)
+        self.client = None
+        if settings.twilio_account_sid and settings.twilio_auth_token:
+            self.client = Client(
+                settings.twilio_account_sid, settings.twilio_auth_token
+            )
         self.from_number = settings.twilio_phone_number
 
     def send_sms(self, to_number: str, body: str) -> dict:
         """Send an SMS message via Twilio."""
+        if not self.client or not self.from_number:
+            logger.error("Twilio credentials or sender phone number are not configured")
+            return {"success": False, "error": "SMS delivery is not configured"}
+
         try:
             message = self.client.messages.create(
                 body=body,

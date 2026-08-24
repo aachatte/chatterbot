@@ -1,5 +1,8 @@
 """SMS webhook and messaging routes."""
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from twilio.request_validator import RequestValidator
+from config import settings
 from app import db
 from app.models.teen import Teen
 from app.models.conversation import Conversation, Message
@@ -21,9 +24,29 @@ scheduler_svc = SchedulerService()
 logger = logging.getLogger(__name__)
 
 
+def _valid_twilio_signature() -> bool:
+    """Validate that an inbound SMS request was sent by Twilio."""
+    signature = request.headers.get("X-Twilio-Signature")
+    if not settings.twilio_auth_token or not signature:
+        return False
+    return RequestValidator(settings.twilio_auth_token).validate(
+        request.url, request.form, signature
+    )
+
+
+def _get_json_object():
+    """Return a JSON object request body, if one was supplied."""
+    data = request.get_json(silent=True)
+    return data if isinstance(data, dict) else None
+
+
 @sms_bp.route("/webhook", methods=["POST"])
 def twilio_webhook():
     """Handle inbound SMS from Twilio."""
+    if not _valid_twilio_signature():
+        logger.warning("Rejected SMS webhook with an invalid Twilio signature")
+        return jsonify({"error": "Invalid Twilio signature"}), 403
+
     data = request.form.to_dict()
     inbound = twilio_svc.parse_inbound_webhook(data)
 
@@ -151,16 +174,24 @@ def twilio_webhook():
 
 
 @sms_bp.route("/send", methods=["POST"])
+@jwt_required()
 def send_manual_sms():
-    """Admin endpoint to manually send an SMS (for testing)."""
-    data = request.get_json()
+    """Send a manual message to one of the authenticated parent's teens."""
+    user_id = int(get_jwt_identity())
+    data = _get_json_object()
+    if data is None:
+        return jsonify({"error": "Request body must be a JSON object"}), 400
     phone = data.get("phone")
     message = data.get("message")
 
-    if not phone or not message:
+    if not isinstance(phone, str) or not phone.strip() or not isinstance(message, str) or not message.strip():
         return jsonify({"error": "phone and message are required"}), 400
 
-    result = twilio_svc.send_sms(phone, message)
+    teen = Teen.query.filter_by(phone=phone.strip(), parent_id=user_id).first()
+    if not teen:
+        return jsonify({"error": "Teen not found"}), 404
+
+    result = twilio_svc.send_sms(teen.phone, message.strip())
 
     if result["success"]:
         return jsonify({"message": "SMS sent", "sid": result["sid"]}), 200
@@ -169,14 +200,21 @@ def send_manual_sms():
 
 
 @sms_bp.route("/nudge/<int:teen_id>", methods=["POST"])
+@jwt_required()
 def trigger_nudge(teen_id):
     """Manually trigger a proactive nudge for a teen."""
-    teen = Teen.query.get(teen_id)
+    user_id = int(get_jwt_identity())
+    teen = Teen.query.filter_by(id=teen_id, parent_id=user_id).first()
     if not teen:
         return jsonify({"error": "Teen not found"}), 404
 
-    data = request.get_json()
+    data = _get_json_object()
+    if data is None:
+        return jsonify({"error": "Request body must be a JSON object"}), 400
     message = data.get("message", f"Hey {teen.first_name}! Just checking in. How are you doing?")
+    if not isinstance(message, str) or not message.strip():
+        return jsonify({"error": "message must be a non-empty string"}), 400
+    message = message.strip()
 
     result = twilio_svc.send_proactive_nudge(teen.phone, message)
 

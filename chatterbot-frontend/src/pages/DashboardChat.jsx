@@ -10,7 +10,7 @@ export default function DashboardChat() {
 
   const handleSend = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return;
 
     const userMsg = input.trim();
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
@@ -30,7 +30,8 @@ export default function DashboardChat() {
     <div style={{ maxWidth: 800, margin: '0 auto', height: '80vh', display: 'flex', flexDirection: 'column' }}>
       <div>
         <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 'var(--cb-space-2)' }}>Assistant</h1>
-        <p style={{ color: 'var(--cb-text-secondary)', fontSize: 15, marginBottom: 'var(--cb-space-6)' }}>Chat with the AI about your teen's alerts and mental health strategies.</p>
+        <p style={{ color: 'var(--cb-text-secondary)', fontSize: 15, marginBottom: 'var(--cb-space-3)' }}>Ask for general guidance about alerts and family safety practices.</p>
+        <p style={{ color: 'var(--cb-text-tertiary)', fontSize: 13, marginBottom: 'var(--cb-space-6)' }}>Do not use this chat for an immediate emergency. Call or text 988 in the United States, or contact local emergency services.</p>
       </div>
 
       <div style={{ 
@@ -68,6 +69,8 @@ export default function DashboardChat() {
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
+            maxLength={1000}
+            aria-label="Message for the guardian assistant"
             placeholder="Ask about alerts, setting boundaries, or how the bot works..."
             style={{
               flex: 1,

@@ -1,11 +1,13 @@
 """External webhook routes (Stripe, etc.)."""
+from datetime import datetime
+import logging
+
 from flask import Blueprint, request, jsonify
 import stripe
 from config import settings
 from app import db
 from app.models.user import User
 from app.models.subscription import Subscription
-import logging
 
 webhook_bp = Blueprint("webhooks", __name__)
 logger = logging.getLogger(__name__)
@@ -75,15 +77,26 @@ def _handle_checkout_completed(data):
     sub.plan_tier = "premium"
 
     # Get subscription details from Stripe
-    try:
-        stripe_sub = stripe.Subscription.retrieve(subscription_id)
-        sub.current_period_start = datetime.fromtimestamp(stripe_sub.current_period_start)
-        sub.current_period_end = datetime.fromtimestamp(stripe_sub.current_period_end)
-        sub.amount = stripe_sub.plan.amount
-        sub.currency = stripe_sub.plan.currency
-        sub.interval = stripe_sub.plan.interval
-    except Exception as e:
-        logger.error(f"Failed to retrieve Stripe subscription: {e}")
+    if not subscription_id:
+        logger.warning("Checkout completed without a subscription ID for customer %s", customer_id)
+    else:
+        try:
+            stripe_sub = stripe.Subscription.retrieve(subscription_id)
+            sub.current_period_start = datetime.utcfromtimestamp(
+                stripe_sub.current_period_start
+            )
+            sub.current_period_end = datetime.utcfromtimestamp(
+                stripe_sub.current_period_end
+            )
+            sub.amount = stripe_sub.plan.amount
+            sub.currency = stripe_sub.plan.currency
+            sub.interval = stripe_sub.plan.interval
+        except stripe.error.StripeError as exc:
+            logger.warning(
+                "Could not retrieve Stripe subscription %s: %s",
+                subscription_id,
+                exc,
+            )
 
     db.session.commit()
     logger.info(f"Subscription activated for user {user.id}")
@@ -98,8 +111,8 @@ def _handle_payment_succeeded(data):
     sub = Subscription.query.filter_by(stripe_subscription_id=subscription_id).first()
     if sub:
         sub.status = "active"
-        sub.current_period_start = datetime.fromtimestamp(data["period_start"])
-        sub.current_period_end = datetime.fromtimestamp(data["period_end"])
+        sub.current_period_start = datetime.utcfromtimestamp(data["period_start"])
+        sub.current_period_end = datetime.utcfromtimestamp(data["period_end"])
         db.session.commit()
 
 
