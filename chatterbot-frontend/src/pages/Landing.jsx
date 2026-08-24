@@ -1,286 +1,326 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import './Landing.css';
 
 export default function Landing() {
-  // --- DEMO STATE & LOGIC ---
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [parentAlert, setParentAlert] = useState(null);
-  
-  // Ref targets the container, not the bottom element, to prevent page jumping
+  const [activeScenario, setActiveScenario] = useState(null);
+  const [navScrolled, setNavScrolled] = useState(false);
   const chatContainerRef = useRef(null);
 
-  // Only scrolls the internal chat box
-  const scrollToBottom = () => {
+  useEffect(() => {
+    const onScroll = () => setNavScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  };
-
-  useEffect(() => {
-    scrollToBottom();
   }, [messages, isTyping]);
 
   const playDemo = async (flow) => {
     setMessages([]);
     setParentAlert(null);
+    setActiveScenario(flow);
     setIsTyping(true);
-    
     const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
     if (flow === 'nudge') {
       await delay(800);
       setIsTyping(false);
       setMessages([{ sender: 'bot', text: 'Hey Maya! 👋 How did the rest of your Wednesday go?' }]);
-      
       await delay(2000);
       setMessages(prev => [...prev, { sender: 'teen', text: "It was okay. Just got home from practice and I'm exhausted." }]);
       setIsTyping(true);
-      
       await delay(1500);
       setIsTyping(false);
-      setMessages(prev => [...prev, { sender: 'bot', text: 'Practice will definitely do that! Make sure to grab some water. You just chilling for the rest of the night?' }]);
-      
+      setMessages(prev => [...prev, { sender: 'bot', text: 'Practice will do that! Make sure to grab some water. Chilling for the rest of the night?' }]);
       await delay(2500);
       setMessages(prev => [...prev, { sender: 'teen', text: "No I have so much homework. I'm literally so overwhelmed by this history paper." }]);
       setIsTyping(true);
-
       await delay(2000);
       setIsTyping(false);
-      setMessages(prev => [...prev, { sender: 'bot', text: 'Ah, history papers can definitely pile up. 📚 Taking it one step at a time helps. Do you know what topic you\'re focusing on yet?' }]);
-      
+      setMessages(prev => [...prev, { sender: 'bot', text: 'History papers can pile up. 📚 Taking it one step at a time helps—do you know your topic yet?' }]);
       await delay(3000);
-      setMessages(prev => [...prev, { sender: 'teen', text: "Yeah the industrial revolution but I can't find good sources and it's due Friday. I'm freaking out a little." }]);
+      setMessages(prev => [...prev, { sender: 'teen', text: "Yeah the industrial revolution but I can't find good sources and it's due Friday." }]);
       setIsTyping(true);
-
       await delay(2000);
       setIsTyping(false);
-      setMessages(prev => [...prev, { sender: 'bot', text: "Deep breaths! You still have time. Maybe just aim to find two good sources tonight and write the intro tomorrow? You've got this." }]);
-      
-      await delay(2000);
-      setMessages(prev => [...prev, { sender: 'teen', text: "Yeah maybe. I'll try looking on the school portal." }]);
-      setIsTyping(true);
-
-      await delay(1500);
-      setIsTyping(false);
-      setMessages(prev => [...prev, { sender: 'bot', text: "Good plan. Good luck with the research, and let me know if you need a distraction later!" }]);
-    } 
-    
+      setMessages(prev => [...prev, { sender: 'bot', text: "Deep breaths! Aim for two good sources tonight and the intro tomorrow. You've got this." }]);
+    }
     else if (flow === 'friends') {
       await delay(800);
       setIsTyping(false);
       setMessages([{ sender: 'teen', text: "my best friend is being weird today and I'm really annoyed." }]);
       setIsTyping(true);
-      
       await delay(1800);
       setIsTyping(false);
-      setMessages(prev => [...prev, { sender: 'bot', text: "I'm sorry to hear that. Friend drama is always tough. Have you talked to them directly about it?" }]);
-      
+      setMessages(prev => [...prev, { sender: 'bot', text: "Friend drama is always tough. Have you talked to them directly about it?" }]);
       await delay(2000);
       setMessages(prev => [...prev, { sender: 'teen', text: "no I'm too scared they'll get mad and ice me out." }]);
       setIsTyping(true);
-
       await delay(2200);
       setIsTyping(false);
-      setMessages(prev => [...prev, { sender: 'bot', text: "That's totally understandable. Sometimes writing out what you want to say in your notes app first can make it less scary. Want to try that?" }]);
+      setMessages(prev => [...prev, { sender: 'bot', text: "That's totally understandable. Writing out what you want to say in your notes app first can make it feel less scary." }]);
     }
-
     else if (flow === 'boredom') {
       await delay(800);
       setIsTyping(false);
       setMessages([{ sender: 'teen', text: "i am so bored and idk what to do right now." }]);
       setIsTyping(true);
-      
       await delay(1500);
       setIsTyping(false);
-      setMessages(prev => [...prev, { sender: 'bot', text: "I feel that! Sometimes doing one tiny thing helps. Want a random mini-goal to build some momentum?" }]);
-      
+      setMessages(prev => [...prev, { sender: 'bot', text: "I feel that! Sometimes doing one tiny thing builds momentum. Want a random mini-goal?" }]);
       await delay(1800);
       setMessages(prev => [...prev, { sender: 'teen', text: "sure what is it" }]);
       setIsTyping(true);
-
       await delay(2000);
       setIsTyping(false);
-      setMessages(prev => [...prev, { sender: 'bot', text: "Drink a glass of water, find one song you haven't heard in a year, and listen to it. Let me know what song it is!" }]);
-    }
-    
-    else if (flow === 'crisis') {
-      await delay(800);
-      setIsTyping(false);
-      setMessages([{ sender: 'teen', text: "I can't take this anymore, everyone hates me and I just want to hurt myself." }]);
-      setIsTyping(true);
-      
-      // Graduated 3-part crisis response
-      await delay(2000);
-      setIsTyping(false);
-      setMessages(prev => [...prev, { sender: 'bot', text: 'I am so sorry you are feeling this way. That sounds incredibly heavy, but please know you are not alone.' }]);
-      setIsTyping(true);
-
-      await delay(1500);
-      setIsTyping(false);
-      setMessages(prev => [...prev, { sender: 'bot', text: "I'm here for you. It's really important to talk to someone who can help keep you safe right now." }]);
-      setIsTyping(true);
-
-      await delay(1500);
-      setIsTyping(false);
-      setMessages(prev => [...prev, { sender: 'bot', text: 'Please talk to your parents or call the suicide lifeline at 988 immediately. They are trained to help.' }]);
-      
-      await delay(800);
-      setParentAlert({
-        title: "⚠️ Emergency Alert: Self-Harm Keyword Detected",
-        body: "Maya (16) used high-risk language indicating severe distress. An automatic SMS has been sent to your phone."
-      });
+      setMessages(prev => [...prev, { sender: 'bot', text: "Drink a glass of water, find one song you haven't heard in a year, and listen to it. Tell me what song it is!" }]);
     }
   };
 
-  const getPillarStyle = (colorVar) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-    background: '#ffffff',
-    padding: '32px 24px',
-    borderTop: `10px solid var(${colorVar})`,
-    borderBottom: `16px solid var(${colorVar})`,
-    borderRadius: '4px',
-    boxShadow: '0 12px 30px rgba(0, 32, 91, 0.12)',
-    backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 15px, rgba(0, 32, 91, 0.03) 15px, rgba(0, 32, 91, 0.03) 30px)',
-    textAlign: 'center'
-  });
+  const scenarios = [
+    { id: 'nudge', emoji: '👋', label: 'Daily Check-in' },
+    { id: 'friends', emoji: '💬', label: 'Peer Conflict' },
+    { id: 'boredom', emoji: '🎯', label: 'Motivation Boost' },
+  ];
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--cb-bg)', color: 'var(--cb-text-primary)', overflowX: 'hidden' }}>
-      
-      <nav style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px var(--cb-space-6)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 'var(--cb-radius-md)', background: 'var(--cb-primary-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <div className="landing-root">
+
+      {/* ── STICKY NAV ── */}
+      <nav className={`landing-nav${navScrolled ? ' landing-nav--scrolled' : ''}`}>
+        <div className="landing-nav__inner">
+          <Link to="/" className="landing-nav__brand">
+            <div className="landing-nav__logo">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            <span>Chatterbot</span>
+          </Link>
+          <div className="landing-nav__links">
+            <Link to="/login" className="landing-nav__link">Sign in</Link>
+            <Link to="/demo" className="landing-nav__link landing-nav__link--demo">Live demo</Link>
+            <Link to="/register" className="landing-nav__cta">Get started free</Link>
           </div>
-          <span style={{ fontWeight: 800, fontSize: 22, letterSpacing: '-0.5px' }}>Chatterbot</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--cb-space-4)' }}>
-          <Link to="/login" style={{ color: 'var(--cb-text-secondary)', textDecoration: 'none', fontWeight: 600, fontSize: 15 }}>Sign in</Link>
-          <Link to="/demo" style={{ color: 'var(--cb-primary)', textDecoration: 'none', fontWeight: 600, fontSize: 15 }}>View demo</Link>
-          <Link to="/register" style={{ background: 'var(--cb-danger)', color: 'white', padding: '10px 20px', borderRadius: 'var(--cb-radius-md)', textDecoration: 'none', fontWeight: 700, fontSize: 15, boxShadow: 'var(--cb-shadow-glow)' }}>Get Started</Link>
         </div>
       </nav>
 
-      <section style={{ maxWidth: 900, margin: '60px auto', textAlign: 'center', padding: '0 var(--cb-space-4)' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(200, 16, 46, 0.1)', color: 'var(--cb-danger)', padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 700, marginBottom: 24, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-          <span className="pulse-dot"></span> Proactive adolescent support
+      {/* ── HERO ── */}
+      <section className="landing-hero">
+        <div className="landing-hero__bg-grid" aria-hidden="true" />
+        <div className="landing-hero__bg-blob landing-hero__bg-blob--1" aria-hidden="true" />
+        <div className="landing-hero__bg-blob landing-hero__bg-blob--2" aria-hidden="true" />
+
+        <div className="landing-hero__content">
+          <div className="landing-hero__badge">
+            <span className="pulse-dot pulse-dot--red" />
+            Proactive adolescent support
+          </div>
+
+          <h1 className="landing-hero__heading">
+            Support for the<br />
+            <span className="landing-hero__heading-accent">digital generation.</span>
+          </h1>
+
+          <p className="landing-hero__sub">
+            Daily SMS check-ins, guardian-configured boundaries, and instant safety
+            alerts—no apps to download, no accounts for teens.
+          </p>
+
+          <div className="landing-hero__actions">
+            <Link to="/register" className="btn btn--primary btn--lg">
+              Start free trial
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </Link>
+            <Link to="/demo" className="btn btn--ghost btn--lg">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+              View demo dashboard
+            </Link>
+          </div>
+
+          <div className="landing-hero__stats">
+            {[
+              { value: 'Zero', label: 'apps to install' },
+              { value: 'SMS', label: 'native, no bypass' },
+              { value: '24 / 7', label: 'safety monitoring' },
+              { value: '988', label: 'crisis protocol' },
+            ].map(s => (
+              <div className="landing-hero__stat" key={s.label}>
+                <span className="landing-hero__stat-value">{s.value}</span>
+                <span className="landing-hero__stat-label">{s.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
-        <h1 style={{ fontSize: 'clamp(40px, 6vw, 64px)', fontWeight: 800, marginBottom: 24, lineHeight: 1.1, letterSpacing: '-1.5px' }}>
-          Support for the <span style={{ color: 'var(--cb-danger)' }}>digital generation.</span>
-        </h1>
-        <p style={{ fontSize: 'clamp(16px, 2vw, 20px)', color: 'var(--cb-text-secondary)', marginBottom: 40, lineHeight: 1.6, maxWidth: 700, margin: '0 auto 40px auto' }}>
-          Chatterbot supports daily SMS check-ins, guardian-configured boundaries, and safety notifications when concerning language is detected.
-        </p>
       </section>
 
-      <section style={{ maxWidth: 1100, margin: '0 auto 80px auto', padding: '0 var(--cb-space-4)' }}>
-        <div className="glass-card" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 40, alignItems: 'center', padding: '40px' }}>
-          
-          <div style={{ margin: '0 auto', width: '100%', maxWidth: 340, height: 600, background: '#ffffff', borderRadius: 40, border: '12px solid #1e293b', position: 'relative', overflow: 'hidden', boxShadow: 'var(--cb-shadow-lg)', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 120, height: 24, background: '#1e293b', borderBottomLeftRadius: 16, borderBottomRightRadius: 16, zIndex: 10 }}></div>
-            
-            <div style={{ padding: '36px 16px 12px 16px', background: 'var(--cb-bg-muted)', borderBottom: '1px solid var(--cb-border)', textAlign: 'center', fontSize: 15, fontWeight: 700 }}>
-              Chatterbot (SMS)
-            </div>
+      {/* ── INTERACTIVE DEMO ── */}
+      <section className="landing-demo">
+        <div className="landing-demo__inner">
+          <div className="landing-demo__left">
+            <p className="landing-section-eyebrow">See it in action</p>
+            <h2 className="landing-section-heading">A conversation that<br/>actually helps.</h2>
+            <p className="landing-section-body">
+              Chatterbot reaches out first—no teen-side app required. Select a scenario to watch the AI adapt to real situations teens face every day.
+            </p>
+            <p className="landing-demo__disclaimer">
+              These conversations are illustrative only and do not represent live monitoring or emergency services.
+            </p>
 
-            <div ref={chatContainerRef} style={{ flex: 1, padding: 16, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 12, background: '#f8fafc', scrollBehavior: 'smooth' }}>
-              {messages.length === 0 && !isTyping && (
-                <div style={{ textAlign: 'center', color: 'var(--cb-text-tertiary)', fontSize: 13, marginTop: '50%' }}>
-                  Select a scenario to start demo
-                </div>
-              )}
-              
-              {messages.map((m, i) => (
-                <div key={i} style={{ alignSelf: m.sender === 'teen' ? 'flex-end' : 'flex-start', background: m.sender === 'teen' ? 'var(--cb-primary)' : '#e2e8f0', color: m.sender === 'teen' ? '#ffffff' : 'var(--cb-text-primary)', padding: '10px 14px', borderRadius: 18, borderBottomRightRadius: m.sender === 'teen' ? 4 : 18, borderBottomLeftRadius: m.sender === 'bot' ? 4 : 18, maxWidth: '85%', fontSize: 14, lineHeight: 1.4 }}>
-                  {m.text}
-                </div>
+            <div className="landing-demo__scenarios">
+              {scenarios.map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => playDemo(s.id)}
+                  className={`landing-demo__scenario-btn${activeScenario === s.id ? ' landing-demo__scenario-btn--active' : ''}`}
+                >
+                  <span className="landing-demo__scenario-emoji">{s.emoji}</span>
+                  <span>{s.label}</span>
+                </button>
               ))}
-              
-              {isTyping && (
-                <div style={{ alignSelf: 'flex-start', background: '#e2e8f0', padding: '10px 14px', borderRadius: 18, width: 50, display: 'flex', gap: 4, justifyContent: 'center' }}>
-                  <span style={{ width: 6, height: 6, background: 'var(--cb-text-tertiary)', borderRadius: '50%', animation: 'pulse 1s infinite' }}></span>
-                  <span style={{ width: 6, height: 6, background: 'var(--cb-text-tertiary)', borderRadius: '50%', animation: 'pulse 1s infinite 0.2s' }}></span>
-                  <span style={{ width: 6, height: 6, background: 'var(--cb-text-tertiary)', borderRadius: '50%', animation: 'pulse 1s infinite 0.4s' }}></span>
-                </div>
-              )}
             </div>
+
+            {parentAlert && (
+              <div className="landing-demo__alert">
+                <div className="landing-demo__alert-icon">⚠️</div>
+                <div>
+                  <div className="landing-demo__alert-title">{parentAlert.title}</div>
+                  <div className="landing-demo__alert-body">{parentAlert.body}</div>
+                  <div className="landing-demo__alert-badge">DASHBOARD SYNCED · SMS SENT</div>
+                </div>
+              </div>
+            )}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-            <div>
-              <h2 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12 }}>Explore a simulated conversation</h2>
-              <p style={{ color: 'var(--cb-text-secondary)', fontSize: 16 }}>These examples are illustrative only and do not represent live monitoring or emergency services.</p>
-            </div>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              <button onClick={() => playDemo('nudge')} style={{ background: 'var(--cb-bg-elevated)', color: 'var(--cb-primary)', border: '2px solid var(--cb-primary)', padding: '14px', borderRadius: 'var(--cb-radius-md)', fontWeight: 700, fontSize: 14, cursor: 'pointer', textAlign: 'left' }}>
-                👋 Extended Check-in
-              </button>
-              <button onClick={() => playDemo('friends')} style={{ background: 'var(--cb-bg-elevated)', color: 'var(--cb-primary)', border: '2px solid var(--cb-primary)', padding: '14px', borderRadius: 'var(--cb-radius-md)', fontWeight: 700, fontSize: 14, cursor: 'pointer', textAlign: 'left' }}>
-                👯‍♀️ Peer Conflict
-              </button>
-              <button onClick={() => playDemo('boredom')} style={{ background: 'var(--cb-bg-elevated)', color: 'var(--cb-primary)', border: '2px solid var(--cb-primary)', padding: '14px', borderRadius: 'var(--cb-radius-md)', fontWeight: 700, fontSize: 14, cursor: 'pointer', textAlign: 'left' }}>
-                🥱 Teen Boredom
-              </button>
-            </div>
-
-            <div style={{ minHeight: 120, marginTop: 16 }}>
-              {parentAlert && (
-                <div style={{ background: 'rgba(200, 16, 46, 0.1)', borderLeft: '6px solid var(--cb-danger)', padding: '16px', borderRadius: 'var(--cb-radius-md)', animation: 'slideDown 0.3s ease-out' }}>
-                  <h4 style={{ color: 'var(--cb-danger)', margin: '0 0 8px 0', fontSize: 15, fontWeight: 700 }}>{parentAlert.title}</h4>
-                  <p style={{ color: 'var(--cb-text-primary)', margin: 0, fontSize: 14, lineHeight: 1.5 }}>{parentAlert.body}</p>
-                  <div style={{ fontSize: 12, color: 'var(--cb-danger)', marginTop: 8, fontWeight: 600 }}>DASHBOARD SYNCED & SMS SENT</div>
-                </div>
-              )}
+          {/* Phone mockup */}
+          <div className="landing-phone">
+            <div className="landing-phone__frame">
+              <div className="landing-phone__notch" aria-hidden="true" />
+              <div className="landing-phone__header">
+                <div className="landing-phone__contact-dot" />
+                <span>Chatterbot</span>
+                <span className="landing-phone__status-dot" />
+              </div>
+              <div className="landing-phone__messages" ref={chatContainerRef}>
+                {messages.length === 0 && !isTyping && (
+                  <div className="landing-phone__empty">← Pick a scenario</div>
+                )}
+                {messages.map((m, i) => (
+                  <div
+                    key={i}
+                    className={`landing-phone__bubble landing-phone__bubble--${m.sender}`}
+                  >
+                    {m.text}
+                  </div>
+                ))}
+                {isTyping && (
+                  <div className="landing-phone__bubble landing-phone__bubble--bot landing-phone__typing">
+                    <span /><span /><span />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section style={{ maxWidth: 1200, margin: '0 auto 100px auto', padding: '0 var(--cb-space-4)' }}>
-        <div style={{ textAlign: 'center', marginBottom: 60 }}>
-          <h2 style={{ fontSize: 32, fontWeight: 800, marginBottom: 12, letterSpacing: '-0.5px' }}>The Three Pillars of Chatterbot</h2>
-          <p style={{ color: 'var(--cb-text-secondary)', fontSize: 16, maxWidth: 600, margin: '0 auto' }}>Traditional monitoring apps spy and alienate teens. We built a platform founded on mutual trust and proactive safety.</p>
-        </div>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 32 }}>
-          <div style={getPillarStyle('--cb-primary')}>
-            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--cb-bg-muted)', color: 'var(--cb-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>I</div>
-            <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cb-primary)' }}>The Core Teen Experience</h3>
-            <p style={{ color: 'var(--cb-text-secondary)', lineHeight: 1.6, fontSize: 15 }}>
-              We meet teenagers where they already are. Using Twilio SMS integration, the system proactively texts your teen first—acting as a lifestyle organizer and supportive sounding board. There are no apps to download or bypass.
+      {/* ── PILLARS / BENTO ── */}
+      <section className="landing-pillars">
+        <div className="landing-pillars__inner">
+          <div className="landing-pillars__header">
+            <p className="landing-section-eyebrow">How it works</p>
+            <h2 className="landing-section-heading">Built on trust, not surveillance.</h2>
+            <p className="landing-section-body" style={{ maxWidth: 560, margin: '0 auto' }}>
+              Traditional monitoring apps spy on teens and erode trust. Chatterbot takes a
+              radically different approach.
             </p>
           </div>
 
-          <div style={getPillarStyle('--cb-danger')}>
-            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(200, 16, 46, 0.1)', color: 'var(--cb-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>II</div>
-            <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cb-danger)' }}>The Guardian Dashboard</h3>
-            <p style={{ color: 'var(--cb-text-secondary)', lineHeight: 1.6, fontSize: 15 }}>
-              Guardians access a privacy-conscious portal with high-level activity summaries and safety notifications without exposing full conversation transcripts.
-            </p>
-          </div>
+          <div className="landing-bento">
+            <div className="landing-bento__card landing-bento__card--primary landing-bento__card--tall">
+              <div className="landing-bento__icon landing-bento__icon--navy">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div className="landing-bento__number">01</div>
+              <h3 className="landing-bento__title">The Teen Experience</h3>
+              <p className="landing-bento__body">
+                Chatterbot texts your teen first—no app required, no account to create.
+                It acts as a supportive sounding board right inside the Messages app they
+                already use. There's nothing to download or bypass.
+              </p>
+              <div className="landing-bento__pill">SMS-native</div>
+            </div>
 
-          <div style={getPillarStyle('--cb-primary')}>
-            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--cb-bg-muted)', color: 'var(--cb-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto', fontSize: 18 }}>III</div>
-            <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cb-primary)' }}>Legal & Safety Compliance</h3>
-            <p style={{ color: 'var(--cb-text-secondary)', lineHeight: 1.6, fontSize: 15 }}>
-              Chatterbot is designed around guardian consent, minimal data exposure, and timely safety notifications. Product safeguards and privacy practices should be reviewed before enrollment.
-            </p>
+            <div className="landing-bento__card landing-bento__card--red">
+              <div className="landing-bento__icon landing-bento__icon--red">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+              </div>
+              <div className="landing-bento__number">02</div>
+              <h3 className="landing-bento__title">Guardian Dashboard</h3>
+              <p className="landing-bento__body">
+                A privacy-conscious portal gives you high-level summaries and instant
+                safety alerts—without exposing full transcripts. Stay informed, not intrusive.
+              </p>
+              <div className="landing-bento__pill landing-bento__pill--red">Real-time alerts</div>
+            </div>
+
+            <div className="landing-bento__card landing-bento__card--light">
+              <div className="landing-bento__icon landing-bento__icon--navy">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div className="landing-bento__number">03</div>
+              <h3 className="landing-bento__title">Safety & Compliance</h3>
+              <p className="landing-bento__body">
+                Crisis language triggers an immediate multi-step response: a compassionate
+                message to the teen, a 988 referral, and an automatic alert to your phone.
+                Built on guardian consent and minimal data retention.
+              </p>
+              <div className="landing-bento__pill">988 integrated</div>
+            </div>
+
+            <div className="landing-bento__card landing-bento__card--dark landing-bento__card--wide">
+              <div className="landing-bento__cta-content">
+                <h3 className="landing-bento__cta-heading">Ready to get started?</h3>
+                <p className="landing-bento__cta-body">Set up in under 5 minutes. No credit card required.</p>
+              </div>
+              <Link to="/register" className="btn btn--white btn--lg">
+                Create free account
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      <footer style={{ borderTop: '1px solid var(--cb-border)', padding: '40px var(--cb-space-4)', textAlign: 'center', color: 'var(--cb-text-tertiary)', fontSize: 14 }}>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--cb-space-4)', flexWrap: 'wrap', marginBottom: 'var(--cb-space-3)' }}>
-          <Link to="/privacy" style={{ color: 'var(--cb-primary)' }}>Privacy</Link>
-          <Link to="/terms" style={{ color: 'var(--cb-primary)' }}>Terms</Link>
-          <Link to="/safety" style={{ color: 'var(--cb-primary)' }}>Safety</Link>
-          <Link to="/support" style={{ color: 'var(--cb-primary)' }}>Support</Link>
+      {/* ── FOOTER ── */}
+      <footer className="landing-footer">
+        <div className="landing-footer__inner">
+          <div className="landing-footer__brand">
+            <div className="landing-nav__logo">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            <span className="landing-footer__brand-name">Chatterbot</span>
+          </div>
+          <nav className="landing-footer__links" aria-label="Footer navigation">
+            <Link to="/privacy">Privacy</Link>
+            <Link to="/terms">Terms</Link>
+            <Link to="/safety">Safety</Link>
+            <Link to="/support">Support</Link>
+            <Link to="/demo">Demo</Link>
+          </nav>
+          <p className="landing-footer__copy">
+            &copy; {new Date().getFullYear()} Chatterbot Technologies, Inc.
+          </p>
         </div>
-        <p>&copy; {new Date().getFullYear()} Chatterbot Technologies, Inc. All rights reserved.</p>
       </footer>
     </div>
   );
