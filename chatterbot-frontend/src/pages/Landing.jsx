@@ -296,6 +296,70 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ── FOR TEENS ── */}
+      <section className="landing-teens">
+        <div className="landing-teens__inner">
+          <div className="landing-teens__content">
+            <p className="landing-section-eyebrow" style={{ color: 'var(--cb-red)' }}>Built for kids too</p>
+            <h2 className="landing-section-heading" style={{ color: 'var(--cb-navy)' }}>
+              A smarter AI for younger minds.
+            </h2>
+            <p className="landing-section-body" style={{ color: '#444' }}>
+              ChatGPT and Google are powerful — but they weren't designed for a 13-year-old wondering
+              about anxiety, social pressure, or puberty. Chatterbot speaks at <strong>their level</strong>,
+              in plain language, with age-appropriate context, no judgment, and guardrails that keep
+              the conversation safe.
+            </p>
+            <ul className="landing-teens__list">
+              {[
+                { icon: '🧠', title: 'Age-calibrated answers', body: 'Responses are tuned to the teen\'s age — not a generic adult AI dump.' },
+                { icon: '💬', title: 'Text, don\'t type an essay', body: 'No long prompts. Just text "I\'m stressed about school" and get real help.' },
+                { icon: '🔒', title: 'Private from peers, visible to parents', body: 'Teens get a safe space. Guardians see summaries, not screenshots.' },
+                { icon: '🚨', title: 'Knows when to escalate', body: 'If a conversation turns serious, Chatterbot alerts a guardian and suggests 988.' },
+              ].map(item => (
+                <li key={item.title} className="landing-teens__item">
+                  <span className="landing-teens__item-icon">{item.icon}</span>
+                  <div>
+                    <strong className="landing-teens__item-title">{item.title}</strong>
+                    <p className="landing-teens__item-body">{item.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="landing-teens__visual">
+            <div className="landing-teens__phone">
+              <div className="landing-teens__phone-notch" />
+              <div className="landing-teens__phone-screen">
+                <div className="landing-teens__phone-label">Chatterbot</div>
+                {[
+                  { from: 'teen', text: 'why do i always feel nervous around people' },
+                  { from: 'bot', text: 'That\'s social anxiety — it\'s really common for teens. Your brain is learning how to read social situations, which can feel overwhelming. Want some quick tips that actually work?' },
+                  { from: 'teen', text: 'yeah please' },
+                  { from: 'bot', text: '✅ Box breathing: inhale 4 sec, hold 4, exhale 4. \n✅ Pick one person to talk to, not the whole room. \n✅ Remember: most people are thinking about themselves, not judging you.' },
+                ].map((msg, i) => (
+                  <div key={i} className={`landing-teens__bubble landing-teens__bubble--${msg.from}`}>
+                    {msg.text}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="landing-teens__vs">
+              <div className="landing-teens__vs-card landing-teens__vs-card--bad">
+                <div className="landing-teens__vs-label">Generic AI</div>
+                <p className="landing-teens__vs-text">"Social anxiety disorder (SAD) is characterized by intense fear of social situations and may require CBT, SSRIs, or exposure therapy as outlined in DSM-5 criteria..."</p>
+                <div className="landing-teens__vs-tag landing-teens__vs-tag--bad">Not built for teens</div>
+              </div>
+              <div className="landing-teens__vs-card landing-teens__vs-card--good">
+                <div className="landing-teens__vs-label">Chatterbot</div>
+                <p className="landing-teens__vs-text">"That feeling is super normal. Here's what helps most teens..."</p>
+                <div className="landing-teens__vs-tag landing-teens__vs-tag--good">Age-appropriate ✓</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── SOCIAL PROOF / PRESS ── */}
       <section className="landing-press">
         <div className="landing-press__inner">
