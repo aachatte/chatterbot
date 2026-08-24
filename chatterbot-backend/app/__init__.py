@@ -80,6 +80,11 @@ def create_app(config_override=None):
     from app.routes.webhook import webhook_bp
     from app.routes.admin import admin_bp
     from app.routes.support import support_bp
+    from app.routes.mood import mood_bp
+    from app.routes.digest import digest_bp
+    from app.routes.checkin import checkin_bp
+    from app.routes.counselor import counselor_bp
+    from app.routes.referral import referral_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(sms_bp, url_prefix="/api/sms")
@@ -88,6 +93,11 @@ def create_app(config_override=None):
     app.register_blueprint(webhook_bp, url_prefix="/api/webhooks")
     app.register_blueprint(admin_bp, url_prefix="/api/admin")
     app.register_blueprint(support_bp, url_prefix="/api/support")
+    app.register_blueprint(mood_bp)
+    app.register_blueprint(digest_bp)
+    app.register_blueprint(checkin_bp)
+    app.register_blueprint(counselor_bp)
+    app.register_blueprint(referral_bp)
 
     # Error handlers
     @app.errorhandler(400)
