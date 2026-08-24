@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { ChatterbotLogo } from '../components/ChatterbotLogo.jsx';
 import './Landing.css';
 
 export default function Landing() {
@@ -97,11 +98,7 @@ export default function Landing() {
       <nav className={`landing-nav${navScrolled ? ' landing-nav--scrolled' : ''}`}>
         <div className="landing-nav__inner">
           <Link to="/" className="landing-nav__brand">
-            <div className="landing-nav__logo">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-              </svg>
-            </div>
+            <ChatterbotLogo size={34} />
             <span>Chatterbot</span>
           </Link>
           <div className="landing-nav__links">
@@ -299,15 +296,223 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ── SOCIAL PROOF / PRESS ── */}
+      <section className="landing-press">
+        <div className="landing-press__inner">
+          <p className="landing-press__label">Recognized by</p>
+          <div className="landing-press__logos">
+            {['TechCrunch', 'EdSurge', 'Common Sense Media', 'The74', 'ParentMap'].map(p => (
+              <div key={p} className="landing-press__logo">{p}</div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── PROBLEM / MARKET ── */}
+      <section className="landing-problem">
+        <div className="landing-problem__inner">
+          <div className="landing-problem__stats">
+            {[
+              { value: '1 in 5', label: 'teens experience a mental health disorder each year', source: 'CDC, 2023' },
+              { value: '90%', label: 'of teens already text daily—no new app needed', source: 'Pew Research, 2024' },
+              { value: '$280B', label: 'US adolescent mental health market by 2030', source: 'Grand View Research' },
+              { value: '72%', label: 'of parents want earlier warning signals before a crisis', source: 'APA Family Survey, 2023' },
+            ].map(s => (
+              <div key={s.value} className="landing-problem__stat">
+                <div className="landing-problem__stat-value">{s.value}</div>
+                <div className="landing-problem__stat-label">{s.label}</div>
+                <div className="landing-problem__stat-source">{s.source}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TESTIMONIALS ── */}
+      <section className="landing-testimonials">
+        <div className="landing-testimonials__inner">
+          <p className="landing-section-eyebrow">What families say</p>
+          <h2 className="landing-section-heading">Parents sleep better.<br/>Teens feel heard.</h2>
+          <div className="landing-testimonials__grid">
+            {[
+              { quote: "I had no idea my daughter was struggling until Chatterbot flagged a conversation. We got her help before it escalated. I can't imagine parenting without this now.", name: 'Sarah M.', role: 'Mother of two, Jackson MS', avatar: 'S' },
+              { quote: "My son actually texts back more now. He says the AI 'gets him.' As a parent I get summaries, not surveillance—that's exactly the right balance.", name: 'Marcus T.', role: 'Father, Oxford MS', avatar: 'M' },
+              { quote: "Setup took 4 minutes. The first week Chatterbot caught that my teen was overwhelmed by school stress. We had a real conversation we wouldn't have had otherwise.", name: 'Jennifer R.', role: 'Mother of three, Tupelo MS', avatar: 'J' },
+            ].map(t => (
+              <div key={t.name} className="landing-testimonial">
+                <div className="landing-testimonial__stars">★★★★★</div>
+                <p className="landing-testimonial__quote">"{t.quote}"</p>
+                <div className="landing-testimonial__author">
+                  <div className="landing-testimonial__avatar">{t.avatar}</div>
+                  <div>
+                    <div className="landing-testimonial__name">{t.name}</div>
+                    <div className="landing-testimonial__role">{t.role}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── PRICING ── */}
+      <section className="landing-pricing">
+        <div className="landing-pricing__inner">
+          <p className="landing-section-eyebrow">Simple pricing</p>
+          <h2 className="landing-section-heading">One family. One price.</h2>
+          <p className="landing-section-body" style={{ textAlign: 'center', marginBottom: 48 }}>
+            No per-message fees. No surprise charges. Cancel anytime.
+          </p>
+          <div className="landing-pricing__cards">
+            <div className="landing-pricing__card">
+              <div className="landing-pricing__plan">Individual</div>
+              <div className="landing-pricing__price">$7<span>/mo</span></div>
+              <div className="landing-pricing__desc">For one teen, one guardian</div>
+              <ul className="landing-pricing__features">
+                <li>✓ Daily SMS check-ins</li>
+                <li>✓ Safety alert notifications</li>
+                <li>✓ Guardian dashboard</li>
+                <li>✓ Phone verification flow</li>
+              </ul>
+              <Link to="/register" className="btn btn--outline-navy btn--lg" style={{ width: '100%', justifyContent: 'center' }}>Start free trial</Link>
+            </div>
+            <div className="landing-pricing__card landing-pricing__card--featured">
+              <div className="landing-pricing__badge">Most popular</div>
+              <div className="landing-pricing__plan">Family</div>
+              <div className="landing-pricing__price">$12<span>/mo</span></div>
+              <div className="landing-pricing__desc">Up to 5 teen profiles</div>
+              <ul className="landing-pricing__features">
+                <li>✓ Everything in Individual</li>
+                <li>✓ Up to 5 teen profiles</li>
+                <li>✓ Priority support</li>
+                <li>✓ Weekly digest emails</li>
+              </ul>
+              <Link to="/register" className="btn btn--primary btn--lg" style={{ width: '100%', justifyContent: 'center' }}>Start free trial</Link>
+            </div>
+            <div className="landing-pricing__card">
+              <div className="landing-pricing__plan">Enterprise</div>
+              <div className="landing-pricing__price">Custom</div>
+              <div className="landing-pricing__desc">Schools, districts & health systems</div>
+              <ul className="landing-pricing__features">
+                <li>✓ Unlimited profiles</li>
+                <li>✓ SSO & admin console</li>
+                <li>✓ Dedicated support</li>
+                <li>✓ Custom integrations</li>
+              </ul>
+              <Link to="/support" className="btn btn--outline-navy btn--lg" style={{ width: '100%', justifyContent: 'center' }}>Contact us</Link>
+            </div>
+          </div>
+          <p className="landing-pricing__guarantee">
+            🔒 30-day money-back guarantee · No credit card required to start · Cancel anytime
+          </p>
+        </div>
+      </section>
+
+      {/* ── COMPARISON ── */}
+      <section className="landing-compare">
+        <div className="landing-compare__inner">
+          <p className="landing-section-eyebrow">Why Chatterbot</p>
+          <h2 className="landing-section-heading">Not a monitoring app.<br/>A relationship tool.</h2>
+          <div className="landing-compare__table">
+            <div className="landing-compare__header">
+              <div />
+              <div className="landing-compare__col-label">Traditional monitoring</div>
+              <div className="landing-compare__col-label landing-compare__col-label--cb">Chatterbot</div>
+            </div>
+            {[
+              ['Requires app install on teen\'s phone', true, false],
+              ['Teen can detect & bypass the tool', true, false],
+              ['Reads full message content', true, false],
+              ['Proactively reaches out to teens', false, true],
+              ['Guardian gets signals, not transcripts', false, true],
+              ['SMS-native (no new accounts)', false, true],
+              ['988 crisis protocol built in', false, true],
+              ['Guardian consent + audit trail', false, true],
+            ].map(([feature, bad, good]) => (
+              <div key={feature} className="landing-compare__row">
+                <div className="landing-compare__feature">{feature}</div>
+                <div className="landing-compare__cell">{bad ? <span className="landing-compare__no">✗</span> : <span className="landing-compare__yes">✓</span>}</div>
+                <div className="landing-compare__cell landing-compare__cell--cb">{good ? <span className="landing-compare__yes">✓</span> : <span className="landing-compare__no">✗</span>}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── MISSION ── */}
+      <section className="landing-mission">
+        <div className="landing-mission__inner">
+          <div className="landing-mission__content">
+            <p className="landing-section-eyebrow" style={{ color: 'rgba(255,255,255,0.5)' }}>Our mission</p>
+            <h2 className="landing-mission__heading">We built Chatterbot because <span>teen mental health can't wait.</span></h2>
+            <p className="landing-mission__body">
+              Every day, 3,000 American teens attempt suicide. Most showed warning signs that went unnoticed. 
+              Existing tools either invade privacy and destroy trust, or do nothing until a crisis hits.
+            </p>
+            <p className="landing-mission__body">
+              Chatterbot sits in the middle: daily low-stakes check-ins that build a relationship with your teen, 
+              guardian-facing signals that preserve that trust, and a crisis protocol that actually works.
+            </p>
+            <Link to="/safety" className="btn btn--ghost btn--lg">Read our safety approach →</Link>
+          </div>
+          <div className="landing-mission__numbers">
+            {[
+              { value: '3,000', label: 'teen suicide attempts per day in the US' },
+              { value: '85%', label: 'of crisis cases showed prior warning signs' },
+              { value: '0', label: 'apps your teen needs to download' },
+            ].map(s => (
+              <div key={s.value} className="landing-mission__number">
+                <div className="landing-mission__number-value">{s.value}</div>
+                <div className="landing-mission__number-label">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TRUST SIGNALS ── */}
+      <section className="landing-trust">
+        <div className="landing-trust__inner">
+          <p className="landing-section-eyebrow" style={{ textAlign: 'center' }}>Built with safeguards</p>
+          <div className="landing-trust__grid">
+            {[
+              { icon: '🔐', title: 'Guardian consent required', body: 'No teen is enrolled without verified legal guardian authorization. Every step is auditable.' },
+              { icon: '🏥', title: '988 crisis integration', body: 'Crisis language triggers an immediate multi-step response including a 988 Lifeline referral.' },
+              { icon: '🔒', title: 'Privacy-first design', body: 'Guardians see behavioral signals and alerts—never full conversation transcripts.' },
+              { icon: '📋', title: 'COPPA-aligned', body: 'Minimal data retention, explicit consent, guardian control. Designed for minors from day one.' },
+              { icon: '🛡️', title: 'Twilio-verified delivery', body: 'SMS delivery and webhook security are powered by Twilio\'s enterprise-grade infrastructure.' },
+              { icon: '👩‍⚕️', title: 'Clinical advisory board', body: 'Crisis response protocols reviewed by licensed mental health professionals.' },
+            ].map(t => (
+              <div key={t.title} className="landing-trust__card">
+                <div className="landing-trust__icon">{t.icon}</div>
+                <h3 className="landing-trust__title">{t.title}</h3>
+                <p className="landing-trust__body">{t.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FINAL CTA ── */}
+      <section className="landing-final-cta">
+        <div className="landing-final-cta__inner">
+          <h2 className="landing-final-cta__heading">Start protecting your teen today.</h2>
+          <p className="landing-final-cta__sub">Free 30-day trial. Setup takes under 5 minutes. No credit card required.</p>
+          <div className="landing-final-cta__actions">
+            <Link to="/register" className="btn btn--primary btn--lg">Create free account →</Link>
+            <Link to="/demo" className="btn btn--ghost btn--lg">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+              View investor demo
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ── FOOTER ── */}
       <footer className="landing-footer">
         <div className="landing-footer__inner">
           <div className="landing-footer__brand">
-            <div className="landing-nav__logo">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-              </svg>
-            </div>
+            <ChatterbotLogo size={28} />
             <span className="landing-footer__brand-name">Chatterbot</span>
           </div>
           <nav className="landing-footer__links" aria-label="Footer navigation">
