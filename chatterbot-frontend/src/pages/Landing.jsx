@@ -328,33 +328,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ── */}
-      <section className="landing-testimonials">
-        <div className="landing-testimonials__inner">
-          <p className="landing-section-eyebrow">What families say</p>
-          <h2 className="landing-section-heading">Parents sleep better.<br/>Teens feel heard.</h2>
-          <div className="landing-testimonials__grid">
-            {[
-              { quote: "I had no idea my daughter was struggling until Chatterbot flagged a conversation. We got her help before it escalated. I can't imagine parenting without this now.", name: 'Sarah M.', role: 'Mother of two, Jackson MS', avatar: 'S' },
-              { quote: "My son actually texts back more now. He says the AI 'gets him.' As a parent I get summaries, not surveillance—that's exactly the right balance.", name: 'Marcus T.', role: 'Father, Oxford MS', avatar: 'M' },
-              { quote: "Setup took 4 minutes. The first week Chatterbot caught that my teen was overwhelmed by school stress. We had a real conversation we wouldn't have had otherwise.", name: 'Jennifer R.', role: 'Mother of three, Tupelo MS', avatar: 'J' },
-            ].map(t => (
-              <div key={t.name} className="landing-testimonial">
-                <div className="landing-testimonial__stars">★★★★★</div>
-                <p className="landing-testimonial__quote">"{t.quote}"</p>
-                <div className="landing-testimonial__author">
-                  <div className="landing-testimonial__avatar">{t.avatar}</div>
-                  <div>
-                    <div className="landing-testimonial__name">{t.name}</div>
-                    <div className="landing-testimonial__role">{t.role}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── PRICING ── */}
       <section className="landing-pricing">
         <div className="landing-pricing__inner">
