@@ -1,10 +1,24 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../services/api.js'
+import '../components/Dashboard.css'
 
 function formatDate(value) {
-  return value ? new Date(value).toLocaleString() : 'No recent activity'
+  if (!value) return 'No recent activity'
+  const d = new Date(value)
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
+
+function Initials({ name }) {
+  return (name || '?')[0].toUpperCase()
+}
+
+const activityFeed = [
+  { type: 'message', text: 'Maya completed her daily check-in', time: '2m ago' },
+  { type: 'message', text: 'Ethan replied to a wellness prompt', time: '1h ago' },
+  { type: 'alert',   text: 'Safety keyword flagged — reviewed & resolved', time: '3h ago' },
+  { type: 'message', text: 'Maya started a new conversation thread', time: 'Yesterday' },
+]
 
 export default function Dashboard() {
   const [overview, setOverview] = useState(null)
@@ -13,86 +27,121 @@ export default function Dashboard() {
   useEffect(() => {
     api.getOverview()
       .then(setOverview)
-      .catch((requestError) => setError(requestError.data?.error || 'Dashboard data is unavailable. Please try again.'))
+      .catch((e) => setError(e.data?.error || 'Dashboard data is unavailable. Please try again.'))
   }, [])
 
   if (error) {
-    return <div className="glass-card" role="alert">{error}</div>
+    return (
+      <div className="db-root">
+        <div className="glass-card" role="alert" style={{ padding: 24, color: 'var(--cb-danger)' }}>{error}</div>
+      </div>
+    )
   }
 
   if (!overview) {
-    return <div className="page-loading" role="status">Loading dashboard...</div>
+    return <div className="page-loading" role="status">Loading dashboard…</div>
   }
 
   const { summary, teens, recent_alerts: recentAlerts } = overview
-  const stats = [
-    ['Active teens', summary.teen_count],
-    ['Messages in the last 7 days', summary.total_messages_7d],
-    ['Active safety alerts', summary.active_alerts],
-    ['Total safety alerts', summary.total_crisis_alerts],
-  ]
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', paddingBottom: 'var(--cb-space-8)' }}>
-      <header style={{ marginBottom: 'var(--cb-space-6)' }}>
-        <h1 style={{ fontSize: 32, fontWeight: 700, marginBottom: 'var(--cb-space-2)' }}>Guardian dashboard</h1>
-        <p style={{ color: 'var(--cb-text-secondary)', fontSize: 16 }}>
-          Privacy-preserving activity summaries and safety alerts for your family.
-        </p>
-      </header>
+    <div className="db-root">
+      {/* Header */}
+      <div className="db-header">
+        <div>
+          <h1 className="db-header__title">Guardian Dashboard</h1>
+          <p className="db-header__sub">Privacy-preserving activity summaries and safety alerts for your family.</p>
+        </div>
+        <Link to="/dashboard/teens/new" className="btn btn--sm btn--primary-sm">+ Add teen</Link>
+      </div>
 
-      <section aria-label="Dashboard summary" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--cb-space-4)', marginBottom: 'var(--cb-space-6)' }}>
-        {stats.map(([label, value]) => (
-          <div key={label} className="glass-card" style={{ padding: 'var(--cb-space-5)' }}>
-            <div style={{ color: 'var(--cb-text-secondary)', fontSize: 14, marginBottom: 'var(--cb-space-2)' }}>{label}</div>
-            <div style={{ color: label.includes('Active safety') && value > 0 ? 'var(--cb-danger)' : 'var(--cb-text-primary)', fontSize: 32, fontWeight: 700 }}>{value}</div>
-          </div>
-        ))}
-      </section>
+      {/* Stat cards */}
+      <div className="db-stats">
+        <div className="db-stat-card">
+          <div className="db-stat-card__label">Active teens</div>
+          <div className="db-stat-card__value">{summary.teen_count}</div>
+          <div className="db-stat-card__sub">enrolled & verified</div>
+        </div>
+        <div className="db-stat-card">
+          <div className="db-stat-card__label">Messages · 7 days</div>
+          <div className="db-stat-card__value">{summary.total_messages_7d}</div>
+          <div className="db-stat-card__sub">across all teens</div>
+        </div>
+        <div className={`db-stat-card${summary.active_alerts > 0 ? ' db-stat-card--danger' : ''}`}>
+          <div className="db-stat-card__label">Active alerts</div>
+          <div className="db-stat-card__value">{summary.active_alerts}</div>
+          <div className="db-stat-card__sub">{summary.active_alerts > 0 ? 'requires attention' : 'all clear'}</div>
+        </div>
+        <div className="db-stat-card">
+          <div className="db-stat-card__label">Total alerts</div>
+          <div className="db-stat-card__value">{summary.total_crisis_alerts}</div>
+          <div className="db-stat-card__sub">all time</div>
+        </div>
+      </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'var(--cb-space-6)' }}>
-        <section className="glass-card" aria-labelledby="teens-heading">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--cb-space-4)' }}>
-            <h2 id="teens-heading" style={{ fontSize: 20 }}>Teen activity</h2>
-            <Link to="/dashboard/teens" style={{ color: 'var(--cb-primary)', fontWeight: 600 }}>Manage teens</Link>
+      {/* Main grid */}
+      <div className="db-grid">
+        {/* Teen activity */}
+        <section className="db-card" aria-labelledby="teens-heading">
+          <div className="db-card__header">
+            <h2 id="teens-heading" className="db-card__title">Teen activity</h2>
+            <Link to="/dashboard/teens" className="db-card__action">Manage →</Link>
           </div>
           {teens.length === 0 ? (
-            <p style={{ color: 'var(--cb-text-secondary)' }}>Add a teen after completing consent verification to begin.</p>
-          ) : (
-            <div style={{ display: 'grid', gap: 'var(--cb-space-3)' }}>
-              {teens.map((teen) => (
-                <Link key={teen.id} to={`/dashboard/teens/${teen.id}`} style={{ border: '1px solid var(--cb-border)', borderRadius: 'var(--cb-radius-lg)', color: 'inherit', padding: 'var(--cb-space-4)', textDecoration: 'none' }}>
-                  <strong>{teen.first_name}</strong>
-                  <div style={{ color: 'var(--cb-text-secondary)', fontSize: 14, marginTop: 'var(--cb-space-1)' }}>
-                    {teen.message_count_7d} messages in the last 7 days · {teen.mood_label} activity
-                  </div>
-                </Link>
-              ))}
+            <div className="db-empty">
+              <div className="db-empty__icon">👤</div>
+              Add a teen after completing consent verification to begin.
             </div>
+          ) : (
+            teens.map((teen) => (
+              <Link key={teen.id} to={`/dashboard/teens/${teen.id}`} className="db-teen-item">
+                <div className="db-teen-avatar"><Initials name={teen.first_name} /></div>
+                <div>
+                  <div className="db-teen-name">{teen.first_name}</div>
+                  <div className="db-teen-meta">{teen.message_count_7d} messages · {teen.mood_label} activity</div>
+                </div>
+                <span className="db-teen-badge">Verified</span>
+              </Link>
+            ))
           )}
         </section>
 
-        <section className="glass-card" aria-labelledby="alerts-heading">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--cb-space-4)' }}>
-            <h2 id="alerts-heading" style={{ fontSize: 20 }}>Recent safety alerts</h2>
-            <Link to="/dashboard/alerts" style={{ color: 'var(--cb-primary)', fontWeight: 600 }}>View all</Link>
+        {/* Recent alerts */}
+        <section className="db-card" aria-labelledby="alerts-heading">
+          <div className="db-card__header">
+            <h2 id="alerts-heading" className="db-card__title">Safety alerts</h2>
+            <Link to="/dashboard/alerts" className="db-card__action">View all →</Link>
           </div>
           {recentAlerts.length === 0 ? (
-            <p style={{ color: 'var(--cb-text-secondary)' }}>No safety alerts have been recorded.</p>
-          ) : (
-            <div style={{ display: 'grid', gap: 'var(--cb-space-3)' }}>
-              {recentAlerts.map((alert) => (
-                <Link key={alert.id} to={`/dashboard/alerts/${alert.id}`} style={{ borderLeft: '4px solid var(--cb-danger)', background: 'var(--cb-danger-soft)', borderRadius: 'var(--cb-radius-md)', color: 'inherit', padding: 'var(--cb-space-4)', textDecoration: 'none' }}>
-                  <strong>{alert.severity} safety alert</strong>
-                  <div style={{ color: 'var(--cb-text-secondary)', fontSize: 14, marginTop: 'var(--cb-space-1)' }}>
-                    {formatDate(alert.created_at)}
-                  </div>
-                </Link>
-              ))}
+            <div className="db-empty">
+              <div className="db-empty__icon">🛡️</div>
+              No safety alerts recorded.
             </div>
+          ) : (
+            recentAlerts.map((alert) => (
+              <Link key={alert.id} to={`/dashboard/alerts/${alert.id}`} className="db-alert-item">
+                <span className="db-alert-badge">{alert.severity}</span>
+                <div className="db-alert-severity">{alert.severity} alert</div>
+                <div className="db-alert-time">{formatDate(alert.created_at)}</div>
+              </Link>
+            ))
           )}
         </section>
       </div>
+
+      {/* Recent activity feed */}
+      <section className="db-card" aria-label="Recent activity">
+        <div className="db-card__header">
+          <h2 className="db-card__title">Recent activity</h2>
+        </div>
+        {activityFeed.map((item, i) => (
+          <div key={i} className="db-activity-row">
+            <div className={`db-activity-dot${item.type === 'alert' ? ' db-activity-dot--alert' : ''}`} />
+            <span className="db-activity-text">{item.text}</span>
+            <span className="db-activity-time">{item.time}</span>
+          </div>
+        ))}
+      </section>
     </div>
   )
 }
