@@ -392,6 +392,92 @@ export default function Landing() {
         </div>
       </section>
 
+      <section className="landing-resources">
+        <div className="landing-resources__inner">
+          <p className="landing-section-eyebrow">Free resources</p>
+          <h2 className="landing-section-heading">Help is always one text away.</h2>
+          <p className="landing-section-body" style={{ textAlign: 'center', marginBottom: 48 }}>
+            Every Chatterbot subscription includes access to a curated library of age-appropriate mental health resources, hotlines, and self-help tools.
+          </p>
+          <div className="landing-resources__grid">
+            {[
+              { icon: '📞', title: '988 Suicide & Crisis Lifeline', body: '24/7 call or text. Free, confidential.' },
+              { icon: '🗣️', title: 'Crisis Text Line', body: 'Text HOME to 741741 for immediate support.' },
+              { icon: '🧠', title: 'Teen Mental Health', body: 'Articles on anxiety, depression, and stress written for teens.' },
+              { icon: '😴', title: 'Sleep Foundation Teen Guide', body: 'Science-backed sleep tips for 13–17 year olds.' },
+              { icon: '🤝', title: 'Anti-Bullying Resources', body: 'PACER Center resources for teens experiencing bullying.' },
+              { icon: '🏫', title: 'School Support', body: 'How to talk to your school counselor. Guided scripts for teens.' },
+            ].map((resource) => (
+              <article key={resource.title} className="landing-resources__card">
+                <div className="landing-resources__title-wrap">
+                  <span className="landing-resources__icon" aria-hidden="true">{resource.icon}</span>
+                  <h3 className="landing-resources__title">{resource.title}</h3>
+                </div>
+                <p className="landing-resources__body">{resource.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-school">
+        <div className="landing-school__inner">
+          <div className="landing-school__content">
+            <p className="landing-section-eyebrow">For schools & institutions</p>
+            <h2 className="landing-section-heading">Bring Chatterbot to your district.</h2>
+            <p className="landing-section-body">
+              Schools and counselors can partner with Chatterbot to extend mental health support beyond office hours. Counselors get opt-in crisis alert CC, and students get 24/7 support that complements — not replaces — professional care.
+            </p>
+            <a href="mailto:schools@chatterbot.ai" className="btn btn--primary btn--lg">Contact us for school pricing</a>
+          </div>
+          <div className="landing-school__features-card">
+            <ul className="landing-school__features">
+              {[
+                'Counselor opt-in crisis CC',
+                'FERPA-compliant data handling',
+                'Bulk guardian enrollment',
+                'District analytics dashboard',
+                'Dedicated onboarding support',
+              ].map((feature) => (
+                <li key={feature} className="landing-school__feature">
+                  <span className="landing-school__check" aria-hidden="true">✅</span>
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-referral">
+        <div className="landing-referral__inner">
+          <p className="landing-section-eyebrow">Refer a family</p>
+          <h2 className="landing-section-heading">Share Chatterbot. Get a free month.</h2>
+          <p className="landing-section-body" style={{ textAlign: 'center' }}>
+            For every family you refer who signs up, you both get one month free. No limits.
+          </p>
+          <div className="landing-referral__card">
+            <div className="landing-referral__code-box">XXXXXXXX</div>
+            <button type="button" className="btn btn--outline-navy landing-referral__copy-btn">Copy link</button>
+            <p className="landing-referral__share-text">Share your unique link with other parents</p>
+          </div>
+          <div className="landing-referral__steps">
+            {[
+              'Share your link with a parent',
+              'They sign up for Chatterbot',
+              'You both get a free month',
+            ].map((step, index) => (
+              <div key={step} className="landing-referral__step">
+                <div className="landing-referral__step-icon" aria-hidden="true">🔗</div>
+                <div className="landing-referral__step-number">{index + 1}</div>
+                <p className="landing-referral__step-text">{step}</p>
+              </div>
+            ))}
+          </div>
+          <Link to="/dashboard" className="btn btn--primary btn--lg">Get my referral link</Link>
+        </div>
+      </section>
+
       {/* ── PRICING ── */}
       <section className="landing-pricing">
         <div className="landing-pricing__inner">

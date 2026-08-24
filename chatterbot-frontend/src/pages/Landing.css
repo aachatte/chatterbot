@@ -1024,6 +1024,167 @@
 .landing-testimonial__name { font-weight: 700; font-size: 14px; }
 .landing-testimonial__role { font-size: 12px; color: var(--cb-text-tertiary); }
 
+/* ── Resources ── */
+.landing-resources {
+  background: var(--cb-bg);
+  padding: 100px 32px;
+  border-top: 1px solid var(--cb-border);
+}
+.landing-resources__inner { max-width: 1100px; margin: 0 auto; }
+.landing-resources__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.landing-resources__card {
+  background: var(--cb-bg-elevated);
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius-md);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.landing-resources__card:hover { transform: translateY(-3px); box-shadow: var(--cb-shadow-sm); }
+.landing-resources__title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.landing-resources__icon { font-size: 22px; line-height: 1; }
+.landing-resources__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--cb-navy);
+  letter-spacing: -0.2px;
+}
+.landing-resources__body {
+  margin: 0;
+  font-size: 14px;
+  color: var(--cb-text-secondary);
+  line-height: 1.6;
+}
+
+/* ── School / counselor ── */
+.landing-school {
+  background: #f0f3fa;
+  padding: 100px 32px;
+  border-top: 1px solid var(--cb-border);
+}
+.landing-school__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 28px;
+  align-items: center;
+}
+.landing-school__content .landing-section-body { margin-bottom: 28px; }
+.landing-school__features-card {
+  background: var(--cb-bg-elevated);
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius-md);
+  padding: 26px 24px;
+}
+.landing-school__features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.landing-school__feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--cb-text-primary);
+  font-weight: 600;
+}
+.landing-school__check { color: var(--cb-navy); }
+
+/* ── Referral ── */
+.landing-referral {
+  background: var(--cb-bg-secondary);
+  padding: 100px 32px;
+  border-top: 1px solid var(--cb-border);
+}
+.landing-referral__inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+.landing-referral__card {
+  width: min(640px, 100%);
+  background: var(--cb-bg-elevated);
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius-md);
+  padding: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+.landing-referral__code-box {
+  min-width: 180px;
+  padding: 12px 16px;
+  border: 1px dashed var(--cb-border-strong);
+  border-radius: var(--cb-radius-md);
+  background: var(--cb-bg-muted);
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--cb-navy);
+}
+.landing-referral__copy-btn { min-width: 120px; justify-content: center; }
+.landing-referral__share-text {
+  width: 100%;
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: var(--cb-text-secondary);
+}
+.landing-referral__steps {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.landing-referral__step {
+  background: var(--cb-bg-elevated);
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius-md);
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.landing-referral__step-icon { font-size: 20px; }
+.landing-referral__step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--cb-radius-full);
+  background: var(--cb-navy);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.landing-referral__step-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--cb-text-secondary);
+}
+
 /* ── Pricing ── */
 .landing-pricing {
   background: var(--cb-bg-secondary);
@@ -1250,6 +1411,12 @@
   .landing-testimonials__grid { grid-template-columns: 1fr; }
   .landing-pricing__cards { grid-template-columns: 1fr; }
   .landing-pricing__card--featured { transform: none; }
+  .landing-resources { padding: 60px 20px; }
+  .landing-resources__grid { grid-template-columns: repeat(2, 1fr); }
+  .landing-school { padding: 60px 20px; }
+  .landing-school__inner { grid-template-columns: 1fr; }
+  .landing-referral { padding: 60px 20px; }
+  .landing-referral__steps { grid-template-columns: 1fr; }
   .landing-compare__header { grid-template-columns: 1fr 80px 80px; }
   .landing-compare__row { grid-template-columns: 1fr 80px 80px; }
   .landing-mission__inner { grid-template-columns: 1fr; }
@@ -1267,5 +1434,6 @@
   .landing-problem__stats { grid-template-columns: 1fr; }
   .landing-problem__stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
   .landing-trust__grid { grid-template-columns: 1fr; }
+  .landing-resources__grid { grid-template-columns: 1fr; }
   .landing-compare__feature { font-size: 12px; }
 }
