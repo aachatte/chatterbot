@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { ChatterbotLogo } from '../components/ChatterbotLogo.jsx'
 import './Demo.css'
 
 /* ── Fictional data ─────────────────────────────────────── */
@@ -509,9 +510,7 @@ export default function Demo() {
       <header className="demo-header">
         <div className="demo-header__inner">
           <div className="demo-header__brand">
-            <div className="demo-header__logo">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            </div>
+            <ChatterbotLogo size={30} />
             <span className="demo-header__brand-name">Chatterbot</span>
             <span className="demo-header__badge">Investor Demo</span>
           </div>

@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react'
 import { Outlet, NavLink, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
+import { ChatterbotLogo } from './ChatterbotLogo.jsx'
 import './Layout.css'
 
 const navItems = [
@@ -65,9 +66,7 @@ export default function Layout() {
       <aside className={`layout-sidebar${mobileMenuOpen ? ' layout-sidebar--open' : ''}`}>
         {/* Brand */}
         <div className="layout-brand">
-          <div className="layout-brand__logo">
-            <ChatIcon />
-          </div>
+          <ChatterbotLogo size={36} />
           <div>
             <div className="layout-brand__name">Chatterbot</div>
             <div className="layout-brand__sub">Guardian Dashboard</div>
