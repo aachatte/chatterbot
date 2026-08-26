@@ -50,8 +50,9 @@ export default function AlertDetail() {
       setAlert(prev => ({ ...prev, status: 'resolved', resolved_at: new Date().toISOString() }))
     } catch (err) {
       alert(err.data?.error || 'Failed to resolve')
+    } finally {
+      setResolving(false)
     }
-    setResolving(false)
   }
 
   if (loading) return <div style={{ color: 'var(--cb-text-tertiary)', textAlign: 'center', padding: 'var(--cb-space-10)' }}>Loading...</div>

@@ -45,7 +45,7 @@ export default function Onboarding() {
     ]
     const complete = checks.filter(Boolean).length
     return Math.round((complete / checks.length) * 100)
-  }, [healthChecks, invites.length, firstWeekChecklist])
+  }, [healthChecks, invites, firstWeekChecklist])
 
   const handleAddTeen = async () => {
     if (!form.name.trim() || !form.phone.trim()) {
@@ -55,7 +55,7 @@ export default function Onboarding() {
     setLoading(true)
     setError('')
     try {
-      const data = await api.createTeen({ first_name: form.name.trim(), phone: form.phone.trim() })
+      const data = await api.addTeen(form.name.trim(), form.phone.trim())
       setTeenId(data.teen.id)
       setHealthChecks((prev) => ({ ...prev, profile_added: true }))
       setStep(1)
@@ -113,23 +113,31 @@ export default function Onboarding() {
   }
 
   const handleSavePrefs = async () => {
+    let saved = false
     setLoading(true)
     setError('')
     try {
       await api.updateGuardianPreferences(prefs)
       setHealthChecks((prev) => ({ ...prev, notifications_enabled: !!prefs.crisis_alert_sms_enabled }))
       setFirstWeekChecklist((prev) => ({ ...prev, review_alert_settings: true }))
+      saved = true
     } catch (e) {
       setError(e?.data?.error || 'Could not save preferences, but setup can continue.')
     } finally {
       setLoading(false)
-      navigate('/dashboard')
     }
+    if (saved) navigate('/dashboard')
   }
 
   const inviteCollaborator = () => {
     const email = inviteEmail.trim()
-    if (!email || !email.includes('@')) return
+    const atIndex = email.indexOf('@')
+    const hasBasicEmailShape = atIndex > 0 && email.indexOf('.', atIndex) > atIndex + 1
+    if (!email || !hasBasicEmailShape) return
+    if (invites.includes(email)) {
+      setInviteEmail('')
+      return
+    }
     setInvites((prev) => [...prev, email])
     setInviteEmail('')
     setFirstWeekChecklist((prev) => ({ ...prev, add_support_partner: true }))

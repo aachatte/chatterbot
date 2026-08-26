@@ -30,7 +30,7 @@ function urgencyFrom(alert) {
 
 function confidenceFrom(alert) {
   const base = alert.severity === 'critical' ? 92 : alert.severity === 'high' ? 84 : alert.severity === 'medium' ? 73 : 62
-  return `${base}%`
+  return `${base}% (est.)`
 }
 
 export default function Alerts() {
@@ -93,13 +93,13 @@ export default function Alerts() {
     if (selected.length === 0 || bulkBusy) return
     setBulkBusy(true)
     try {
-      for (const id of selected) {
-        if (action === 'acknowledge') {
-          await api.acknowledgeAlert(id, bulkNotes)
-        } else {
-          await api.resolveAlert(id, bulkNotes)
-        }
-      }
+      await Promise.all(
+        selected.map((id) => (
+          action === 'acknowledge'
+            ? api.acknowledgeAlert(id, bulkNotes)
+            : api.resolveAlert(id, bulkNotes)
+        )),
+      )
       const refreshed = await api.getAlerts()
       setAlerts(refreshed.alerts || [])
       setBanner(`${selected.length} alert${selected.length > 1 ? 's' : ''} ${action === 'acknowledge' ? 'acknowledged' : 'resolved'}.`)
@@ -208,7 +208,7 @@ export default function Alerts() {
             <span>Alert</span>
             <span>Status</span>
             <span>Urgency</span>
-            <span>Confidence</span>
+            <span>Est. confidence</span>
             <span>Owner</span>
           </div>
           {filtered.length === 0 ? (

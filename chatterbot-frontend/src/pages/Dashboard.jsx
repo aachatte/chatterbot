@@ -11,6 +11,8 @@ const DEFAULT_WIDGETS = {
   teens: true,
   alerts: true,
 }
+const RESILIENCE_SCORE_FLOOR = 55
+const RESILIENCE_ALERT_PENALTY = 3
 
 const WIDGET_STORAGE_KEY = 'cb_command_center_widgets'
 const ROLE_STORAGE_KEY = 'cb_guardian_role'
@@ -98,12 +100,14 @@ export default function Dashboard() {
       },
       {
         label: '30-day engagement shift',
-        value: `${trendDelta(summary.total_messages_7d || 0, 4)}%`,
-        detail: 'Estimated from weekly message volume',
+        value: `${trendDelta(summary.total_messages_7d || 0, 4)}% (est.)`,
+        detail: 'Estimated placeholder derived from weekly message volume',
       },
       {
         label: '90-day resilience trend',
-        value: `${Math.max(55, 100 - (summary.total_crisis_alerts || 0) * 3)} / 100`,
+        // Provisional client-side composite pending backend-provided longitudinal metric:
+        // 100 baseline with per-alert penalty and a conservative floor to avoid false precision.
+        value: `${Math.max(RESILIENCE_SCORE_FLOOR, 100 - (summary.total_crisis_alerts || 0) * RESILIENCE_ALERT_PENALTY)} / 100 (est.)`,
         detail: 'Composite score from alerts and activity',
       },
     ]
@@ -173,7 +177,7 @@ export default function Dashboard() {
                 onChange={() => setWidgets((prev) => ({ ...prev, [key]: !prev[key] }))}
                 style={{ marginRight: 6 }}
               />
-              {key.replace('_', ' ')}
+              {key.replaceAll('_', ' ')}
             </label>
           ))}
         </div>
