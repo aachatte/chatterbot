@@ -13,7 +13,7 @@ checkin_bp = Blueprint("checkin", __name__)
 @jwt_required()
 def get_schedule(teen_id):
     teen = Teen.query.get_or_404(teen_id)
-    if teen.guardian_id != int(get_jwt_identity()):
+    if teen.parent_id != int(get_jwt_identity()):
         return jsonify({"error": "Forbidden"}), 403
     schedule = CheckinSchedule.query.filter_by(teen_id=teen_id).first()
     if not schedule:
@@ -25,7 +25,7 @@ def get_schedule(teen_id):
 @jwt_required()
 def upsert_schedule(teen_id):
     teen = Teen.query.get_or_404(teen_id)
-    if teen.guardian_id != int(get_jwt_identity()):
+    if teen.parent_id != int(get_jwt_identity()):
         return jsonify({"error": "Forbidden"}), 403
     data = request.get_json() or {}
     schedule = CheckinSchedule.query.filter_by(teen_id=teen_id).first()

@@ -31,6 +31,18 @@ export default function AlertDetail() {
       .finally(() => setLoading(false))
   }, [id])
 
+  const handleAcknowledge = async () => {
+    setAcknowledging(true)
+    try {
+      const data = await api.acknowledgeAlert(id, notes)
+      setAlert(data.alert)
+    } catch (err) {
+      alert(err.data?.error || 'Failed to acknowledge alert')
+    } finally {
+      setAcknowledging(false)
+    }
+  }
+
   const handleResolve = async () => {
     setResolving(true)
     try {
@@ -38,18 +50,6 @@ export default function AlertDetail() {
       setAlert(prev => ({ ...prev, status: 'resolved', resolved_at: new Date().toISOString() }))
     } catch (err) {
       alert(err.data?.error || 'Failed to resolve')
-    }
-
-    const handleAcknowledge = async () => {
-      setAcknowledging(true)
-      try {
-        const data = await api.acknowledgeAlert(id, notes)
-        setAlert(data.alert)
-      } catch (err) {
-        alert(err.data?.error || 'Failed to acknowledge alert')
-      } finally {
-        setAcknowledging(false)
-      }
     }
     setResolving(false)
   }

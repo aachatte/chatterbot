@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../services/api';
+import { api } from '../services/api.js';
 import './Onboarding.css';
 
 const STEPS = ['Add your teen', 'Verify phone', 'Set preferences'];
@@ -28,11 +28,11 @@ export default function Onboarding() {
     setLoading(true);
     setError('');
     try {
-      const teen = await api.addTeen(form.name, form.phone);
-      setTeenId(teen.id);
+      const data = await api.addTeen(form.name, form.phone);
+      setTeenId(data.teen.id);
       setStep(1);
     } catch (e) {
-      setError(e?.response?.data?.error || 'Failed to add teen. Please try again.');
+      setError(e?.data?.error || 'Failed to add teen. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -45,7 +45,7 @@ export default function Onboarding() {
       await api.beginPhoneVerification(teenId);
       setVerificationSent(true);
     } catch (e) {
-      setError(e?.response?.data?.error || 'Failed to send verification code.');
+      setError(e?.data?.error || 'Failed to send verification code.');
     } finally {
       setLoading(false);
     }
@@ -59,7 +59,7 @@ export default function Onboarding() {
       await api.verifyPhone(teenId, verifyCode);
       setStep(2);
     } catch (e) {
-      setError(e?.response?.data?.error || 'Invalid code. Please try again.');
+      setError(e?.data?.error || 'Invalid code. Please try again.');
     } finally {
       setLoading(false);
     }

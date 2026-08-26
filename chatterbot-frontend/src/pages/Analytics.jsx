@@ -7,8 +7,6 @@ const STUB_CONVOS = [3, 5, 2, 8, 4, 6, 9];
 const STUB_TOPICS = ['School stress', 'Anxiety', 'Friendships', 'Sleep', 'Family'];
 
 export default function Analytics() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
   const [overview, setOverview] = useState(null);
 
   useEffect(() => {

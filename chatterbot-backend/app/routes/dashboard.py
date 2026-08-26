@@ -355,6 +355,7 @@ def confirm_teen_consent(teen_id):
 
 
 @dashboard_bp.route("/teens/<int:teen_id>/phone-verification/request", methods=["POST"])
+@dashboard_bp.route("/teens/<int:teen_id>/begin-verification", methods=["POST"])
 @jwt_required()
 def request_phone_verification(teen_id):
     """Deliver a one-time phone-verification token without exposing it in the API."""
@@ -380,6 +381,7 @@ def request_phone_verification(teen_id):
 
 
 @dashboard_bp.route("/teens/<int:teen_id>/phone-verification/confirm", methods=["POST"])
+@dashboard_bp.route("/teens/<int:teen_id>/verify-phone", methods=["POST"])
 @jwt_required()
 def confirm_phone_verification(teen_id):
     """Complete a pending phone verification using a previously delivered token."""

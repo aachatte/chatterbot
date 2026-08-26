@@ -12,7 +12,7 @@ def build_digest_payload(guardian_id: int) -> dict:
     if not guardian:
         return {}
 
-    teens = Teen.query.filter_by(guardian_id=guardian_id).all()
+    teens = Teen.query.filter_by(parent_id=guardian_id).all()
     week_ago = datetime.utcnow() - timedelta(days=7)
 
     teen_summaries = []
@@ -27,21 +27,25 @@ def build_digest_payload(guardian_id: int) -> dict:
         all_scores.extend(scores)
         teen_summaries.append({
             "teen_id": teen.id,
-            "name": teen.name,
+            "name": teen.first_name,
             "mood_avg": avg,
             "mood_entries": len(entries),
             "conversation_count": 0,  # stub
         })
 
     alert_count = db.session.query(CrisisAlert).join(Teen).filter(
-        Teen.guardian_id == guardian_id,
+        Teen.parent_id == guardian_id,
         CrisisAlert.created_at >= week_ago,
     ).count()
 
     overall_avg = round(sum(all_scores) / len(all_scores), 1) if all_scores else None
 
     return {
-        "guardian_name": guardian.name if hasattr(guardian, 'name') else guardian.email,
+        "guardian_name": (
+            f"{guardian.first_name} {guardian.last_name}".strip()
+            if guardian.first_name and guardian.last_name
+            else guardian.email
+        ),
         "period": "last 7 days",
         "teens": teen_summaries,
         "alert_count": alert_count,
