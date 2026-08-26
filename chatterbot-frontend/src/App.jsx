@@ -21,6 +21,7 @@ const Support = lazy(() => import('./pages/Support.jsx'))
 const Analytics = lazy(() => import('./pages/Analytics.jsx'))
 const Onboarding = lazy(() => import('./pages/Onboarding.jsx'))
 const ConversationHistory = lazy(() => import('./pages/ConversationHistory.jsx'))
+const Notifications = lazy(() => import('./pages/Notifications.jsx'))
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
@@ -56,6 +57,7 @@ function App() {
           <Route path="chat" element={<DashboardChat />} />
           <Route path="alerts" element={<Alerts />} />
           <Route path="alerts/:id" element={<AlertDetail />} />
+          <Route path="notifications" element={<Notifications />} />
           <Route path="settings" element={<Settings />} />
           <Route path="support" element={<Support />} />
           <Route path="billing" element={<Billing />} />
