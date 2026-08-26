@@ -1,6 +1,6 @@
 """Authentication routes for guardian accounts."""
 from datetime import timedelta
-from flask import Blueprint, jsonify, make_response, request
+from flask import Blueprint, current_app, jsonify, make_response, request
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -19,6 +19,7 @@ REFRESH_COOKIE_MAX_AGE = 60 * 60 * 24 * 7  # 7 days
 ACCESS_TOKEN_TTL = 60 * 60  # 1 hour
 COOKIE_PATH = "/api/auth"
 MIN_PASSWORD_LENGTH = 8
+_REVOKED_REFRESH_JTIS = set()
 
 
 def _json_body():
@@ -27,12 +28,12 @@ def _json_body():
 
 
 def _set_refresh_cookie(resp, refresh_token):
-    is_secure = bool(request.is_secure or request.headers.get("X-Forwarded-Proto") == "https")
+    secure_cookie = bool(current_app.config.get("SESSION_COOKIE_SECURE", True))
     resp.set_cookie(
         "refresh_token",
         refresh_token,
         httponly=True,
-        secure=is_secure,
+        secure=secure_cookie,
         samesite="Lax",
         max_age=REFRESH_COOKIE_MAX_AGE,
         path=COOKIE_PATH,
@@ -122,6 +123,8 @@ def refresh():
         claims = decode_token(raw)
         if claims.get("type") != "refresh":
             raise ValueError("invalid token type")
+        if claims.get("jti") in _REVOKED_REFRESH_JTIS:
+            raise ValueError("refresh token revoked")
         user_id = int(claims["sub"])
     except Exception:
         resp = make_response(jsonify({"error": "Session expired"}), 401)
@@ -153,7 +156,16 @@ def refresh():
 
 
 @auth_bp.post("/logout")
+@jwt_required()
 def logout():
+    raw = request.cookies.get("refresh_token")
+    if raw:
+        try:
+            claims = decode_token(raw)
+            if claims.get("type") == "refresh" and claims.get("jti"):
+                _REVOKED_REFRESH_JTIS.add(claims["jti"])
+        except Exception:
+            pass
     resp = make_response(jsonify({"success": True}))
     resp.delete_cookie("refresh_token", path=COOKIE_PATH)
     return resp
