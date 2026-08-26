@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { api } from '../services/api';
+import { api } from '../services/api.js';
 import './ConversationHistory.css';
 
 export default function ConversationHistory() {
@@ -16,7 +16,7 @@ export default function ConversationHistory() {
       api.getTeen ? api.getTeen(id).catch(() => null) : Promise.resolve(null),
     ]).then(([moods, teen]) => {
       setEntries(moods || []);
-      if (teen) setTeenName(teen.name);
+      if (teen?.teen?.first_name) setTeenName(teen.teen.first_name);
       setLoading(false);
     });
   }, [id]);

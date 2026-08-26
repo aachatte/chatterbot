@@ -144,7 +144,7 @@ export const api = {
   // Onboarding
   addTeen: (name, phone) => request('/dashboard/teens', {
     method: 'POST',
-    body: { name, phone },
+    body: { first_name: name, phone },
   }),
   beginPhoneVerification: (teenId) => request(`/dashboard/teens/${teenId}/begin-verification`, {
     method: 'POST',

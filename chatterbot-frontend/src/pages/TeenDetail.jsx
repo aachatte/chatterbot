@@ -46,6 +46,20 @@ export default function TeenDetail() {
     setSaving(false)
   }
 
+  const updateEnrollment = async (action) => {
+    setEnrollmentBusy(true)
+    setEnrollmentMessage('')
+    try {
+      const result = await action()
+      setEnrollment(result.enrollment)
+      setEnrollmentMessage('Enrollment status updated.')
+    } catch (err) {
+      setEnrollmentMessage(err.data?.error || 'Enrollment update failed.')
+    } finally {
+      setEnrollmentBusy(false)
+    }
+  }
+
   const handleNudge = async (e) => {
     e.preventDefault()
     setSendingNudge(true)
@@ -55,20 +69,6 @@ export default function TeenDetail() {
       alert('Nudge sent!')
     } catch (err) {
       alert(err.data?.error || 'Failed to send nudge')
-    }
-
-    const updateEnrollment = async (action) => {
-      setEnrollmentBusy(true)
-      setEnrollmentMessage('')
-      try {
-        const result = await action()
-        setEnrollment(result.enrollment)
-        setEnrollmentMessage('Enrollment status updated.')
-      } catch (err) {
-        setEnrollmentMessage(err.data?.error || 'Enrollment update failed.')
-      } finally {
-        setEnrollmentBusy(false)
-      }
     }
     setSendingNudge(false)
   }

@@ -14,7 +14,7 @@ mood_bp = Blueprint("mood", __name__)
 def get_mood_history(teen_id):
     teen = Teen.query.get_or_404(teen_id)
     guardian_id = int(get_jwt_identity())
-    if teen.guardian_id != guardian_id:
+    if teen.parent_id != guardian_id:
         return jsonify({"error": "Forbidden"}), 403
     entries = (
         MoodEntry.query
@@ -31,7 +31,7 @@ def get_mood_history(teen_id):
 def log_mood(teen_id):
     teen = Teen.query.get_or_404(teen_id)
     guardian_id = int(get_jwt_identity())
-    if teen.guardian_id != guardian_id:
+    if teen.parent_id != guardian_id:
         return jsonify({"error": "Forbidden"}), 403
     data = request.get_json() or {}
     score = data.get("score")

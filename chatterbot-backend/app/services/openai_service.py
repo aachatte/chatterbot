@@ -1,18 +1,22 @@
-"""OpenAI wrapper - streaming generator + retry with backoff."""
+"""OpenAI service helpers for both chat routes and SMS/domain services."""
 import logging
+import re
 import time
+from typing import List
 
 from openai import APIConnectionError, APIError, OpenAI, RateLimitError
 
-logger = logging.getLogger(__name__)
+from config import settings
 
+logger = logging.getLogger(__name__)
 MAX_RETRIES = 3
 
 
 def _get_client():
     from flask import current_app
 
-    return OpenAI(api_key=current_app.config["OPENAI_API_KEY"])
+    api_key = current_app.config.get("OPENAI_API_KEY") or settings.openai_api_key
+    return OpenAI(api_key=api_key)
 
 
 def _build_messages(history, new_message):
@@ -29,7 +33,7 @@ def stream_completion(history, new_message):
     for attempt in range(MAX_RETRIES):
         try:
             stream = _get_client().chat.completions.create(
-                model="gpt-4o-mini",
+                model=settings.openai_model,
                 messages=_build_messages(history, new_message),
                 stream=True,
                 temperature=0.7,
@@ -41,20 +45,18 @@ def stream_completion(history, new_message):
                     yield delta
             return
         except (RateLimitError, APIConnectionError) as exc:
-            # Safe to retry only if nothing has been yielded yet,
-            # otherwise the client would receive duplicated text.
             if emitted_any or attempt == MAX_RETRIES - 1:
                 logger.error("Stream failed after %d attempts: %s", attempt + 1, exc)
                 raise
             time.sleep(delay)
-            delay *= 2  # 0.5s -> 1s -> 2s
+            delay *= 2
 
 
 def generate_reply(history, new_message):
-    """Non-streaming reply used by the fallback endpoint and Celery tasks."""
+    """Non-streaming reply used by fallback endpoints."""
     try:
         response = _get_client().chat.completions.create(
-            model="gpt-4o-mini",
+            model=settings.openai_model,
             messages=_build_messages(history, new_message),
             temperature=0.7,
         )
@@ -62,3 +64,117 @@ def generate_reply(history, new_message):
     except APIError as exc:
         logger.error("OpenAI API error: %s", exc)
         raise
+
+
+class OpenAIService:
+    """High-level app service used by SMS, dashboard assistant, and schedulers."""
+
+    def __init__(self):
+        self.model = settings.openai_model
+        self.client = OpenAI(api_key=settings.openai_api_key) if settings.openai_api_key else None
+
+    def _fallback_reply(self, message: str) -> str:
+        return (
+            "Thanks for sharing that. I’m here to help, and your guardian can review dashboard "
+            "summaries for follow-up."
+            if message
+            else "I’m here to help."
+        )
+
+    def generate_parent_reply(self, message: str) -> str:
+        if not self.client:
+            return self._fallback_reply(message)
+
+        prompt = (
+            "You are the Chatterbot guardian assistant. Give concise, practical guidance about "
+            "teen safety, alerts, and healthy communication. Do not provide emergency guarantees."
+        )
+        try:
+            completion = self.client.chat.completions.create(
+                model=self.model,
+                temperature=0.4,
+                max_tokens=300,
+                messages=[
+                    {"role": "system", "content": prompt},
+                    {"role": "user", "content": message},
+                ],
+            )
+            return (completion.choices[0].message.content or "").strip() or self._fallback_reply(message)
+        except Exception as exc:
+            logger.error("Parent assistant reply failed: %s", exc)
+            return self._fallback_reply(message)
+
+    def generate_response(
+        self,
+        user_message: str,
+        conversation_history: List[dict] | None = None,
+        context_facts: List[str] | None = None,
+        teen_name: str | None = None,
+        trigger_type: str = "reactive",
+    ) -> dict:
+        if not self.client:
+            return {"text": self._fallback_reply(user_message)}
+
+        context_history = conversation_history or []
+        context_lines = context_facts or []
+        safety_mode = "crisis-support mode" if trigger_type == "crisis" else "supportive mode"
+        system_prompt = (
+            f"You are Chatterbot, a supportive teen SMS companion in {safety_mode}. "
+            "Be brief, empathetic, age-appropriate, and avoid clinical diagnosis."
+        )
+        if teen_name:
+            system_prompt += f" The teen's first name is {teen_name}."
+        if context_lines:
+            system_prompt += "\nKnown context:\n" + "\n".join(context_lines[:20])
+
+        messages = [{"role": "system", "content": system_prompt}]
+        for item in context_history[-10:]:
+            role = "assistant" if item.get("direction") == "outbound" else "user"
+            messages.append({"role": role, "content": item.get("content", "")})
+        messages.append({"role": "user", "content": user_message})
+
+        try:
+            completion = self.client.chat.completions.create(
+                model=self.model,
+                temperature=0.6,
+                max_tokens=220,
+                messages=messages,
+            )
+            text = (completion.choices[0].message.content or "").strip()
+            return {"text": text or self._fallback_reply(user_message)}
+        except Exception as exc:
+            logger.error("Teen response generation failed: %s", exc)
+            return {"text": self._fallback_reply(user_message)}
+
+    def analyze_sentiment(self, text: str) -> float:
+        """Heuristic sentiment scoring for lightweight UX metrics, not clinical/safety decisions."""
+        if not text:
+            return 0.0
+        positive_hits = len(re.findall(r"\b(happy|good|great|excited|fine|love)\b", text.lower()))
+        negative_hits = len(re.findall(r"\b(sad|bad|stressed|anxious|angry|scared)\b", text.lower()))
+        score = (positive_hits - negative_hits) / max(1, positive_hits + negative_hits)
+        return max(-1.0, min(1.0, score))
+
+    def extract_context_facts(self, text: str, teen_name: str | None = None) -> list:
+        if not isinstance(text, str) or not text.strip():
+            return []
+
+        facts = []
+        cleaned = text.strip()
+        if "homework" in cleaned.lower() or "school" in cleaned.lower():
+            facts.append({
+                "type": "concern",
+                "key": "school_stress",
+                "value": f"{teen_name or 'Teen'} mentioned school-related stress.",
+                "importance": 6,
+                "confidence": 0.7,
+            })
+        if "practice" in cleaned.lower() or "game" in cleaned.lower():
+            facts.append({
+                "type": "event",
+                "key": "sports_activity",
+                "value": f"{teen_name or 'Teen'} referenced sports or practice.",
+                "importance": 5,
+                "confidence": 0.65,
+            })
+        return facts[:5]
