@@ -334,9 +334,13 @@ export default function Landing() {
                 <div className="landing-teens__phone-label">Chatterbot</div>
                 {[
                   { from: 'teen', text: 'why do i always feel nervous around people' },
-                  { from: 'bot', text: 'That\'s social anxiety — it\'s really common for teens. Your brain is learning how to read social situations, which can feel overwhelming. Want some quick tips that actually work?' },
-                  { from: 'teen', text: 'yeah please' },
-                  { from: 'bot', text: '✅ Box breathing: inhale 4 sec, hold 4, exhale 4. \n✅ Pick one person to talk to, not the whole room. \n✅ Remember: most people are thinking about themselves, not judging you.' },
+                  { from: 'bot', text: 'That\'s social anxiety — it\'s really common for teens. Your brain is still learning how to read social situations, and that can feel overwhelming. You\'re definitely not alone in this 💙' },
+                  { from: 'teen', text: 'it\'s like my heart races and i forget what to say' },
+                  { from: 'bot', text: 'Totally makes sense. That\'s your fight-or-flight response kicking in — your brain thinks it\'s in danger even when it\'s not. It\'s annoying, but it\'s not something wrong with you.' },
+                  { from: 'teen', text: 'ok so what do i actually do about it' },
+                  { from: 'bot', text: 'Here are a few things that genuinely help:\n\n🫁 Box breathing — inhale 4s, hold 4s, exhale 4s. Does a lot.\n👀 Focus on one person, not the whole room.\n💭 Remind yourself: everyone\'s mostly thinking about themselves, not judging you.' },
+                  { from: 'teen', text: 'the breathing thing sounds kinda dumb lol' },
+                  { from: 'bot', text: 'Haha fair — it sounds too simple to work. But it literally slows your heart rate. Athletes use it before games. Give it 60 seconds next time you feel nervous and see what happens 😄' },
                 ].map((msg, i) => (
                   <div key={i} className={`landing-teens__bubble landing-teens__bubble--${msg.from}`}>
                     {msg.text}
