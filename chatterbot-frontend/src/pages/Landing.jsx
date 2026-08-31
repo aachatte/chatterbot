@@ -555,11 +555,11 @@ export default function Landing() {
               ['SMS-native (no new accounts)', false, true],
               ['988 crisis protocol built in', false, true],
               ['Guardian consent + audit trail', false, true],
-            ].map(([feature, bad, good]) => (
+            ].map(([feature, traditional, chatterbot]) => (
               <div key={feature} className="landing-compare__row">
                 <div className="landing-compare__feature">{feature}</div>
-                <div className="landing-compare__cell">{bad ? <span className="landing-compare__no">✗</span> : <span className="landing-compare__yes">✓</span>}</div>
-                <div className="landing-compare__cell landing-compare__cell--cb">{good ? <span className="landing-compare__yes">✓</span> : <span className="landing-compare__no">✗</span>}</div>
+                <div className="landing-compare__cell">{traditional ? <span className="landing-compare__yes">✓</span> : <span className="landing-compare__no">✗</span>}</div>
+                <div className="landing-compare__cell landing-compare__cell--cb">{chatterbot ? <span className="landing-compare__yes">✓</span> : <span className="landing-compare__no">✗</span>}</div>
               </div>
             ))}
           </div>
