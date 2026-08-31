@@ -840,14 +840,14 @@
   white-space: pre-line;
 }
 .landing-teens__bubble--teen {
-  background: var(--cb-navy);
+  background: #5b6af7;
   color: #fff;
   align-self: flex-end;
   border-bottom-right-radius: 4px;
 }
 .landing-teens__bubble--bot {
-  background: #f0f2f8;
-  color: #222;
+  background: #e8f5e9;
+  color: #1a3a2a;
   align-self: flex-start;
   border-bottom-left-radius: 4px;
 }
