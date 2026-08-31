@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext.jsx'
 import Layout from './components/Layout.jsx'
 import Loading from './components/Loading.jsx'
+import SeoManager from './components/SeoManager.jsx'
 
 const Landing = lazy(() => import('./pages/Landing.jsx'))
 const Login = lazy(() => import('./pages/Login.jsx'))
@@ -40,6 +41,7 @@ function ProtectedRoute({ children }) {
 function App() {
   return (
     <Suspense fallback={<Loading />}>
+      <SeoManager />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
