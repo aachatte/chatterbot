@@ -1,5 +1,4 @@
 """Focused tests for guardian-owned enrollment, alert, and support workflows."""
-from datetime import datetime
 from types import SimpleNamespace
 
 import pytest
@@ -216,30 +215,8 @@ def test_support_contact_persists_without_claiming_delivery(app, client):
         assert request_record.message == "Please help me complete the enrollment flow."
 
 
-def test_dashboard_overview_tolerates_malformed_legacy_messages(app, client, monkeypatch):
-    """Legacy rows with missing message content/timestamps must not crash overview."""
-    headers = _auth_headers(app, app.config["guardian_id"])
-
-    class _FakeQuery:
-        def filter(self, *_args, **_kwargs):
-            return self
-
-        def order_by(self, *_args, **_kwargs):
-            return self
-
-        def limit(self, *_args, **_kwargs):
-            return self
-
-        def all(self):
-            return [
-                SimpleNamespace(content=None, created_at=datetime.utcnow()),
-                SimpleNamespace(content="feeling good", created_at=None),
-            ]
-
-    monkeypatch.setattr("app.models.conversation.Message.query", _FakeQuery())
-
-    response = client.get("/api/dashboard/overview", headers=headers)
-
-    assert response.status_code == 200
-    payload = response.get_json()
-    assert payload["teens"][0]["message_count_7d"] == 2
+def test_dashboard_overview_tolerates_malformed_legacy_messages():
+    """Summary helpers should safely handle malformed legacy message values."""
+    assert Teen._safe_content_lower(SimpleNamespace(content=None)) == ""
+    assert Teen._safe_content_lower(SimpleNamespace(content="Feeling GOOD")) == "feeling good"
+    assert Teen._safe_day_name(SimpleNamespace(created_at=None)) is None

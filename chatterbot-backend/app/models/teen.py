@@ -148,15 +148,11 @@ class Teen(db.Model):
         positive_words = ["happy", "excited", "great", "awesome", "won", "love", "fun", "good"]
         negative_words = ["sad", "stressed", "anxious", "tired", "angry", "upset", "worried", "scared"]
 
-        def _normalized_content(message):
-            content = getattr(message, "content", "")
-            return content.lower() if isinstance(content, str) else ""
-
         pos_count = sum(
-            1 for m in recent_msgs if any(w in _normalized_content(m) for w in positive_words)
+            1 for m in recent_msgs if any(w in self._safe_content_lower(m) for w in positive_words)
         )
         neg_count = sum(
-            1 for m in recent_msgs if any(w in _normalized_content(m) for w in negative_words)
+            1 for m in recent_msgs if any(w in self._safe_content_lower(m) for w in negative_words)
         )
         total = len(recent_msgs) or 1
 
@@ -165,9 +161,9 @@ class Teen(db.Model):
         # Activity by day (last 7 days)
         activity = {}
         for msg in recent_msgs:
-            if not getattr(msg, "created_at", None):
+            day = self._safe_day_name(msg)
+            if not day:
                 continue
-            day = msg.created_at.strftime("%a")
             activity[day] = activity.get(day, 0) + 1
 
         return {
@@ -188,3 +184,13 @@ class Teen(db.Model):
         if score >= 70: return "positive"
         if score >= 40: return "neutral"
         return "concerning"
+
+    @staticmethod
+    def _safe_content_lower(message) -> str:
+        content = getattr(message, "content", "")
+        return content.lower() if isinstance(content, str) else ""
+
+    @staticmethod
+    def _safe_day_name(message):
+        created_at = getattr(message, "created_at", None)
+        return created_at.strftime("%a") if created_at else None
