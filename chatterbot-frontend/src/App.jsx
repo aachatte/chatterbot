@@ -4,6 +4,7 @@ import { useAuth } from './context/AuthContext.jsx'
 import Layout from './components/Layout.jsx'
 import Loading from './components/Loading.jsx'
 import SeoManager from './components/SeoManager.jsx'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 
 const Landing = lazy(() => import('./pages/Landing.jsx'))
 const Login = lazy(() => import('./pages/Login.jsx'))
@@ -68,6 +69,7 @@ function App() {
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <SpeedInsights />
     </Suspense>
   )
 }
