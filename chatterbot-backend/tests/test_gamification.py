@@ -55,6 +55,10 @@ def get_token(user_id: int) -> str:
     return create_access_token(identity=str(user_id))
 
 
+def auth_headers(token: str) -> dict:
+    return {"Authorization": "{} {}".format("Bearer", token)}
+
+
 def test_admin_award_points(client, app, monkeypatch):
     monkeypatch.setattr(settings, "admin_api_key", "test-admin-key")
     monkeypatch.setattr(settings, "enable_gamification", True)
@@ -67,7 +71,7 @@ def test_admin_award_points(client, app, monkeypatch):
         "/api/gamification/award",
         json={"user_id": user.id, "amount": 50, "reason": "test"},
         headers={
-            "Authorization": f"******",
+            **auth_headers(token),
             "X-Admin-API-Key": "test-admin-key",
         },
     )
@@ -93,14 +97,14 @@ def test_opt_out_prevents_award(client, app, monkeypatch):
     res = client.post(
         "/api/gamification/preferences",
         json={"gamification_enabled": False},
-        headers={"Authorization": f"******"},
+        headers=auth_headers(token),
     )
     assert res.status_code == 200
     assert res.get_json()["gamification_enabled"] is False
 
     res2 = client.post(
         "/api/gamification/award-login",
-        headers={"Authorization": f"******"},
+        headers=auth_headers(token),
     )
     assert res2.status_code == 403
     assert "disabled" in res2.get_json().get("message", "").lower()
