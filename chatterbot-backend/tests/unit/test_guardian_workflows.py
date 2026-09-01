@@ -1,4 +1,7 @@
 """Focused tests for guardian-owned enrollment, alert, and support workflows."""
+from datetime import datetime
+from types import SimpleNamespace
+
 import pytest
 from flask import Flask
 from flask_jwt_extended import JWTManager, create_access_token
@@ -211,3 +214,32 @@ def test_support_contact_persists_without_claiming_delivery(app, client):
         request_record = SupportRequest.query.one()
         assert request_record.user_id == app.config["guardian_id"]
         assert request_record.message == "Please help me complete the enrollment flow."
+
+
+def test_dashboard_overview_tolerates_malformed_legacy_messages(app, client, monkeypatch):
+    """Legacy rows with missing message content/timestamps must not crash overview."""
+    headers = _auth_headers(app, app.config["guardian_id"])
+
+    class _FakeQuery:
+        def filter(self, *_args, **_kwargs):
+            return self
+
+        def order_by(self, *_args, **_kwargs):
+            return self
+
+        def limit(self, *_args, **_kwargs):
+            return self
+
+        def all(self):
+            return [
+                SimpleNamespace(content=None, created_at=datetime.utcnow()),
+                SimpleNamespace(content="feeling good", created_at=None),
+            ]
+
+    monkeypatch.setattr("app.models.conversation.Message.query", _FakeQuery())
+
+    response = client.get("/api/dashboard/overview", headers=headers)
+
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload["teens"][0]["message_count_7d"] == 2

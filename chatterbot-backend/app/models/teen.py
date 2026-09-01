@@ -148,8 +148,16 @@ class Teen(db.Model):
         positive_words = ["happy", "excited", "great", "awesome", "won", "love", "fun", "good"]
         negative_words = ["sad", "stressed", "anxious", "tired", "angry", "upset", "worried", "scared"]
 
-        pos_count = sum(1 for m in recent_msgs if any(w in m.content.lower() for w in positive_words))
-        neg_count = sum(1 for m in recent_msgs if any(w in m.content.lower() for w in negative_words))
+        def _normalized_content(message):
+            content = getattr(message, "content", "")
+            return content.lower() if isinstance(content, str) else ""
+
+        pos_count = sum(
+            1 for m in recent_msgs if any(w in _normalized_content(m) for w in positive_words)
+        )
+        neg_count = sum(
+            1 for m in recent_msgs if any(w in _normalized_content(m) for w in negative_words)
+        )
         total = len(recent_msgs) or 1
 
         mood_score = max(0, min(100, int(((pos_count - neg_count + total/2) / total) * 100)))
@@ -157,6 +165,8 @@ class Teen(db.Model):
         # Activity by day (last 7 days)
         activity = {}
         for msg in recent_msgs:
+            if not getattr(msg, "created_at", None):
+                continue
             day = msg.created_at.strftime("%a")
             activity[day] = activity.get(day, 0) + 1
 
