@@ -1,4 +1,6 @@
 """Focused tests for guardian-owned enrollment, alert, and support workflows."""
+from types import SimpleNamespace
+
 import pytest
 from flask import Flask
 from flask_jwt_extended import JWTManager, create_access_token
@@ -211,3 +213,10 @@ def test_support_contact_persists_without_claiming_delivery(app, client):
         request_record = SupportRequest.query.one()
         assert request_record.user_id == app.config["guardian_id"]
         assert request_record.message == "Please help me complete the enrollment flow."
+
+
+def test_dashboard_overview_tolerates_malformed_legacy_messages():
+    """Summary helpers should safely handle malformed legacy message values."""
+    assert Teen._safe_content_lower(SimpleNamespace(content=None)) == ""
+    assert Teen._safe_content_lower(SimpleNamespace(content="Feeling GOOD")) == "feeling good"
+    assert Teen._safe_day_name(SimpleNamespace(created_at=None)) is None
