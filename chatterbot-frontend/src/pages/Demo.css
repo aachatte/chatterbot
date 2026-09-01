@@ -395,6 +395,128 @@
 }
 @media (max-width: 860px) { .demo-overview__grid { grid-template-columns: 1fr; } }
 
+/* ── Gamification tab ──────────────────────────────────────── */
+.demo-gamification {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.demo-gamification__theme-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.demo-gamification__theme-buttons {
+  display: inline-flex;
+  gap: 8px;
+}
+.demo-gamification__theme-btn {
+  border: 1px solid var(--cb-border);
+  background: var(--cb-bg-elevated);
+  color: var(--cb-text-secondary);
+  padding: 6px 12px;
+  border-radius: var(--cb-radius-full);
+  font-size: 12px;
+  font-weight: 700;
+}
+.demo-gamification__theme-btn--active {
+  color: #fff;
+  background: var(--cb-primary);
+  border-color: var(--cb-primary);
+}
+.demo-stat-card--teen::before {
+  background: linear-gradient(135deg, #7f67ff 0%, #ff5fb8 100%);
+}
+.demo-stat-card--teen .demo-stat-card__value {
+  color: #4338ca;
+}
+.demo-gamification__challenge-list,
+.demo-gamification__leaderboard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.demo-gamification__challenge-row,
+.demo-gamification__leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--cb-border);
+  background: var(--cb-bg);
+  border-radius: var(--cb-radius-lg);
+  padding: 12px 14px;
+}
+.demo-gamification__mascot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #5b4fb3;
+  background: #f2edff;
+  border: 1px solid #e4dbff;
+  border-radius: var(--cb-radius-full);
+  padding: 3px 8px;
+}
+.demo-gamification__challenge-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.demo-gamification__reward {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cb-primary);
+}
+.demo-gamification__rank {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--cb-text-secondary);
+  min-width: 24px;
+}
+.demo-gamification__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e8e5ff 0%, #ffe3f6 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+}
+.demo-gamification__points {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--cb-primary);
+}
+.demo-gamification--bright .demo-gamification__challenge-row,
+.demo-gamification--bright .demo-gamification__leaderboard-row {
+  background: #f9fbff;
+}
+.demo-gamification--night .demo-gamification__challenge-row,
+.demo-gamification--night .demo-gamification__leaderboard-row {
+  background: #f3f6ff;
+  border-color: rgba(67, 56, 202, 0.18);
+}
+.demo-gamification--night .demo-gamification__points,
+.demo-gamification--night .demo-stat-card--teen .demo-stat-card__value {
+  color: #3730a3;
+}
+.demo-gamification--sunset .demo-gamification__challenge-row,
+.demo-gamification--sunset .demo-gamification__leaderboard-row {
+  background: #fff8fb;
+  border-color: rgba(217, 70, 239, 0.2);
+}
+.demo-gamification--sunset .demo-gamification__points,
+.demo-gamification--sunset .demo-stat-card--teen .demo-stat-card__value {
+  color: #be185d;
+}
+
 /* ── Teens tab ────────────────────────────────────────────── */
 .demo-teens { display: grid; grid-template-columns: 200px 1fr; gap: 20px; }
 @media (max-width: 700px) { .demo-teens { grid-template-columns: 1fr; } }

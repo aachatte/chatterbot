@@ -296,6 +296,91 @@
   letter-spacing: 0.5px;
 }
 
+/* ── Gamification section ── */
+.landing-gamification {
+  padding: 92px 32px;
+  background: linear-gradient(180deg, #f4f5ff 0%, #fff8fd 100%);
+  border-top: 1px solid var(--cb-border);
+  border-bottom: 1px solid var(--cb-border);
+}
+.landing-gamification__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.landing-gamification__header {
+  max-width: 720px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+.landing-gamification__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.landing-gamification__card {
+  background: linear-gradient(180deg, #fff 0%, #fdfdff 100%);
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius-xl);
+  padding: 26px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 10px 28px -20px rgba(0, 32, 91, 0.5);
+}
+.landing-gamification__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background: linear-gradient(135deg, #e5edff 0%, #ffe6ef 100%);
+}
+.landing-gamification__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: var(--cb-text-primary);
+}
+.landing-gamification__body {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--cb-text-secondary);
+}
+.landing-gamification__mascot {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #5b4fb3;
+  background: #f2edff;
+  border: 1px solid #e3d9ff;
+  padding: 5px 10px;
+  border-radius: var(--cb-radius-full);
+  align-self: flex-start;
+}
+.landing-gamification__tag {
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #0f3877;
+  background: rgba(72, 120, 255, 0.16);
+  border-radius: var(--cb-radius-full);
+  padding: 4px 10px;
+  align-self: flex-start;
+}
+@media (max-width: 900px) {
+  .landing-gamification__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Demo section ── */
 .landing-demo {
   padding: 100px 32px;
@@ -743,6 +828,7 @@
   .landing-hero__stats { flex-direction: column; }
   .landing-hero__stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
   .landing-hero__stat:last-child { border-bottom: none; }
+  .landing-gamification { padding: 64px 20px; }
   .landing-demo { padding: 60px 20px; }
   .landing-pillars { padding: 60px 20px; }
   .landing-footer__inner { flex-direction: column; align-items: flex-start; }
@@ -757,7 +843,16 @@
 /* ── For Teens section ── */
 .landing-teens {
   padding: 96px 24px;
-  background: #f8f9ff;
+  background: linear-gradient(180deg, #f7f8ff 0%, #fefbff 100%);
+}
+.landing-teens__eyebrow {
+  color: #7d3cff;
+}
+.landing-teens__heading {
+  color: #233070;
+}
+.landing-teens__copy {
+  color: #3f4b67;
 }
 .landing-teens__inner {
   max-width: 1120px;
@@ -789,13 +884,13 @@
   display: block;
   font-size: 15px;
   font-weight: 700;
-  color: var(--cb-navy);
+  color: #2e3d8f;
   margin-bottom: 4px;
 }
 .landing-teens__item-body {
   margin: 0;
   font-size: 14px;
-  color: #555;
+  color: #4a5674;
   line-height: 1.5;
 }
 
@@ -840,14 +935,14 @@
   white-space: pre-line;
 }
 .landing-teens__bubble--teen {
-  background: #5b6af7;
+  background: linear-gradient(135deg, #6c63ff 0%, #8f54ff 100%);
   color: #fff;
   align-self: flex-end;
   border-bottom-right-radius: 4px;
 }
 .landing-teens__bubble--bot {
-  background: #e8f5e9;
-  color: #1a3a2a;
+  background: #ebfff4;
+  color: #1f5440;
   align-self: flex-start;
   border-bottom-left-radius: 4px;
 }

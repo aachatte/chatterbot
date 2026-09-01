@@ -158,6 +158,59 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ── GAMIFICATION ── */}
+      <section className="landing-gamification">
+        <div className="landing-gamification__inner">
+          <div className="landing-gamification__header">
+            <p className="landing-section-eyebrow">Gamified support</p>
+            <h2 className="landing-section-heading">Turn small wins into real momentum.</h2>
+            <p className="landing-section-body">
+              Daily check-ins become points, streaks, and badges so showing up feels fun,
+              not like homework.
+            </p>
+          </div>
+          <div className="landing-gamification__grid">
+            {[
+              {
+                icon: '🔥',
+                title: 'Daily streaks',
+                body: 'Keep your streak alive with one quick check-in a day.',
+                tag: 'Habit loop',
+                mascot: 'Spark Fox',
+                mascotEmoji: '🦊',
+              },
+              {
+                icon: '🏅',
+                title: 'Achievement badges',
+                body: 'Unlock playful badges for coping, sleep goals, and reflection wins.',
+                tag: 'Progress milestones',
+                mascot: 'Nova Owl',
+                mascotEmoji: '🦉',
+              },
+              {
+                icon: '🎯',
+                title: 'Mini challenges',
+                body: 'Do 2-minute wellness missions like hydration or gratitude boosts.',
+                tag: 'Quick wins',
+                mascot: 'Wave Whale',
+                mascotEmoji: '🐳',
+              },
+            ].map((item) => (
+              <article key={item.title} className="landing-gamification__card">
+                <div className="landing-gamification__icon" aria-hidden="true">{item.icon}</div>
+                <h3 className="landing-gamification__title">{item.title}</h3>
+                <p className="landing-gamification__body">{item.body}</p>
+                <div className="landing-gamification__mascot">
+                  <span aria-hidden="true">{item.mascotEmoji}</span>
+                  <span>{item.mascot}</span>
+                </div>
+                <div className="landing-gamification__tag">{item.tag}</div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── INTERACTIVE DEMO ── */}
       <section className="landing-demo">
         <div className="landing-demo__inner">
@@ -300,22 +353,20 @@ export default function Landing() {
       <section className="landing-teens">
         <div className="landing-teens__inner">
           <div className="landing-teens__content">
-            <p className="landing-section-eyebrow" style={{ color: 'var(--cb-red)' }}>Built for kids too</p>
-            <h2 className="landing-section-heading" style={{ color: 'var(--cb-navy)' }}>
-              A smarter AI for younger minds.
+            <p className="landing-section-eyebrow landing-teens__eyebrow">Built for teens</p>
+            <h2 className="landing-section-heading landing-teens__heading">
+              Support that actually sounds human.
             </h2>
-            <p className="landing-section-body" style={{ color: '#444' }}>
-              ChatGPT and Google are powerful — but they weren't designed for a 13-year-old wondering
-              about anxiety, social pressure, or puberty. Chatterbot speaks at <strong>their level</strong>,
-              in plain language, with age-appropriate context, no judgment, and guardrails that keep
-              the conversation safe.
+            <p className="landing-section-body landing-teens__copy">
+              Big AI tools can feel overwhelming. Chatterbot keeps it short, kind, and age-appropriate
+              so teens get help they can use right away.
             </p>
             <ul className="landing-teens__list">
               {[
-                { icon: '🧠', title: 'Age-calibrated answers', body: 'Responses are tuned to the teen\'s age — not a generic adult AI dump.' },
-                { icon: '💬', title: 'Text, don\'t type an essay', body: 'No long prompts. Just text "I\'m stressed about school" and get real help.' },
-                { icon: '🔒', title: 'Private from peers, visible to parents', body: 'Teens get a safe space. Guardians see summaries, not screenshots.' },
-                { icon: '🚨', title: 'Knows when to escalate', body: 'If a conversation turns serious, Chatterbot alerts a guardian and suggests 988.' },
+                { icon: '🧠', title: 'Age-calibrated answers', body: 'Advice fits the teen\'s age and situation.' },
+                { icon: '💬', title: 'Low effort, high support', body: 'Just text how you feel—no long prompt needed.' },
+                { icon: '🔒', title: 'Private by design', body: 'Teens keep their space. Guardians get signals, not transcripts.' },
+                { icon: '🚨', title: 'Fast safety escalation', body: 'When things get serious, the app alerts guardians quickly.' },
               ].map(item => (
                 <li key={item.title} className="landing-teens__item">
                   <span className="landing-teens__item-icon">{item.icon}</span>
