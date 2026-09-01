@@ -30,17 +30,6 @@ export async function claimDailyLoginReward() {
 }
 
 export async function fetchBadges() {
-  const token = localStorage.getItem('cb_token')
-  const res = await fetch(`${GAM_API}/me`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data.error || 'Failed to fetch badges')
-  }
-  const json = await res.json()
+  const json = await fetchMyGamification()
   return json.badges || []
 }

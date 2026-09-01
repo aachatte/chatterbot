@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../services/api.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import '../components/Dashboard.css'
+import PointsBadge from '../components/PointsBadge.jsx'
 
 const DEFAULT_WIDGETS = {
   briefing: true,
@@ -147,7 +148,11 @@ export default function Dashboard() {
           <h1 className="db-header__title">Command Center</h1>
           <p className="db-header__sub">Good to see you, {greetingName}. {roleCopy}</p>
         </div>
-        <Link to="/dashboard/teens" className="btn btn--sm btn--primary-sm">Manage teens</Link>
+
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <PointsBadge />
+          <Link to="/dashboard/teens" className="btn btn--sm btn--primary-sm">Manage teens</Link>
+        </div>
       </div>
 
       <section className="db-card" style={{ marginBottom: 'var(--cb-space-4)' }}>
@@ -213,7 +218,7 @@ export default function Dashboard() {
           </div>
           <p style={{ color: 'var(--cb-text-secondary)', lineHeight: 1.6, marginBottom: 'var(--cb-space-3)' }}>
             {summary.active_alerts > 0
-              ? `You have ${summary.active_alerts} open alert${summary.active_alerts > 1 ? 's' : ''}. Start with the highest severity items in your queue, then complete pending enrollment actions.`
+              ? `You have ${summary.active_alerts} open alert${summary.active_alerts > 1 ? 's' : ''}. Start with the highest severity items in your queue, then complete pending enrollment actions[...]
               : 'No active safety alerts right now. Great time to complete enrollment, tune preferences, and schedule proactive outreach.'}
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--cb-space-2)' }}>
