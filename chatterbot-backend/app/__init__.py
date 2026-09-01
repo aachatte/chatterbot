@@ -85,6 +85,7 @@ def create_app(config_override=None):
     from app.routes.checkin import checkin_bp
     from app.routes.counselor import counselor_bp
     from app.routes.referral import referral_bp
+    from app.routes.gamification import gam_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(sms_bp, url_prefix="/api/sms")
@@ -98,6 +99,7 @@ def create_app(config_override=None):
     app.register_blueprint(checkin_bp)
     app.register_blueprint(counselor_bp)
     app.register_blueprint(referral_bp)
+    app.register_blueprint(gam_bp, url_prefix="/api/gamification")
 
     # Error handlers
     @app.errorhandler(400)

@@ -17,12 +17,23 @@ class User(db.Model):
     is_verified = db.Column(db.Boolean, default=False)
     crisis_alerts_enabled = db.Column(db.Boolean, default=True, nullable=False)
     crisis_alert_sms_enabled = db.Column(db.Boolean, default=True, nullable=False)
+
+    # Gamification fields
+    points = db.Column(db.Integer, default=0)
+    level = db.Column(db.Integer, default=1)
+    streak_count = db.Column(db.Integer, default=0)
+    last_login_at = db.Column(db.DateTime, nullable=True)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
     teens = db.relationship("Teen", backref="parent", lazy="dynamic", cascade="all, delete-orphan")
     subscriptions = db.relationship("Subscription", backref="user", lazy="dynamic")
+
+    # Gamification relationships (set up in gamification models)
+    point_transactions = db.relationship("PointTransaction", back_populates="user", lazy="dynamic")
+    badges = db.relationship("Badge", secondary="user_badges", backref=db.backref("users", lazy="dynamic"))
 
     def set_password(self, password: str):
         """Hash and store password."""
@@ -51,4 +62,7 @@ class User(db.Model):
             "crisis_alert_sms_enabled": self.crisis_alert_sms_enabled,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "teen_count": self.teens.count(),
+            "points": self.points or 0,
+            "level": self.level or 1,
+            "streak_count": self.streak_count or 0,
         }
