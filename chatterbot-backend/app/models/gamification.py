@@ -28,7 +28,7 @@ class PointTransaction(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     amount = db.Column(db.Integer, nullable=False)
     reason = db.Column(db.String(200))
-    metadata = db.Column(db.JSON, nullable=True)
+    meta = db.Column('metadata', db.JSON, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # relationship set on User via back_populates
