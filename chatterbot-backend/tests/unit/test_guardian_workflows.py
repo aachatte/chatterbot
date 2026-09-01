@@ -78,6 +78,12 @@ def _auth_headers(app, user_id):
     return {"Authorization": f"Bearer {token}"}
 
 
+def _legacy_auth_headers(app, identity):
+    with app.app_context():
+        token = create_access_token(identity=identity)
+    return {"Authorization": "Bearer " + token}
+
+
 def test_guardian_enrollment_requires_ownership_and_never_exposes_token(
     app, client, monkeypatch
 ):
@@ -174,6 +180,16 @@ def test_guardian_preferences_and_alert_acknowledgement_are_persisted(app, clien
         stored_alert = db.session.get(CrisisAlert, alert_id)
         assert stored_alert.resolved_by == app.config["guardian_id"]
         assert stored_alert.resolution_notes == "Guardian follow-up completed."
+
+
+def test_dashboard_overview_accepts_legacy_email_identity(app, client):
+    """Legacy JWT email identities should not trigger server errors."""
+    headers = _legacy_auth_headers(app, "guardian@example.com")
+
+    response = client.get("/api/dashboard/overview", headers=headers)
+
+    assert response.status_code == 200
+    assert response.get_json()["parent"]["email"] == "guardian@example.com"
 
 
 def test_support_contact_persists_without_claiming_delivery(app, client):
