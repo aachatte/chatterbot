@@ -380,6 +380,51 @@
     grid-template-columns: 1fr;
   }
 }
+.landing-gamification__why {
+  margin-top: 48px;
+  background: linear-gradient(135deg, #e5edff 0%, #ffe6ef 100%);
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius-xl);
+  padding: 32px 28px;
+}
+.landing-gamification__why-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #0f3877;
+  margin-bottom: 20px;
+}
+.landing-gamification__why-items {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.landing-gamification__why-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.landing-gamification__why-icon {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+.landing-gamification__why-stat {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  color: var(--cb-text-primary);
+}
+.landing-gamification__why-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--cb-text-secondary);
+}
+@media (max-width: 700px) {
+  .landing-gamification__why-items {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* ── Demo section ── */
 .landing-demo {

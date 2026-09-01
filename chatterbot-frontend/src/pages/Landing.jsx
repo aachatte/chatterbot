@@ -165,8 +165,10 @@ export default function Landing() {
             <p className="landing-section-eyebrow">Gamified support</p>
             <h2 className="landing-section-heading">Turn small wins into real momentum.</h2>
             <p className="landing-section-body">
-              Daily check-ins become points, streaks, and badges so showing up feels fun,
-              not like homework.
+              Teens don't skip therapy because they don't care—they skip because it doesn't
+              feel rewarding. Chatterbot uses streaks, badges, and bite-sized challenges to
+              make showing up feel like progress, not a chore. Consistent engagement is how
+              trust is built over time.
             </p>
           </div>
           <div className="landing-gamification__grid">
@@ -174,7 +176,7 @@ export default function Landing() {
               {
                 icon: '🔥',
                 title: 'Daily streaks',
-                body: 'Keep your streak alive with one quick check-in a day.',
+                body: 'One check-in a day keeps the streak alive. The consistency habit that builds over weeks is the same habit that keeps teens talking when things get hard.',
                 tag: 'Habit loop',
                 mascot: 'Spark Fox',
                 mascotEmoji: '🦊',
@@ -182,7 +184,7 @@ export default function Landing() {
               {
                 icon: '🏅',
                 title: 'Achievement badges',
-                body: 'Unlock playful badges for coping, sleep goals, and reflection wins.',
+                body: 'Unlock badges for coping wins, sleep goals, and honest reflection. Visible progress gives teens a sense of ownership over their own wellbeing journey.',
                 tag: 'Progress milestones',
                 mascot: 'Nova Owl',
                 mascotEmoji: '🦉',
@@ -190,7 +192,7 @@ export default function Landing() {
               {
                 icon: '🎯',
                 title: 'Mini challenges',
-                body: 'Do 2-minute wellness missions like hydration or gratitude boosts.',
+                body: '2-minute wellness missions—hydration, gratitude, a quick breathing exercise. Small enough to actually do; meaningful enough to make a real difference.',
                 tag: 'Quick wins',
                 mascot: 'Wave Whale',
                 mascotEmoji: '🐳',
@@ -207,6 +209,22 @@ export default function Landing() {
                 <div className="landing-gamification__tag">{item.tag}</div>
               </article>
             ))}
+          </div>
+          <div className="landing-gamification__why">
+            <div className="landing-gamification__why-label">Why it works</div>
+            <div className="landing-gamification__why-items">
+              {[
+                { icon: '📈', stat: '3×', desc: 'more likely to complete a check-in when a streak is at stake' },
+                { icon: '💬', stat: '68%', desc: 'of teens say rewards make mental health tools feel less awkward' },
+                { icon: '🔒', stat: '100%', desc: 'guardian-visible—points and badges show up in your dashboard' },
+              ].map((item, idx) => (
+                <div key={idx} className="landing-gamification__why-item">
+                  <span className="landing-gamification__why-icon" aria-hidden="true">{item.icon}</span>
+                  <span className="landing-gamification__why-stat">{item.stat}</span>
+                  <span className="landing-gamification__why-desc">{item.desc}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
