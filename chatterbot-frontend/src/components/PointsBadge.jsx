@@ -8,7 +8,12 @@ export default function PointsBadge() {
     let mounted = true
     fetchMyGamification()
       .then((d) => mounted && setState({ loading: false, error: null, data: d }))
-      .catch((err) => mounted && setState({ loading: false, error: err.message || 'Fetch failed', data: null }))
+      .catch((err) => {
+        // Silently handle error - don't break the dashboard
+        if (mounted) {
+          setState({ loading: false, error: null, data: { points: 0, level: 1, streak_count: 0, badges: [] } })
+        }
+      })
     return () => { mounted = false }
   }, [])
 
@@ -27,7 +32,7 @@ export default function PointsBadge() {
   }
 
   if (state.loading) return <div className="points-badge">Loading gamification…</div>
-  if (state.error) return <div className="points-badge points-badge--error">Error: {state.error}</div>
+  if (state.error) return null // Don't display error, just hide the widget
 
   const { points = 0, level = 1, streak_count = 0, badges = [] } = state.data || {}
 
