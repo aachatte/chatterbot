@@ -395,6 +395,52 @@
 }
 @media (max-width: 860px) { .demo-overview__grid { grid-template-columns: 1fr; } }
 
+/* ── Gamification tab ──────────────────────────────────────── */
+.demo-gamification {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.demo-gamification__challenge-list,
+.demo-gamification__leaderboard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.demo-gamification__challenge-row,
+.demo-gamification__leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--cb-border);
+  background: var(--cb-bg);
+  border-radius: var(--cb-radius-lg);
+  padding: 12px 14px;
+}
+.demo-gamification__challenge-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.demo-gamification__reward {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cb-primary);
+}
+.demo-gamification__rank {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--cb-text-secondary);
+  min-width: 24px;
+}
+.demo-gamification__points {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--cb-primary);
+}
+
 /* ── Teens tab ────────────────────────────────────────────── */
 .demo-teens { display: grid; grid-template-columns: 200px 1fr; gap: 20px; }
 @media (max-width: 700px) { .demo-teens { grid-template-columns: 1fr; } }

@@ -31,6 +31,24 @@ const BILLING = {
   status: 'Active',
 }
 
+const GAMIFICATION_OVERVIEW = {
+  activeChallenges: 3,
+  pointsEarned7d: 540,
+  badgesUnlocked30d: 6,
+  avgStreak: 14,
+}
+
+const GAMIFICATION_CHALLENGES = [
+  { id: 1, name: 'Hydration Hero', teen: 'Maya', progress: '5 / 7 days', reward: '+120 XP', status: 'In progress' },
+  { id: 2, name: 'Mindful Minute', teen: 'Ethan', progress: '7 / 7 days', reward: 'New badge', status: 'Completed' },
+  { id: 3, name: 'Sleep Streak', teen: 'Maya', progress: '4 / 5 nights', reward: '+80 XP', status: 'In progress' },
+]
+
+const GAMIFICATION_LEADERBOARD = [
+  { rank: 1, teen: 'Maya', points: 1820, streak: 18, badge: 'Focus Fox' },
+  { rank: 2, teen: 'Ethan', points: 1490, streak: 11, badge: 'Calm Coder' },
+]
+
 const CHAT_CONVO = [
   { sender: 'maya', text: "I'm kind of nervous about my math test tomorrow.", time: '4:02 PM' },
   { sender: 'bot',  text: "Totally understandable! A little pre-test nerves can actually help you focus. Have you done a quick review of the topics covered?", time: '4:02 PM' },
@@ -45,6 +63,7 @@ const TABS = [
   { id: 'overview',    label: 'Overview',      icon: '📊' },
   { id: 'teens',       label: 'Teens',         icon: '👥' },
   { id: 'alerts',      label: 'Alerts',        icon: '🛡️' },
+  { id: 'gamification', label: 'Gamification', icon: '🎮' },
   { id: 'chat',        label: 'AI Assistant',  icon: '💬' },
   { id: 'billing',     label: 'Billing',       icon: '💳' },
   { id: 'enrollment',  label: 'Enrollment',    icon: '✅' },
@@ -76,6 +95,15 @@ const FEATURE_EXPLAINERS = {
       'Alert states: Triggered → Parent Notified → Acknowledged → Resolved',
       'Guardian must acknowledge before resolving—creating an audit trail',
       'Integration with 988 Suicide & Crisis Lifeline is part of the AI response',
+    ],
+  },
+  gamification: {
+    title: 'Gamification Engine',
+    bullets: [
+      'Wellness challenges convert daily check-ins into measurable progress',
+      'Points and badges reinforce healthy micro-habits without public pressure',
+      'Guardians can track participation momentum while preserving conversation privacy',
+      'Engagement trends help identify when motivation starts dropping',
     ],
   },
   chat: {
@@ -301,6 +329,68 @@ function AlertsTab() {
   )
 }
 
+function GamificationTab() {
+  return (
+    <div className="demo-gamification">
+      <div className="demo-stats">
+        {[
+          { label: 'Active challenges', value: `${GAMIFICATION_OVERVIEW.activeChallenges}`, sub: 'this week' },
+          { label: 'Points · 7 days', value: `${GAMIFICATION_OVERVIEW.pointsEarned7d}`, sub: 'combined total' },
+          { label: 'Badges · 30 days', value: `${GAMIFICATION_OVERVIEW.badgesUnlocked30d}`, sub: 'new unlocks' },
+          { label: 'Average streak', value: `${GAMIFICATION_OVERVIEW.avgStreak}d`, sub: 'across teen profiles' },
+        ].map((s) => (
+          <div key={s.label} className="demo-stat-card">
+            <div className="demo-stat-card__label">{s.label}</div>
+            <div className="demo-stat-card__value">{s.value}</div>
+            <div className="demo-stat-card__sub">{s.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="demo-overview__grid">
+        <div className="demo-card">
+          <div className="demo-card__header">
+            <span className="demo-card__title">Weekly challenges</span>
+          </div>
+          <div className="demo-gamification__challenge-list">
+            {GAMIFICATION_CHALLENGES.map((challenge) => (
+              <div key={challenge.id} className="demo-gamification__challenge-row">
+                <div>
+                  <div className="demo-teen-name">{challenge.name}</div>
+                  <div className="demo-teen-meta">{challenge.teen} · {challenge.progress}</div>
+                </div>
+                <div className="demo-gamification__challenge-right">
+                  <span className={`demo-badge ${challenge.status === 'Completed' ? 'demo-badge--green' : 'demo-badge--yellow'}`}>{challenge.status}</span>
+                  <span className="demo-gamification__reward">{challenge.reward}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="demo-card">
+          <div className="demo-card__header">
+            <span className="demo-card__title">Top streak leaderboard</span>
+          </div>
+          <div className="demo-gamification__leaderboard">
+            {GAMIFICATION_LEADERBOARD.map((entry) => (
+              <div key={entry.rank} className="demo-gamification__leaderboard-row">
+                <span className="demo-gamification__rank">#{entry.rank}</span>
+                <div className="demo-avatar demo-avatar--sm">{entry.teen[0]}</div>
+                <div>
+                  <div className="demo-teen-name">{entry.teen}</div>
+                  <div className="demo-teen-meta">{entry.badge} · {entry.streak} day streak</div>
+                </div>
+                <div className="demo-gamification__points">{entry.points} XP</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function ChatTab() {
   const bottomRef = useRef(null)
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [])
@@ -502,7 +592,7 @@ export default function Demo() {
   const [activeTab, setActiveTab] = useState('overview')
   const explainer = FEATURE_EXPLAINERS[activeTab]
 
-  const tabContent = { overview: <OverviewTab />, teens: <TeensTab />, alerts: <AlertsTab />, chat: <ChatTab />, billing: <BillingTab />, enrollment: <EnrollmentTab /> }
+  const tabContent = { overview: <OverviewTab />, teens: <TeensTab />, alerts: <AlertsTab />, gamification: <GamificationTab />, chat: <ChatTab />, billing: <BillingTab />, enrollment: <EnrollmentTab /> }
 
   return (
     <div className="demo-root">

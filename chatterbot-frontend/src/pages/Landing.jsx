@@ -158,6 +158,49 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ── GAMIFICATION ── */}
+      <section className="landing-gamification">
+        <div className="landing-gamification__inner">
+          <div className="landing-gamification__header">
+            <p className="landing-section-eyebrow">Gamified support</p>
+            <h2 className="landing-section-heading">Healthy habits that feel rewarding.</h2>
+            <p className="landing-section-body">
+              Chatterbot turns check-ins into a progress journey with streaks, points,
+              and milestone badges so teens stay motivated to keep showing up.
+            </p>
+          </div>
+          <div className="landing-gamification__grid">
+            {[
+              {
+                icon: '🔥',
+                title: 'Daily streaks',
+                body: 'Build momentum with simple daily check-ins and celebrate consistency over perfection.',
+                tag: 'Habit loop',
+              },
+              {
+                icon: '🏅',
+                title: 'Achievement badges',
+                body: 'Unlock badges for positive milestones like stress coping, sleep goals, and reflection wins.',
+                tag: 'Progress milestones',
+              },
+              {
+                icon: '🎯',
+                title: 'Mini challenges',
+                body: 'Complete short wellness missions like hydration, breathing, or gratitude in under 2 minutes.',
+                tag: 'Quick wins',
+              },
+            ].map((item) => (
+              <article key={item.title} className="landing-gamification__card">
+                <div className="landing-gamification__icon" aria-hidden="true">{item.icon}</div>
+                <h3 className="landing-gamification__title">{item.title}</h3>
+                <p className="landing-gamification__body">{item.body}</p>
+                <div className="landing-gamification__tag">{item.tag}</div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── INTERACTIVE DEMO ── */}
       <section className="landing-demo">
         <div className="landing-demo__inner">
