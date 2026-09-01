@@ -28,6 +28,21 @@ def _get_owned_teen(teen_id, user_id):
     return Teen.query.filter_by(id=teen_id, parent_id=user_id).first()
 
 
+def _get_authenticated_user_id():
+    """Return a normalized guardian user id from the JWT identity."""
+    identity = get_jwt_identity()
+    if isinstance(identity, int):
+        return identity
+    if isinstance(identity, str):
+        normalized = identity.strip()
+        if normalized.isdigit():
+            return int(normalized)
+        user = User.query.filter_by(email=normalized.lower()).first()
+        if user:
+            return user.id
+    return None
+
+
 def _get_owned_alert(alert_id, user_id):
     """Fetch an alert only when its teen belongs to the authenticated guardian."""
     return CrisisAlert.query.join(Teen).filter(
@@ -51,7 +66,9 @@ def _validated_notes(data):
 @jwt_required()
 def dashboard_overview():
     """Get parent dashboard overview."""
-    user_id = int(get_jwt_identity())
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
     user = User.query.get(user_id)
 
     if not user:
@@ -106,7 +123,9 @@ def dashboard_overview():
 @jwt_required()
 def list_teens():
     """List all teens for the parent."""
-    user_id = int(get_jwt_identity())
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
     teens = Teen.query.filter_by(parent_id=user_id).all()
 
     return jsonify({
@@ -118,7 +137,9 @@ def list_teens():
 @jwt_required()
 def create_teen():
     """Add a new teen to the parent account."""
-    user_id = int(get_jwt_identity())
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
     data = _get_json_object()
     if data is None:
         return jsonify({"error": "Request body must be a JSON object"}), 400
@@ -163,7 +184,9 @@ def create_teen():
 @jwt_required()
 def get_teen_detail(teen_id):
     """Get detailed info for a specific teen."""
-    user_id = int(get_jwt_identity())
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
     teen = _get_owned_teen(teen_id, user_id)
 
     if not teen:
@@ -197,7 +220,9 @@ def get_teen_detail(teen_id):
 @jwt_required()
 def update_teen(teen_id):
     """Update teen settings."""
-    user_id = int(get_jwt_identity())
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
     teen = _get_owned_teen(teen_id, user_id)
 
     if not teen:
@@ -246,7 +271,9 @@ def update_teen(teen_id):
 @jwt_required()
 def delete_teen(teen_id):
     """Delete a teen and all associated data (GDPR/COPPA compliance)."""
-    user_id = int(get_jwt_identity())
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
     teen = _get_owned_teen(teen_id, user_id)
 
     if not teen:
@@ -263,7 +290,9 @@ def delete_teen(teen_id):
 @jwt_required()
 def list_alerts():
     """List all crisis alerts for parent\'s teens."""
-    user_id = int(get_jwt_identity())
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
 
     status_filter = request.args.get("status")
 
@@ -281,7 +310,9 @@ def list_alerts():
 @jwt_required()
 def get_alert_detail(alert_id):
     """Get detailed info for a specific alert."""
-    user_id = int(get_jwt_identity())
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
 
     alert = _get_owned_alert(alert_id, user_id)
 
@@ -295,7 +326,9 @@ def get_alert_detail(alert_id):
 @jwt_required()
 def resolve_alert(alert_id):
     """Mark an alert as resolved."""
-    user_id = int(get_jwt_identity())
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
 
     alert = _get_owned_alert(alert_id, user_id)
 
@@ -324,7 +357,9 @@ def resolve_alert(alert_id):
 @jwt_required()
 def get_teen_enrollment(teen_id):
     """Get the authenticated guardian's enrollment state for a teen."""
-    user_id = int(get_jwt_identity())
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
     teen = _get_owned_teen(teen_id, user_id)
     if not teen:
         return jsonify({"error": "Teen not found"}), 404
@@ -336,7 +371,9 @@ def get_teen_enrollment(teen_id):
 @jwt_required()
 def confirm_teen_consent(teen_id):
     """Record an authenticated guardian's explicit enrollment confirmation."""
-    user_id = int(get_jwt_identity())
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
     teen = _get_owned_teen(teen_id, user_id)
     if not teen:
         return jsonify({"error": "Teen not found"}), 404
@@ -359,7 +396,9 @@ def confirm_teen_consent(teen_id):
 @jwt_required()
 def request_phone_verification(teen_id):
     """Deliver a one-time phone-verification token without exposing it in the API."""
-    user_id = int(get_jwt_identity())
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
     teen = _get_owned_teen(teen_id, user_id)
     if not teen:
         return jsonify({"error": "Teen not found"}), 404
@@ -385,7 +424,9 @@ def request_phone_verification(teen_id):
 @jwt_required()
 def confirm_phone_verification(teen_id):
     """Complete a pending phone verification using a previously delivered token."""
-    user_id = int(get_jwt_identity())
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
     teen = _get_owned_teen(teen_id, user_id)
     if not teen:
         return jsonify({"error": "Teen not found"}), 404
@@ -405,7 +446,9 @@ def confirm_phone_verification(teen_id):
 @jwt_required()
 def teen_preferences(teen_id):
     """Inspect or update safety and proactive messaging preferences for one teen."""
-    user_id = int(get_jwt_identity())
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
     teen = _get_owned_teen(teen_id, user_id)
     if not teen:
         return jsonify({"error": "Teen not found"}), 404
@@ -454,7 +497,9 @@ def teen_preferences(teen_id):
 @jwt_required()
 def guardian_preferences():
     """Inspect or update a guardian's crisis-alert delivery preferences."""
-    user_id = int(get_jwt_identity())
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
     user = db.session.get(User, user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
@@ -486,7 +531,9 @@ def guardian_preferences():
 @jwt_required()
 def acknowledge_alert(alert_id):
     """Record the owning guardian's acknowledgement of an open alert."""
-    user_id = int(get_jwt_identity())
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
     alert = _get_owned_alert(alert_id, user_id)
     if not alert:
         return jsonify({"error": "Alert not found"}), 404
