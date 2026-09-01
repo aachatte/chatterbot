@@ -118,17 +118,18 @@ export default function Landing() {
         <div className="landing-hero__content">
           <div className="landing-hero__badge">
             <span className="pulse-dot pulse-dot--red" />
-            Proactive adolescent support
+            SMS-first support for teens
           </div>
 
           <h1 className="landing-hero__heading">
-            Support for the<br />
-            <span className="landing-hero__heading-accent">digital generation.</span>
+            Support teens where they already are.<br />
+            <span className="landing-hero__heading-accent">Right in their texts.</span>
           </h1>
 
           <p className="landing-hero__sub">
-            Daily SMS check-ins, guardian-configured boundaries, and instant safety
-            alerts—no apps to download, no accounts for teens.
+            Thoughtful SMS check-ins, guardian-set boundaries, and fast safety alerts—
+            so teens get support that feels natural, and guardians get visibility they
+            can trust.
           </p>
 
           <div className="landing-hero__actions">
@@ -138,16 +139,16 @@ export default function Landing() {
             </Link>
             <Link to="/demo" className="btn btn--ghost btn--lg">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-              View demo dashboard
+              See demo dashboard
             </Link>
           </div>
 
           <div className="landing-hero__stats">
             {[
-              { value: 'Zero', label: 'apps to install' },
-              { value: 'SMS', label: 'native, no bypass' },
-              { value: '24 / 7', label: 'safety monitoring' },
-              { value: '988', label: 'crisis protocol' },
+              { value: '0', label: 'new apps for teens' },
+              { value: 'SMS', label: 'support in their everyday flow' },
+              { value: '24 / 7', label: 'check-ins + risk monitoring' },
+              { value: '988', label: 'crisis-ready escalation' },
             ].map(s => (
               <div className="landing-hero__stat" key={s.label}>
                 <span className="landing-hero__stat-value">{s.value}</span>
@@ -353,20 +354,21 @@ export default function Landing() {
       <section className="landing-teens">
         <div className="landing-teens__inner">
           <div className="landing-teens__content">
-            <p className="landing-section-eyebrow landing-teens__eyebrow">Built for teens</p>
+            <p className="landing-section-eyebrow landing-teens__eyebrow">Teen-first by design</p>
             <h2 className="landing-section-heading landing-teens__heading">
-              Support that actually sounds human.
+              Actually helpful. Never awkward.
             </h2>
             <p className="landing-section-body landing-teens__copy">
-              Big AI tools can feel overwhelming. Chatterbot keeps it short, kind, and age-appropriate
-              so teens get help they can use right away.
+              When life feels messy, teens do not need a lecture or a wall of AI jargon.
+              Chatterbot keeps it calm, clear, and age-appropriate so support feels easy
+              to text back to.
             </p>
             <ul className="landing-teens__list">
               {[
-                { icon: '🧠', title: 'Age-calibrated answers', body: 'Advice fits the teen\'s age and situation.' },
-                { icon: '💬', title: 'Low effort, high support', body: 'Just text how you feel—no long prompt needed.' },
-                { icon: '🔒', title: 'Private by design', body: 'Teens keep their space. Guardians get signals, not transcripts.' },
-                { icon: '🚨', title: 'Fast safety escalation', body: 'When things get serious, the app alerts guardians quickly.' },
+                { icon: '🧠', title: 'Advice that fits', body: 'Support matches the teen\'s age, situation, and what they actually said.' },
+                { icon: '💬', title: 'Easy to answer', body: 'A quick honest text is enough to get grounded, useful support back.' },
+                { icon: '🔒', title: 'Private space, clear guardrails', body: 'Teens are not watched line by line. Guardians get signals and safety alerts, not full transcripts.' },
+                { icon: '🚨', title: 'Fast help when it matters', body: 'If risk rises, Chatterbot escalates quickly with crisis guidance and guardian alerts.' },
               ].map(item => (
                 <li key={item.title} className="landing-teens__item">
                   <span className="landing-teens__item-icon">{item.icon}</span>
@@ -402,13 +404,13 @@ export default function Landing() {
             <div className="landing-teens__vs">
               <div className="landing-teens__vs-card landing-teens__vs-card--bad">
                 <div className="landing-teens__vs-label">Generic AI</div>
-                <p className="landing-teens__vs-text">"Social anxiety disorder (SAD) is characterized by intense fear of social situations and may require CBT, SSRIs, or exposure therapy as outlined in DSM-5 criteria..."</p>
-                <div className="landing-teens__vs-tag landing-teens__vs-tag--bad">Not built for teens</div>
+                <p className="landing-teens__vs-text">"Social anxiety can involve physiological arousal, avoidance behaviors, and evidence-based treatment pathways..."</p>
+                <div className="landing-teens__vs-tag landing-teens__vs-tag--bad">Feels like homework</div>
               </div>
               <div className="landing-teens__vs-card landing-teens__vs-card--good">
                 <div className="landing-teens__vs-label">Chatterbot</div>
-                <p className="landing-teens__vs-text">"That feeling is super normal. Here's what helps most teens..."</p>
-                <div className="landing-teens__vs-tag landing-teens__vs-tag--good">Age-appropriate ✓</div>
+                <p className="landing-teens__vs-text">"You are not weird for feeling that. Want a quick reset you can try before class?"</p>
+                <div className="landing-teens__vs-tag landing-teens__vs-tag--good">Built for teens ✓</div>
               </div>
             </div>
           </div>
