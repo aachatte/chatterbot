@@ -218,7 +218,7 @@ export default function Dashboard() {
           </div>
           <p style={{ color: 'var(--cb-text-secondary)', lineHeight: 1.6, marginBottom: 'var(--cb-space-3)' }}>
             {summary.active_alerts > 0
-              ? `You have ${summary.active_alerts} open alert${summary.active_alerts > 1 ? 's' : ''}. Start with the highest severity items in your queue, then complete pending enrollment actions[...]
+              ? `You have ${summary.active_alerts} open alert${summary.active_alerts > 1 ? 's' : ''}. Start with the highest severity items in your queue, then complete pending enrollment actions.`
               : 'No active safety alerts right now. Great time to complete enrollment, tune preferences, and schedule proactive outreach.'}
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--cb-space-2)' }}>
