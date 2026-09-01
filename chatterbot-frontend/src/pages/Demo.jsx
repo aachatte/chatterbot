@@ -39,14 +39,20 @@ const GAMIFICATION_OVERVIEW = {
 }
 
 const GAMIFICATION_CHALLENGES = [
-  { id: 1, name: 'Hydration Hero', teen: 'Maya', progress: '5 / 7 days', reward: '+120 XP', status: 'In progress' },
-  { id: 2, name: 'Mindful Minute', teen: 'Ethan', progress: '7 / 7 days', reward: 'New badge', status: 'Completed' },
-  { id: 3, name: 'Sleep Streak', teen: 'Maya', progress: '4 / 5 nights', reward: '+80 XP', status: 'In progress' },
+  { id: 1, name: 'Hydration Hero', teen: 'Maya', progress: '5 / 7 days', reward: '+120 XP', status: 'In progress', mascot: 'Spark Fox', mascotEmoji: '🦊' },
+  { id: 2, name: 'Mindful Minute', teen: 'Ethan', progress: '7 / 7 days', reward: 'New badge', status: 'Completed', mascot: 'Nova Owl', mascotEmoji: '🦉' },
+  { id: 3, name: 'Sleep Streak', teen: 'Maya', progress: '4 / 5 nights', reward: '+80 XP', status: 'In progress', mascot: 'Wave Whale', mascotEmoji: '🐳' },
 ]
 
 const GAMIFICATION_LEADERBOARD = [
-  { rank: 1, teen: 'Maya', points: 1820, streak: 18, badge: 'Focus Fox' },
-  { rank: 2, teen: 'Ethan', points: 1490, streak: 11, badge: 'Calm Coder' },
+  { rank: 1, teen: 'Maya', points: 1820, streak: 18, badge: 'Focus Fox', mascotEmoji: '🦊' },
+  { rank: 2, teen: 'Ethan', points: 1490, streak: 11, badge: 'Calm Coder', mascotEmoji: '🦉' },
+]
+
+const GAMIFICATION_VIBES = [
+  { id: 'bright', label: 'Bright' },
+  { id: 'night', label: 'Night' },
+  { id: 'sunset', label: 'Sunset' },
 ]
 
 const CHAT_CONVO = [
@@ -330,16 +336,34 @@ function AlertsTab() {
 }
 
 function GamificationTab() {
+  const [vibe, setVibe] = useState('bright')
+
   return (
-    <div className="demo-gamification">
+    <div className={`demo-gamification demo-gamification--${vibe}`}>
+      <div className="demo-gamification__theme-bar">
+        <span className="demo-section-label" style={{ marginBottom: 0 }}>Theme vibe</span>
+        <div className="demo-gamification__theme-buttons">
+          {GAMIFICATION_VIBES.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              className={`demo-gamification__theme-btn${vibe === option.id ? ' demo-gamification__theme-btn--active' : ''}`}
+              onClick={() => setVibe(option.id)}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="demo-stats">
         {[
-          { label: 'Active challenges', value: `${GAMIFICATION_OVERVIEW.activeChallenges}`, sub: 'this week' },
-          { label: 'Points · 7 days', value: `${GAMIFICATION_OVERVIEW.pointsEarned7d}`, sub: 'combined total' },
-          { label: 'Badges · 30 days', value: `${GAMIFICATION_OVERVIEW.badgesUnlocked30d}`, sub: 'new unlocks' },
-          { label: 'Average streak', value: `${GAMIFICATION_OVERVIEW.avgStreak}d`, sub: 'across teen profiles' },
+          { label: 'Live challenges', value: `${GAMIFICATION_OVERVIEW.activeChallenges}`, sub: 'this week' },
+          { label: 'XP · 7 days', value: `${GAMIFICATION_OVERVIEW.pointsEarned7d}`, sub: 'team total' },
+          { label: 'Badges · 30 days', value: `${GAMIFICATION_OVERVIEW.badgesUnlocked30d}`, sub: 'fresh unlocks' },
+          { label: 'Average streak', value: `${GAMIFICATION_OVERVIEW.avgStreak}d`, sub: 'across profiles' },
         ].map((s) => (
-          <div key={s.label} className="demo-stat-card">
+          <div key={s.label} className="demo-stat-card demo-stat-card--teen">
             <div className="demo-stat-card__label">{s.label}</div>
             <div className="demo-stat-card__value">{s.value}</div>
             <div className="demo-stat-card__sub">{s.sub}</div>
@@ -358,6 +382,10 @@ function GamificationTab() {
                 <div>
                   <div className="demo-teen-name">{challenge.name}</div>
                   <div className="demo-teen-meta">{challenge.teen} · {challenge.progress}</div>
+                  <div className="demo-gamification__mascot">
+                    <span aria-hidden="true">{challenge.mascotEmoji}</span>
+                    <span>{challenge.mascot}</span>
+                  </div>
                 </div>
                 <div className="demo-gamification__challenge-right">
                   <span className={`demo-badge ${challenge.status === 'Completed' ? 'demo-badge--green' : 'demo-badge--yellow'}`}>{challenge.status}</span>
@@ -376,7 +404,7 @@ function GamificationTab() {
             {GAMIFICATION_LEADERBOARD.map((entry) => (
               <div key={entry.rank} className="demo-gamification__leaderboard-row">
                 <span className="demo-gamification__rank">#{entry.rank}</span>
-                <div className="demo-avatar demo-avatar--sm">{entry.teen[0]}</div>
+                <div className="demo-gamification__avatar" aria-hidden="true">{entry.mascotEmoji}</div>
                 <div>
                   <div className="demo-teen-name">{entry.teen}</div>
                   <div className="demo-teen-meta">{entry.badge} · {entry.streak} day streak</div>
@@ -602,7 +630,7 @@ export default function Demo() {
           <div className="demo-header__brand">
             <ChatterbotLogo size={30} />
             <span className="demo-header__brand-name">Chatterbot</span>
-            <span className="demo-header__badge">Investor Demo</span>
+            <span className="demo-header__badge">Interactive Demo</span>
           </div>
           <div className="demo-header__right">
             <span className="demo-header__fictional">⚠ Fictional data — illustrative only</span>
