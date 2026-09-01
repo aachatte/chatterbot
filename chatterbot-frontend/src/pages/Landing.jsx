@@ -359,7 +359,7 @@ export default function Landing() {
               Actually helpful. Never awkward.
             </h2>
             <p className="landing-section-body landing-teens__copy">
-              When life feels messy, teens do not need a lecture or a wall of AI jargon.
+              When life feels messy, teens don't need a lecture or a wall of AI jargon.
               Chatterbot keeps it calm, clear, and age-appropriate so support feels easy
               to text back to.
             </p>
@@ -367,7 +367,7 @@ export default function Landing() {
               {[
                 { icon: '🧠', title: 'Advice that fits', body: 'Support matches the teen\'s age, situation, and what they actually said.' },
                 { icon: '💬', title: 'Easy to answer', body: 'A quick honest text is enough to get grounded, useful support back.' },
-                { icon: '🔒', title: 'Private space, clear guardrails', body: 'Teens are not watched line by line. Guardians get signals and safety alerts, not full transcripts.' },
+                { icon: '🔒', title: 'Private space, clear guardrails', body: 'Teens aren\'t watched line by line. Guardians get signals and safety alerts, not full transcripts.' },
                 { icon: '🚨', title: 'Fast help when it matters', body: 'If risk rises, Chatterbot escalates quickly with crisis guidance and guardian alerts.' },
               ].map(item => (
                 <li key={item.title} className="landing-teens__item">
@@ -409,7 +409,7 @@ export default function Landing() {
               </div>
               <div className="landing-teens__vs-card landing-teens__vs-card--good">
                 <div className="landing-teens__vs-label">Chatterbot</div>
-                <p className="landing-teens__vs-text">"You are not weird for feeling that. Want a quick reset you can try before class?"</p>
+                <p className="landing-teens__vs-text">"You're not weird for feeling that. Want a quick reset you can try before class?"</p>
                 <div className="landing-teens__vs-tag landing-teens__vs-tag--good">Built for teens ✓</div>
               </div>
             </div>
