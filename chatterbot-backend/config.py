@@ -1,8 +1,8 @@
-"""Chatterbot application configuration."""
-import os
+"""Add global enable_gamification setting."""
 from pydantic import validator, ValidationError
 from pydantic_settings import BaseSettings
 
+from datetime import datetime
 
 class Settings(BaseSettings):
     # App
@@ -47,6 +47,9 @@ class Settings(BaseSettings):
     rate_limit_enabled: bool = True
     auth_rate_limit: str = "5/minute"
     api_rate_limit: str = "100/minute"
+
+    # Gamification feature flag
+    enable_gamification: bool = True
 
     class Config:
         env_file = ".env"
