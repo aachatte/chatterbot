@@ -5,8 +5,8 @@ import './Demo.css'
 
 /* ── Fictional data ─────────────────────────────────────── */
 const TEENS = [
-  { id: 1, name: 'Maya', age: 16, messages7d: 24, mood: 'Engaged', consent: 'Verified', phone: '(601) 555-0142', enrolled: 'Aug 12, 2024', lastActive: '2 hours ago', streak: 18 },
-  { id: 2, name: 'Ethan', age: 14, messages7d: 17, mood: 'Neutral', consent: 'Verified', phone: '(601) 555-0189', enrolled: 'Aug 14, 2024', lastActive: '5 hours ago', streak: 11 },
+  { id: 1, name: 'Maya', age: 16, messages7d: 24, mood: 'On a roll', consent: 'Verified', phone: '(601) 555-0142', enrolled: 'Aug 12, 2024', lastActive: '2 hours ago', streak: 18, avatarEmoji: '🌈' },
+  { id: 2, name: 'Ethan', age: 14, messages7d: 17, mood: 'Steady', consent: 'Verified', phone: '(601) 555-0189', enrolled: 'Aug 14, 2024', lastActive: '5 hours ago', streak: 11, avatarEmoji: '⚡' },
 ]
 
 const ALERTS = [
@@ -15,9 +15,9 @@ const ALERTS = [
 ]
 
 const ACTIVITY = [
-  { type: 'message', teen: 'Maya', text: 'Completed daily check-in', time: '2h ago' },
-  { type: 'alert',   teen: 'Maya', text: 'Safety alert resolved by parent', time: 'Aug 18' },
-  { type: 'message', teen: 'Ethan', text: 'Replied to wellness prompt', time: 'Aug 20' },
+  { type: 'message', teen: 'Maya', text: 'Small win: check-in done', time: '2h ago' },
+  { type: 'alert',   teen: 'Maya', text: 'Guardian safety alert reviewed', time: 'Aug 18' },
+  { type: 'message', teen: 'Ethan', text: 'Quick mood check reply sent', time: 'Aug 20' },
   { type: 'enroll',  teen: 'Ethan', text: 'Phone verification completed', time: 'Aug 14' },
   { type: 'message', teen: 'Maya', text: 'Enrolled and consent verified', time: 'Aug 12' },
 ]
@@ -39,29 +39,34 @@ const GAMIFICATION_OVERVIEW = {
 }
 
 const GAMIFICATION_CHALLENGES = [
-  { id: 1, name: 'Hydration Hero', teen: 'Maya', progress: '5 / 7 days', reward: '+120 XP', status: 'In progress', mascot: 'Spark Fox', mascotEmoji: '🦊' },
+  { id: 1, name: 'Hydration Hero', teen: 'Maya', progress: '5 / 7 days', reward: '+120 XP', status: 'On a roll', mascot: 'Spark Fox', mascotEmoji: '🦊' },
   { id: 2, name: 'Mindful Minute', teen: 'Ethan', progress: '7 / 7 days', reward: 'New badge', status: 'Completed', mascot: 'Nova Owl', mascotEmoji: '🦉' },
-  { id: 3, name: 'Sleep Streak', teen: 'Maya', progress: '4 / 5 nights', reward: '+80 XP', status: 'In progress', mascot: 'Wave Whale', mascotEmoji: '🐳' },
+  { id: 3, name: 'Sleep Streak', teen: 'Maya', progress: '4 / 5 nights', reward: '+80 XP', status: 'On a roll', mascot: 'Wave Whale', mascotEmoji: '🐳' },
 ]
 
 const GAMIFICATION_LEADERBOARD = [
-  { rank: 1, teen: 'Maya', points: 1820, streak: 18, badge: 'Focus Fox', mascotEmoji: '🦊' },
-  { rank: 2, teen: 'Ethan', points: 1490, streak: 11, badge: 'Calm Coder', mascotEmoji: '🦉' },
+  { rank: 1, teen: 'Maya', points: 1820, streak: 18, badge: 'Focus Fox', mascotEmoji: '🦊', mascot: 'Spark Fox' },
+  { rank: 2, teen: 'Ethan', points: 1490, streak: 11, badge: 'Calm Coder', mascotEmoji: '🦉', mascot: 'Nova Owl' },
 ]
 
 const GAMIFICATION_VIBES = [
   { id: 'bright', label: 'Bright' },
-  { id: 'night', label: 'Night' },
+  { id: 'ocean', label: 'Ocean' },
   { id: 'sunset', label: 'Sunset' },
+]
+
+const GAMIFICATION_MODES = [
+  { id: 'light', label: 'Light' },
+  { id: 'dark', label: 'Dark' },
 ]
 
 const CHAT_CONVO = [
   { sender: 'maya', text: "I'm kind of nervous about my math test tomorrow.", time: '4:02 PM' },
-  { sender: 'bot',  text: "Totally understandable! A little pre-test nerves can actually help you focus. Have you done a quick review of the topics covered?", time: '4:02 PM' },
+  { sender: 'bot',  text: "That makes sense. Small wins help—want to pick one quick review move?", time: '4:02 PM' },
   { sender: 'maya', text: "Yeah I went over my notes. I just don't feel confident.", time: '4:04 PM' },
-  { sender: 'bot',  text: "That feeling is really common, especially before big tests. Here's what actually helps: do 3 practice problems tonight—not all night, just 3. Then get a full 8 hours. Your brain consolidates learning while you sleep. 🧠", time: '4:04 PM' },
+  { sender: 'bot',  text: "You’re not alone. Try just 3 practice questions tonight, then rest. You got this. 🧠", time: '4:04 PM' },
   { sender: 'maya', text: "okay yeah I can do that", time: '4:05 PM' },
-  { sender: 'bot',  text: "You've got this, Maya. Let me know how it goes tomorrow!", time: '4:05 PM' },
+  { sender: 'bot',  text: "Love it. Small win locked in—let me know tomorrow!", time: '4:05 PM' },
 ]
 
 /* ── Tab definitions ────────────────────────────────────── */
@@ -79,19 +84,19 @@ const FEATURE_EXPLAINERS = {
   overview: {
     title: 'Dashboard Overview',
     bullets: [
-      'Real-time snapshot of all teen activity across your family',
-      'Safety alert counter surfaces urgent issues immediately',
-      'Activity feed shows a chronological log of all system events',
-      'No conversation content is shown—only high-level behavioral signals',
+      'Quick read on teen check-ins across your family',
+      'Safety counters stay clear and neutral for fast guardian triage',
+      'Activity feed highlights small wins and key moments',
+      'No chat transcripts—just high-level signals',
     ],
   },
   teens: {
     title: 'Teen Profiles',
     bullets: [
-      'Each teen has an isolated profile with their own consent status and activity history',
-      'Engagement streak tracks consecutive days of check-in participation',
-      'Mood label is derived from message sentiment trends—not raw content',
-      'Guardians can update notification preferences per teen',
+      'Each teen gets a personal profile with their own history',
+      'Streaks make momentum visible through small wins',
+      'Mood labels come from trends—not raw message content',
+      'Guardians can tune alerts per teen',
     ],
   },
   alerts: {
@@ -106,10 +111,10 @@ const FEATURE_EXPLAINERS = {
   gamification: {
     title: 'Gamification Engine',
     bullets: [
-      'Wellness challenges convert daily check-ins into measurable progress',
-      'Points and badges reinforce healthy micro-habits without public pressure',
-      'Guardians can track participation momentum while preserving conversation privacy',
-      'Engagement trends help identify when motivation starts dropping',
+      'Wellness challenges turn daily habits into visible progress',
+      'Mascots, badges, and streaks celebrate small wins',
+      'Color vibes keep the demo playful without changing guardian controls',
+      'Momentum trends help spot dips early',
     ],
   },
   chat: {
@@ -117,7 +122,7 @@ const FEATURE_EXPLAINERS = {
     bullets: [
       'Chatterbot texts the teen first—no app download required',
       'Conversations happen in native SMS, which teens already use daily',
-      'AI adapts tone based on the teen\'s mood signals and previous messages',
+      'AI keeps tone short, positive, and casual ("you got this")',
       'All content is private to the teen—guardians see signals, not transcripts',
     ],
   },
@@ -173,6 +178,7 @@ function OverviewTab() {
                 <div className="demo-teen-name">{t.name}</div>
                 <div className="demo-teen-meta">{t.messages7d} messages · {t.mood}</div>
               </div>
+              <div className="demo-avatar demo-avatar--sm demo-avatar--mascot" aria-hidden="true">{t.avatarEmoji}</div>
               <span className="demo-badge demo-badge--green">Verified</span>
             </div>
           ))}
@@ -217,7 +223,7 @@ function TeensTab() {
       <div className="demo-teens__sidebar">
         {TEENS.map(t => (
           <button key={t.id} className={`demo-teens__btn${selected.id === t.id ? ' demo-teens__btn--active' : ''}`} onClick={() => setSelected(t)}>
-            <div className="demo-avatar demo-avatar--sm">{t.name[0]}</div>
+            <div className="demo-avatar demo-avatar--sm">{t.avatarEmoji}</div>
             <div>
               <div className="demo-teen-name">{t.name}</div>
               <div className="demo-teen-meta">Age {t.age}</div>
@@ -228,7 +234,7 @@ function TeensTab() {
       <div className="demo-card demo-teens__detail">
         <div className="demo-card__header">
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div className="demo-avatar demo-avatar--lg">{selected.name[0]}</div>
+            <div className="demo-avatar demo-avatar--lg">{selected.avatarEmoji}</div>
             <div>
               <div style={{ fontWeight: 800, fontSize: 20 }}>{selected.name}</div>
               <div className="demo-teen-meta">Age {selected.age} · Enrolled {selected.enrolled}</div>
@@ -336,23 +342,41 @@ function AlertsTab() {
 }
 
 function GamificationTab() {
+  const [mode, setMode] = useState('light')
   const [vibe, setVibe] = useState('bright')
 
   return (
-    <div className={`demo-gamification demo-gamification--${vibe}`}>
+    <div className={`demo-gamification demo-gamification--${mode} demo-gamification--${vibe}`}>
       <div className="demo-gamification__theme-bar">
-        <span className="demo-section-label" style={{ marginBottom: 0 }}>Theme vibe</span>
-        <div className="demo-gamification__theme-buttons">
-          {GAMIFICATION_VIBES.map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              className={`demo-gamification__theme-btn${vibe === option.id ? ' demo-gamification__theme-btn--active' : ''}`}
-              onClick={() => setVibe(option.id)}
-            >
-              {option.label}
-            </button>
-          ))}
+        <div className="demo-gamification__theme-group">
+          <span className="demo-section-label" style={{ marginBottom: 0 }}>Light / dark</span>
+          <div className="demo-gamification__theme-buttons">
+            {GAMIFICATION_MODES.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                className={`demo-gamification__theme-btn${mode === option.id ? ' demo-gamification__theme-btn--active' : ''}`}
+                onClick={() => setMode(option.id)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="demo-gamification__theme-group">
+          <span className="demo-section-label" style={{ marginBottom: 0 }}>Color vibe</span>
+          <div className="demo-gamification__theme-buttons">
+            {GAMIFICATION_VIBES.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                className={`demo-gamification__theme-btn${vibe === option.id ? ' demo-gamification__theme-btn--active' : ''}`}
+                onClick={() => setVibe(option.id)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -398,7 +422,7 @@ function GamificationTab() {
 
         <div className="demo-card">
           <div className="demo-card__header">
-            <span className="demo-card__title">Top streak leaderboard</span>
+            <span className="demo-card__title">Top streaks</span>
           </div>
           <div className="demo-gamification__leaderboard">
             {GAMIFICATION_LEADERBOARD.map((entry) => (
@@ -407,7 +431,7 @@ function GamificationTab() {
                 <div className="demo-gamification__avatar" aria-hidden="true">{entry.mascotEmoji}</div>
                 <div>
                   <div className="demo-teen-name">{entry.teen}</div>
-                  <div className="demo-teen-meta">{entry.badge} · {entry.streak} day streak</div>
+                  <div className="demo-teen-meta">{entry.badge} · {entry.streak} day streak · {entry.mascot}</div>
                 </div>
                 <div className="demo-gamification__points">{entry.points} XP</div>
               </div>
@@ -442,12 +466,12 @@ function ChatTab() {
 
       <div className="demo-card demo-chat__window">
         <div className="demo-chat__header">
-          <div className="demo-avatar demo-avatar--sm">M</div>
+          <div className="demo-avatar demo-avatar--sm">🌈</div>
           <div>
             <div style={{ fontWeight: 700, fontSize: 15 }}>Maya's AI Thread</div>
             <div className="demo-teen-meta">SMS · fictional example</div>
           </div>
-          <span className="demo-badge demo-badge--green" style={{ marginLeft: 'auto' }}>Active</span>
+          <span className="demo-badge demo-badge--green" style={{ marginLeft: 'auto' }}>You got this</span>
         </div>
         <div className="demo-chat__messages">
           {CHAT_CONVO.map((m, i) => (
@@ -459,7 +483,7 @@ function ChatTab() {
           <div ref={bottomRef} />
         </div>
         <div className="demo-chat__input-bar">
-          <div className="demo-chat__input-mock">This is a read-only view — SMS conversations happen on the teen's phone</div>
+          <div className="demo-chat__input-mock">Read-only demo view — chats stay on the teen's phone</div>
         </div>
       </div>
     </div>
@@ -503,7 +527,7 @@ function BillingTab() {
           {[
             { name: 'Individual', price: '$7/mo', teens: 1, features: ['Daily check-ins', 'Safety alerts', 'Guardian dashboard'] },
             { name: 'Family', price: '$12/mo', teens: 5, features: ['Everything in Individual', 'Up to 5 teen profiles', 'Priority support'], current: true },
-            { name: 'Enterprise', price: 'Custom', teens: '∞', features: ['Unlimited profiles', 'SSO & admin console', 'Dedicated support'] },
+            { name: 'Interactive Plus', price: 'Custom', teens: '∞', features: ['Unlimited profiles', 'SSO & admin console', 'Dedicated support'] },
           ].map(p => (
             <div key={p.name} className={`demo-plan-card${p.current ? ' demo-plan-card--current' : ''}`}>
               {p.current && <div className="demo-plan-card__badge">Current</div>}
@@ -642,9 +666,9 @@ export default function Demo() {
       {/* Hero */}
       <section className="demo-hero">
         <div className="demo-hero__inner">
-          <p className="demo-hero__eyebrow">Full product walkthrough</p>
+          <p className="demo-hero__eyebrow">Interactive product walkthrough</p>
           <h1 className="demo-hero__heading">The complete Chatterbot platform, <span>feature by feature.</span></h1>
-          <p className="demo-hero__sub">Every tab below is a live interactive demo of the real product. Select a feature to explore it—and read the explainer to understand the product thesis behind it.</p>
+          <p className="demo-hero__sub">Tap any tab for a live demo. Explore the flow, the copy, and the small wins vibe.</p>
         </div>
       </section>
 

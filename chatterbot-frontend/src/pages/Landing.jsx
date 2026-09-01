@@ -568,7 +568,7 @@ export default function Landing() {
               <Link to="/register" className="btn btn--primary btn--lg" style={{ width: '100%', justifyContent: 'center' }}>Start free trial</Link>
             </div>
             <div className="landing-pricing__card">
-              <div className="landing-pricing__plan">Enterprise</div>
+              <div className="landing-pricing__plan">Interactive Plus</div>
               <div className="landing-pricing__price">Custom</div>
               <div className="landing-pricing__desc">Schools, districts & health systems</div>
               <ul className="landing-pricing__features">
