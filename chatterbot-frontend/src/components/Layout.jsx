@@ -18,7 +18,7 @@ import {
 } from 'lucide-react'
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { useTheme } from 'next-themes'
+import { useThemeToggle } from '@/context/ThemeProvider'
 
 import { useAuth } from '@/context/AuthContext.jsx'
 import { Button } from '@/components/ui/button'
@@ -72,7 +72,7 @@ const quickActions = [
 
 export default function Layout() {
   const { user, logout } = useAuth()
-  const { resolvedTheme, setTheme } = useTheme()
+  const { isDark, toggleTheme } = useThemeToggle()
   const location = useLocation()
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -115,8 +115,6 @@ export default function Layout() {
     setQuery('')
     navigate(path)
   }
-
-  const isDark = resolvedTheme === 'dark'
 
   return (
     <div className="layout-root">
@@ -288,7 +286,7 @@ export default function Layout() {
             <Button
               variant="outline"
               aria-label="Toggle color theme"
-              onClick={() => setTheme(isDark ? 'light' : 'dark')}
+              onClick={toggleTheme}
             >
               {isDark ? <Sun size={14} /> : <Moon size={14} />}
             </Button>

@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 
 import App from './App.jsx'
 import { AppProviders } from '@/components/app-providers.jsx'
+import { ThemeProvider } from '@/context/ThemeProvider'
 import ErrorBoundary from '@/components/ErrorBoundary.jsx'
 import { AuthProvider } from '@/context/AuthContext.jsx'
 import { initializeObservability } from '@/lib/observability.js'
@@ -26,14 +27,16 @@ window.addEventListener('unhandledrejection', (event) => {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ErrorBoundary>
-      <AppProviders>
-        <BrowserRouter>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-        </BrowserRouter>
-      </AppProviders>
-    </ErrorBoundary>
+    <ThemeProvider>
+      <ErrorBoundary>
+        <AppProviders>
+          <BrowserRouter>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </BrowserRouter>
+        </AppProviders>
+      </ErrorBoundary>
+    </ThemeProvider>
   </React.StrictMode>
 )
