@@ -1,109 +1,156 @@
-import React, { useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { motion } from 'framer-motion'
+import { MessageCircleMore } from 'lucide-react'
+import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext.jsx'
+
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { useRegisterMutation } from '@/hooks/use-auth-mutations.js'
+import { registerSchema } from '@/lib/validation'
 
 export default function Register() {
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  
   const navigate = useNavigate()
-  const { register } = useAuth()
+  const registerMutation = useRegisterMutation()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+    },
+  })
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-    try {
-      await register({
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        password,
-      })
-      navigate('/dashboard')
-    } catch (err) {
-      setError(err.data?.error || 'Registration failed')
-    }
-    setLoading(false)
+  const onSubmit = async (values) => {
+    await registerMutation.mutateAsync(values)
+    navigate('/dashboard')
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--cb-space-4)', background: 'var(--cb-bg)' }}>
-      <div className="glass-card" style={{ width: '100%', maxWidth: 460 }}>
-        
-        <div style={{ textAlign: 'center', marginBottom: 'var(--cb-space-6)' }}>
-          <div style={{ 
-            width: 48, height: 48, borderRadius: 'var(--cb-radius-md)', 
-            background: 'var(--cb-primary-gradient)', color: 'white', 
-            display: 'flex', alignItems: 'center', justifyContent: 'center', 
-            margin: '0 auto var(--cb-space-4)', boxShadow: 'var(--cb-shadow-glow)'
-          }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-          </div>
-          <h1 style={{ fontSize: 26, fontWeight: 800, marginBottom: 'var(--cb-space-2)', color: 'var(--cb-text-primary)' }}>Create an account</h1>
-          <p style={{ color: 'var(--cb-text-secondary)', fontSize: 15 }}>Start protecting your family today</p>
-        </div>
-
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--cb-space-4)' }}>
-          <div style={{ display: 'flex', gap: 'var(--cb-space-3)' }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cb-text-secondary)', marginBottom: '8px', textTransform: 'uppercase' }}>First Name</label>
-              <input 
-                type="text" required value={firstName} onChange={e => setFirstName(e.target.value)}
-                style={{ width: '100%', padding: '12px 16px', borderRadius: 'var(--cb-radius-md)', border: '2px solid var(--cb-border)', background: 'var(--cb-bg-elevated)', outline: 'none', fontSize: 15, color: 'var(--cb-text-primary)' }} 
-              />
+    <div className="flex min-h-screen items-center justify-center bg-[color:var(--cb-bg)] px-4 py-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+        className="w-full max-w-[460px]"
+      >
+        <Card className="glass-card w-full">
+          <div className="mb-8 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-md bg-[image:var(--cb-primary-gradient)] text-white shadow-glow">
+              <MessageCircleMore className="h-6 w-6" aria-hidden="true" />
             </div>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cb-text-secondary)', marginBottom: '8px', textTransform: 'uppercase' }}>Last Name</label>
-              <input 
-                type="text" required value={lastName} onChange={e => setLastName(e.target.value)}
-                style={{ width: '100%', padding: '12px 16px', borderRadius: 'var(--cb-radius-md)', border: '2px solid var(--cb-border)', background: 'var(--cb-bg-elevated)', outline: 'none', fontSize: 15, color: 'var(--cb-text-primary)' }} 
-              />
-            </div>
+            <h1 className="mb-2 text-3xl font-extrabold text-[color:var(--cb-text-primary)]">
+              Create an account
+            </h1>
+            <p className="text-sm text-[color:var(--cb-text-secondary)]">
+              Start protecting your family today
+            </p>
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cb-text-secondary)', marginBottom: '8px', textTransform: 'uppercase' }}>Email</label>
-            <input 
-              type="email" required value={email} onChange={e => setEmail(e.target.value)}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: 'var(--cb-radius-md)', border: '2px solid var(--cb-border)', background: 'var(--cb-bg-elevated)', outline: 'none', fontSize: 15, color: 'var(--cb-text-primary)' }} 
-            />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cb-text-secondary)', marginBottom: '8px', textTransform: 'uppercase' }}>Password</label>
-            <input 
-              type="password" required value={password} onChange={e => setPassword(e.target.value)}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: 'var(--cb-radius-md)', border: '2px solid var(--cb-border)', background: 'var(--cb-bg-elevated)', outline: 'none', fontSize: 15, color: 'var(--cb-text-primary)' }}
-            />
-          </div>
-
-          {error && <div style={{ color: 'var(--cb-danger)', fontSize: 14, textAlign: 'center', fontWeight: 600 }}>{error}</div>}
-
-          <button 
-            type="submit" disabled={loading} 
-            style={{ 
-              marginTop: '8px', padding: '14px', borderRadius: 'var(--cb-radius-md)', 
-              background: 'var(--cb-primary-gradient)', color: 'white', border: 'none', 
-              fontWeight: 700, fontSize: 16, cursor: loading ? 'not-allowed' : 'pointer', 
-              boxShadow: 'var(--cb-shadow-glow)' 
-            }}
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
           >
-            {loading ? 'Creating account...' : 'Create account'}
-          </button>
+            <div className="grid gap-4 md:grid-cols-2">
+              <label
+                className="block text-sm font-semibold text-[color:var(--cb-text-secondary)]"
+                htmlFor="firstName"
+              >
+                First Name
+                <Input
+                  id="firstName"
+                  autoComplete="given-name"
+                  {...register('firstName')}
+                />
+                {errors.firstName && (
+                  <span className="mt-2 block text-sm text-[color:var(--cb-danger)]">
+                    {errors.firstName.message}
+                  </span>
+                )}
+              </label>
+              <label
+                className="block text-sm font-semibold text-[color:var(--cb-text-secondary)]"
+                htmlFor="lastName"
+              >
+                Last Name
+                <Input
+                  id="lastName"
+                  autoComplete="family-name"
+                  {...register('lastName')}
+                />
+                {errors.lastName && (
+                  <span className="mt-2 block text-sm text-[color:var(--cb-danger)]">
+                    {errors.lastName.message}
+                  </span>
+                )}
+              </label>
+            </div>
 
-        </form>
+            <label
+              className="block text-sm font-semibold text-[color:var(--cb-text-secondary)]"
+              htmlFor="email"
+            >
+              Email
+              <Input
+                id="email"
+                type="email"
+                autoComplete="email"
+                {...register('email')}
+              />
+              {errors.email && (
+                <span className="mt-2 block text-sm text-[color:var(--cb-danger)]">
+                  {errors.email.message}
+                </span>
+              )}
+            </label>
 
-        <div style={{ marginTop: 'var(--cb-space-5)', textAlign: 'center', fontSize: 14, color: 'var(--cb-text-secondary)' }}>
-          Already have an account? <Link to="/login" style={{ color: 'var(--cb-primary)', fontWeight: 700, textDecoration: 'none' }}>Sign in</Link>
-        </div>
-      </div>
+            <label
+              className="block text-sm font-semibold text-[color:var(--cb-text-secondary)]"
+              htmlFor="password"
+            >
+              Password
+              <Input
+                id="password"
+                type="password"
+                autoComplete="new-password"
+                {...register('password')}
+              />
+              {errors.password && (
+                <span className="mt-2 block text-sm text-[color:var(--cb-danger)]">
+                  {errors.password.message}
+                </span>
+              )}
+            </label>
+
+            <Button
+              type="submit"
+              disabled={registerMutation.isPending}
+              className="mt-2 w-full"
+            >
+              {registerMutation.isPending
+                ? 'Creating account...'
+                : 'Create account'}
+            </Button>
+          </form>
+
+          <div className="mt-5 text-center text-sm text-[color:var(--cb-text-secondary)]">
+            Already have an account?{' '}
+            <Link
+              to="/login"
+              className="font-bold text-[color:var(--cb-primary)] no-underline"
+            >
+              Sign in
+            </Link>
+          </div>
+        </Card>
+      </motion.div>
     </div>
   )
 }

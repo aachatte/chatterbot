@@ -1,57 +1,55 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import { api } from '../services/api.js'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+
+import { api } from '@/services/api.js'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const queryClient = useQueryClient()
+  const [token, setToken] = useState(() => localStorage.getItem('cb_token'))
 
-  useEffect(() => {
-    const restoreSession = async () => {
-      if (!localStorage.getItem('cb_token')) {
-        setLoading(false)
-        return
-      }
+  const { data, isLoading } = useQuery({
+    queryKey: ['auth', 'me', token],
+    queryFn: api.getMe,
+    enabled: Boolean(token),
+    retry: false,
+    staleTime: 5 * 60_000,
+  })
 
-      try {
-        const data = await api.getMe()
-        setUser(data.user)
-      } catch {
-        localStorage.removeItem('cb_token')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    restoreSession()
-  }, [])
-
-  const setSession = (data) => {
-    localStorage.setItem('cb_token', data.access_token)
-    setUser(data.user)
-  }
-
-  const login = async (email, password) => {
-    const data = await api.login(email, password)
-    setSession(data)
-  }
-
-  const register = async (registration) => {
-    const data = await api.register(registration)
-    setSession(data)
-  }
-
-  const logout = () => {
-    localStorage.removeItem('cb_token')
-    setUser(null)
-  }
-
-  return (
-    <AuthContext.Provider value={{ user, isAuthenticated: Boolean(user), loading, login, register, logout }}>
-      {children}
-    </AuthContext.Provider>
+  const setSession = useCallback(
+    (session) => {
+      localStorage.setItem('cb_token', session.access_token)
+      setToken(session.access_token)
+      queryClient.setQueryData(['auth', 'me', session.access_token], session)
+    },
+    [queryClient]
   )
+
+  const logout = useCallback(() => {
+    localStorage.removeItem('cb_token')
+    setToken(null)
+    queryClient.removeQueries({ queryKey: ['auth'] })
+  }, [queryClient])
+
+  const value = useMemo(
+    () => ({
+      user: data?.user ?? null,
+      isAuthenticated: Boolean(token && data?.user),
+      loading: token ? isLoading : false,
+      setSession,
+      logout,
+    }),
+    [data?.user, isLoading, logout, setSession, token]
+  )
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
 export const useAuth = () => useContext(AuthContext)

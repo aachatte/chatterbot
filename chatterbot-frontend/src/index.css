@@ -1,55 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   /* Clean Sans-Serif Stack for Readability */
   --cb-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  
+
   /* Bright Academic Backgrounds */
-  --cb-bg: #f4f6f8;                     
+  --cb-bg: #f4f6f8;
   --cb-bg-primary: #f4f6f8;
   --cb-bg-secondary: #e8edf3;
-  --cb-bg-elevated: #ffffff;            
-  --cb-bg-glass: rgba(255, 255, 255, 0.95); 
+  --cb-bg-elevated: #ffffff;
+  --cb-bg-glass: rgba(255, 255, 255, 0.95);
   --cb-bg-muted: rgba(0, 32, 91, 0.06);
   --cb-bg-strong: #dbe5f0;
 
   /* Navy Text Tokens */
-  --cb-text-primary: #00205B;           /* Official Ole Miss Navy */
-  --cb-text-secondary: #334155;         
-  --cb-text-tertiary: #64748b;          
+  --cb-text-primary: #00205b; /* Official Ole Miss Navy */
+  --cb-text-secondary: #334155;
+  --cb-text-tertiary: #64748b;
   --cb-text-quaternary: #94a3b8;
-  
+
   /* Borders */
   --cb-border: rgba(0, 32, 91, 0.15);
-  
+
   /* Official Ole Miss Navy Action Colors */
-  --cb-primary: #00205B;                
+  --cb-primary: #00205b;
   --cb-primary-hover: #001338;
-  --cb-primary-gradient: linear-gradient(135deg, #003380 0%, #00205B 100%);
-  
+  --cb-primary-gradient: linear-gradient(135deg, #003380 0%, #00205b 100%);
+  --cb-primary-foreground: #ffffff;
+
   /* Alert & Status Tokens */
-  --cb-success: #00205B;                /* Navy for active states */
+  --cb-success: #00205b; /* Navy for active states */
   --cb-positive: #176b45;
   --cb-positive-soft: rgba(23, 107, 69, 0.12);
-  --cb-warning: #eab308;                
+  --cb-warning: #eab308;
   --cb-warning-soft: rgba(234, 179, 8, 0.14);
-  --cb-danger: #C8102E;                 /* Official Ole Miss Cardinal Red */
+  --cb-danger: #c8102e; /* Official Ole Miss Cardinal Red */
   --cb-danger-soft: rgba(200, 16, 46, 0.12);
 
   /* Layout & Spacing */
-  --cb-space-1: 4px; 
-  --cb-space-2: 8px; 
-  --cb-space-3: 12px; 
-  --cb-space-4: 16px; 
-  --cb-space-5: 24px; 
+  --cb-space-1: 4px;
+  --cb-space-2: 8px;
+  --cb-space-3: 12px;
+  --cb-space-4: 16px;
+  --cb-space-5: 24px;
   --cb-space-6: 32px;
   --cb-space-8: 48px;
   --cb-space-10: 64px;
-  
-  --cb-radius-sm: 6px; 
-  --cb-radius-md: 10px; 
-  --cb-radius-lg: 14px; 
+
+  --cb-radius-sm: 6px;
+  --cb-radius-md: 10px;
+  --cb-radius-lg: 14px;
   --cb-radius-xl: 20px;
   --cb-radius-full: 9999px;
-  
+
   /* Shadows */
   --cb-shadow-sm: 0 2px 8px rgba(0, 32, 91, 0.08);
   --cb-shadow-lg: 0 12px 36px -8px rgba(0, 32, 91, 0.15);
@@ -58,10 +63,39 @@
   --cb-transition-fast: 0.15s ease;
 }
 
-* { 
-  box-sizing: border-box; 
-  margin: 0; 
-  padding: 0; 
+[data-theme='dark'] {
+  color-scheme: dark;
+  --cb-bg: #09111f;
+  --cb-bg-primary: #09111f;
+  --cb-bg-secondary: #0f1b2d;
+  --cb-bg-elevated: #13233a;
+  --cb-bg-glass: rgba(19, 35, 58, 0.92);
+  --cb-bg-muted: rgba(148, 163, 184, 0.14);
+  --cb-bg-strong: #1e3452;
+  --cb-text-primary: #f8fafc;
+  --cb-text-secondary: #cbd5e1;
+  --cb-text-tertiary: #94a3b8;
+  --cb-text-quaternary: #64748b;
+  --cb-border: rgba(148, 163, 184, 0.2);
+  --cb-primary: #7aa8ff;
+  --cb-primary-hover: #a7c4ff;
+  --cb-primary-gradient: linear-gradient(135deg, #7aa8ff 0%, #4f7ad6 100%);
+  --cb-shadow-sm: 0 2px 12px rgba(9, 17, 31, 0.25);
+  --cb-shadow-md: 0 8px 24px rgba(9, 17, 31, 0.28);
+  --cb-shadow-lg: 0 18px 42px -14px rgba(0, 0, 0, 0.55);
+  --cb-shadow-glow: 0 10px 30px -8px rgba(122, 168, 255, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
 }
 
 body {
@@ -72,15 +106,23 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-button, input, select, textarea {
+button,
+input,
+select,
+textarea {
   font: inherit;
 }
 
-button:not(:disabled), [role="button"]:not([aria-disabled="true"]) {
+button:not(:disabled),
+[role='button']:not([aria-disabled='true']) {
   cursor: pointer;
 }
 
-button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
   outline: 3px solid rgba(200, 16, 46, 0.45);
   outline-offset: 2px;
 }
@@ -95,6 +137,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   color: var(--cb-text-secondary);
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .loading-spinner {
   width: 40px;
   height: 40px;
@@ -105,11 +159,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
@@ -128,22 +186,39 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 /* Pulsing Indicator */
 .pulse-dot {
-  width: 10px; 
-  height: 10px; 
-  border-radius: 50%; 
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
   background-color: var(--cb-danger);
   box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.8);
   animation: pulse 2.2s infinite ease-in-out;
 }
 
 @keyframes pulse {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.8); }
-  70% { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(200, 16, 46, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(200, 16, 46, 0); }
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.8);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 8px rgba(200, 16, 46, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(200, 16, 46, 0);
+  }
 }
 
 @media print {
-  .no-print { display: none !important; }
-  body { background: white; color: black; }
-  .glass-card { box-shadow: none; border: 1px solid #d1d5db; }
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+    color: black;
+  }
+  .glass-card {
+    box-shadow: none;
+    border: 1px solid #d1d5db;
+  }
 }

@@ -1,117 +1,130 @@
-import React, { useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { motion } from 'framer-motion'
+import { MessageCircleMore, Moon, Sun } from 'lucide-react'
+import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext.jsx'
+import { useTheme } from 'next-themes'
+
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { useLoginMutation } from '@/hooks/use-auth-mutations.js'
+import { loginSchema } from '@/lib/validation'
 
 export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const loginMutation = useLoginMutation()
+  const { resolvedTheme, setTheme } = useTheme()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-    try {
-      await login(email, password)
-      navigate('/dashboard')
-    } catch (err) {
-      setError(err.data?.error || 'Login failed')
-    }
-    setLoading(false)
+  const onSubmit = async (values) => {
+    await loginMutation.mutateAsync(values)
+    navigate('/dashboard')
   }
 
+  const isDark = resolvedTheme === 'dark'
+
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--cb-space-4)' }}>
-      <div className="glass-card" style={{ width: '100%', maxWidth: 420 }}>
-        
-        {/* Logo and Header */}
-        <div style={{ textAlign: 'center', marginBottom: 'var(--cb-space-6)' }}>
-          <div style={{ 
-            width: 48, height: 48, borderRadius: 'var(--cb-radius-md)', 
-            background: 'var(--cb-primary-gradient)', color: 'white', 
-            display: 'flex', alignItems: 'center', justifyContent: 'center', 
-            margin: '0 auto var(--cb-space-4)', boxShadow: 'var(--cb-shadow-glow)'
-          }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-          </div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 'var(--cb-space-2)' }}>Welcome back</h1>
-          <p style={{ color: 'var(--cb-text-secondary)', fontSize: 15 }}>Sign in to your Guardian Dashboard</p>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--cb-space-5)' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cb-text-secondary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email</label>
-            <input 
-              type="email" required value={email} onChange={e => setEmail(e.target.value)}
-              style={{ 
-                width: '100%', 
-                padding: '14px 20px', 
-                borderRadius: 'var(--cb-radius-md)', 
-                border: '2px solid var(--cb-border)', 
-                background: 'var(--cb-bg-elevated)', 
-                outline: 'none', 
-                fontSize: 16, 
-                color: 'var(--cb-text-primary)'
-              }} 
-              onFocus={e => e.target.style.borderColor = 'var(--cb-primary)'}
-              onBlur={e => e.target.style.borderColor = 'var(--cb-border)'}
-            />
-          </div>
-          <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cb-text-secondary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Password</label>
-            <input 
-              type="password" required value={password} onChange={e => setPassword(e.target.value)}
-              style={{ 
-                width: '100%', 
-                padding: '14px 20px', 
-                borderRadius: 'var(--cb-radius-md)', 
-                border: '2px solid var(--cb-border)', 
-                background: 'var(--cb-bg-elevated)', 
-                outline: 'none', 
-                fontSize: 16, 
-                color: 'var(--cb-text-primary)'
-              }}
-              onFocus={e => e.target.style.borderColor = 'var(--cb-primary)'}
-              onBlur={e => e.target.style.borderColor = 'var(--cb-border)'}
-            />
-          </div>
-
-          {error && <div style={{ color: 'var(--cb-danger)', fontSize: 14, textAlign: 'center', fontWeight: 500 }}>{error}</div>}
-
-          <button 
-            type="submit" disabled={loading} 
-            style={{ 
-              marginTop: '8px', 
-              padding: '14px', 
-              borderRadius: 'var(--cb-radius-md)', 
-              background: 'var(--cb-primary-gradient)', 
-              color: 'white', 
-              border: 'none', 
-              fontWeight: 600, 
-              fontSize: 16, 
-              cursor: loading ? 'not-allowed' : 'pointer', 
-              boxShadow: 'var(--cb-shadow-glow)', 
-              transition: 'transform 0.1s' 
-            }}
-            onMouseDown={e => e.currentTarget.style.transform = 'scale(0.98)'}
-            onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
-          >
-            {loading ? 'Signing in...' : 'Sign in'}
-          </button>
-
-        </form>
-
-        <div style={{ marginTop: 'var(--cb-space-6)', textAlign: 'center', fontSize: 14, color: 'var(--cb-text-secondary)' }}>
-          Don't have an account? <Link to="/register" style={{ color: 'var(--cb-primary)', fontWeight: 600, textDecoration: 'none' }}>Create one</Link>
-        </div>
+    <div className="min-h-screen bg-[color:var(--cb-bg)] px-4 py-8 text-[color:var(--cb-text-primary)]">
+      <div className="mx-auto flex max-w-5xl justify-end">
+        <Button
+          variant="outline"
+          className="mb-6"
+          aria-label="Toggle color theme"
+          onClick={() => setTheme(isDark ? 'light' : 'dark')}
+        >
+          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          {isDark ? 'Light mode' : 'Dark mode'}
+        </Button>
       </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+        className="mx-auto flex min-h-[70vh] max-w-md items-center justify-center"
+      >
+        <Card className="glass-card w-full max-w-[420px]">
+          <div className="mb-8 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-md bg-[image:var(--cb-primary-gradient)] text-white shadow-glow">
+              <MessageCircleMore className="h-6 w-6" aria-hidden="true" />
+            </div>
+            <h1 className="mb-2 text-3xl font-bold">Welcome back</h1>
+            <p className="text-sm text-[color:var(--cb-text-secondary)]">
+              Sign in to your Guardian Dashboard
+            </p>
+          </div>
+
+          <form
+            className="flex flex-col gap-5"
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+          >
+            <label
+              className="block text-sm font-semibold text-[color:var(--cb-text-secondary)]"
+              htmlFor="email"
+            >
+              Email
+              <Input
+                id="email"
+                type="email"
+                autoComplete="email"
+                {...register('email')}
+              />
+              {errors.email && (
+                <span className="mt-2 block text-sm text-[color:var(--cb-danger)]">
+                  {errors.email.message}
+                </span>
+              )}
+            </label>
+
+            <label
+              className="block text-sm font-semibold text-[color:var(--cb-text-secondary)]"
+              htmlFor="password"
+            >
+              Password
+              <Input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                {...register('password')}
+              />
+              {errors.password && (
+                <span className="mt-2 block text-sm text-[color:var(--cb-danger)]">
+                  {errors.password.message}
+                </span>
+              )}
+            </label>
+
+            <Button
+              type="submit"
+              disabled={loginMutation.isPending}
+              className="mt-2 w-full"
+            >
+              {loginMutation.isPending ? 'Signing in...' : 'Sign in'}
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center text-sm text-[color:var(--cb-text-secondary)]">
+            Don't have an account?{' '}
+            <Link
+              to="/register"
+              className="font-semibold text-[color:var(--cb-primary)] no-underline"
+            >
+              Create one
+            </Link>
+          </div>
+        </Card>
+      </motion.div>
     </div>
   )
 }
