@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   darkMode: ['class', '[data-theme="dark"]'],
   content: [
     './index.html',
@@ -9,6 +9,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        olemiss: {
+          navy: '#00205b',
+          cardinal: '#c8102e',
+        },
         brand: {
           DEFAULT: 'var(--cb-primary)',
           foreground: 'var(--cb-primary-foreground)',
