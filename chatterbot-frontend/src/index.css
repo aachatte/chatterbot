@@ -27,6 +27,10 @@
   --cb-primary-hover: #001338;
   --cb-primary-gradient: linear-gradient(135deg, #003380 0%, #00205b 100%);
   --cb-primary-foreground: #ffffff;
+  --cb-navy: var(--cb-primary);
+  --cb-red: var(--cb-danger);
+  --cb-border-strong: rgba(0, 32, 91, 0.28);
+  --cb-elevation-1: var(--cb-shadow-sm);
 
   /* Alert & Status Tokens */
   --cb-success: #00205b; /* Navy for active states */
@@ -78,6 +82,10 @@
   --cb-primary: #7aa8ff;
   --cb-primary-hover: #a7c4ff;
   --cb-primary-gradient: linear-gradient(135deg, #7aa8ff 0%, #4f7ad6 100%);
+  --cb-navy: var(--cb-primary);
+  --cb-red: var(--cb-danger);
+  --cb-border-strong: rgba(148, 163, 184, 0.35);
+  --cb-elevation-1: var(--cb-shadow-sm);
   --cb-shadow-sm: 0 2px 12px rgba(9, 17, 31, 0.25);
   --cb-shadow-md: 0 8px 24px rgba(9, 17, 31, 0.28);
   --cb-shadow-lg: 0 18px 42px -14px rgba(0, 0, 0, 0.55);
