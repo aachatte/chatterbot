@@ -1003,7 +1003,11 @@
     padding: 16px 20px;
   }
   .landing-nav__links {
-    gap: 14px;
+    gap: 10px;
+  }
+  .landing-nav__cta {
+    min-height: 44px;
+    padding: 10px 16px;
   }
   .landing-nav__link--demo {
     display: none;
@@ -1013,7 +1017,14 @@
   }
   .landing-hero__actions {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+  .landing-hero__actions .btn {
+    width: 100%;
+    justify-content: center;
   }
   .landing-hero__stats {
     flex-direction: column;
@@ -1055,6 +1066,12 @@
   }
   .landing-testimonials__grid {
     grid-template-columns: 1fr;
+  }
+  .landing-phone__frame {
+    width: min(100%, 320px);
+    height: 520px;
+    border-width: 8px;
+    border-radius: 36px;
   }
 }
 
@@ -1898,6 +1915,14 @@
 
 /* ── Additional responsive fixes ── */
 @media (max-width: 900px) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .landing-phone__messages {
+    scroll-behavior: auto;
+  }
   .landing-problem__stats {
     grid-template-columns: repeat(2, 1fr);
   }
