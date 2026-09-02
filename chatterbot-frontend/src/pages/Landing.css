@@ -89,13 +89,21 @@
 
 /* ── Root ── */
 .landing-root {
-  --cb-text-primary: #0f172a;
-  --cb-text-secondary: #334155;
-  --cb-text-tertiary: #64748b;
   min-height: 100vh;
   background: var(--cb-bg);
   color: var(--cb-text-primary);
   overflow-x: hidden;
+}
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* ── Nav ── */
@@ -344,7 +352,7 @@
 /* ── Gamification section ── */
 .landing-gamification {
   padding: 92px 32px;
-  background: linear-gradient(180deg, #f4f5ff 0%, #fff8fd 100%);
+  background: linear-gradient(180deg, var(--cb-bg-secondary) 0%, var(--cb-bg-elevated) 100%);
   border-top: 1px solid var(--cb-border);
   border-bottom: 1px solid var(--cb-border);
 }
@@ -363,7 +371,7 @@
   gap: 18px;
 }
 .landing-gamification__card {
-  background: linear-gradient(180deg, #fff 0%, #fdfdff 100%);
+  background: linear-gradient(180deg, var(--cb-bg-elevated) 0%, #f8fbff 100%);
   border: 1px solid var(--cb-border);
   border-radius: var(--cb-radius-xl);
   padding: 26px 22px;
@@ -380,7 +388,7 @@
   align-items: center;
   justify-content: center;
   font-size: 24px;
-  background: linear-gradient(135deg, #e5edff 0%, #ffe6ef 100%);
+  background: linear-gradient(135deg, rgba(0, 32, 91, 0.1) 0%, rgba(200, 16, 46, 0.14) 100%);
 }
 .landing-gamification__title {
   margin: 0;
@@ -401,9 +409,9 @@
   gap: 8px;
   font-size: 12px;
   font-weight: 700;
-  color: #5b4fb3;
-  background: #f2edff;
-  border: 1px solid #e3d9ff;
+  color: var(--cb-primary);
+  background: rgba(0, 32, 91, 0.08);
+  border: 1px solid rgba(0, 32, 91, 0.14);
   padding: 5px 10px;
   border-radius: var(--cb-radius-full);
   align-self: flex-start;
@@ -414,8 +422,8 @@
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: #0f3877;
-  background: rgba(72, 120, 255, 0.16);
+  color: var(--cb-primary);
+  background: rgba(0, 32, 91, 0.12);
   border-radius: var(--cb-radius-full);
   padding: 4px 10px;
   align-self: flex-start;
@@ -427,7 +435,7 @@
 }
 .landing-gamification__why {
   margin-top: 48px;
-  background: linear-gradient(135deg, #e5edff 0%, #ffe6ef 100%);
+  background: linear-gradient(135deg, rgba(0, 32, 91, 0.08) 0%, rgba(200, 16, 46, 0.1) 100%);
   border: 1px solid var(--cb-border);
   border-radius: var(--cb-radius-xl);
   padding: 32px 28px;
@@ -437,7 +445,7 @@
   font-weight: 700;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  color: #0f3877;
+  color: var(--cb-primary);
   margin-bottom: 20px;
 }
 .landing-gamification__why-items {
@@ -798,7 +806,7 @@
 }
 
 .landing-bento__card--dark {
-  background: #0f172a;
+  background: #13233a;
   color: #fff;
   display: flex;
   align-items: center;
@@ -1053,16 +1061,16 @@
 /* ── For Teens section ── */
 .landing-teens {
   padding: 96px 24px;
-  background: linear-gradient(180deg, #f7f8ff 0%, #fefbff 100%);
+  background: linear-gradient(180deg, var(--cb-bg-secondary) 0%, var(--cb-bg-elevated) 100%);
 }
 .landing-teens__eyebrow {
-  color: #7d3cff;
+  color: var(--cb-danger);
 }
 .landing-teens__heading {
-  color: #233070;
+  color: var(--cb-text-primary);
 }
 .landing-teens__copy {
-  color: #3f4b67;
+  color: var(--cb-text-secondary);
 }
 .landing-teens__inner {
   max-width: 1120px;
@@ -1094,13 +1102,13 @@
   display: block;
   font-size: 15px;
   font-weight: 700;
-  color: #2e3d8f;
+  color: var(--cb-primary);
   margin-bottom: 4px;
 }
 .landing-teens__item-body {
   margin: 0;
   font-size: 14px;
-  color: #4a5674;
+  color: var(--cb-text-secondary);
   line-height: 1.5;
 }
 
@@ -1145,14 +1153,14 @@
   white-space: pre-line;
 }
 .landing-teens__bubble--teen {
-  background: linear-gradient(135deg, #6c63ff 0%, #8f54ff 100%);
+  background: var(--cb-primary-gradient);
   color: #fff;
   align-self: flex-end;
   border-bottom-right-radius: 4px;
 }
 .landing-teens__bubble--bot {
-  background: #ebfff4;
-  color: #1f5440;
+  background: var(--cb-bg-muted);
+  color: var(--cb-text-primary);
   align-self: flex-start;
   border-bottom-left-radius: 4px;
 }
@@ -1169,12 +1177,12 @@
   border: 2px solid transparent;
 }
 .landing-teens__vs-card--bad {
-  background: #fff0f0;
-  border-color: #f5c6c6;
+  background: var(--cb-danger-soft);
+  border-color: rgba(200, 16, 46, 0.25);
 }
 .landing-teens__vs-card--good {
-  background: #f0f5ff;
-  border-color: #c6d3f5;
+  background: rgba(0, 32, 91, 0.08);
+  border-color: rgba(0, 32, 91, 0.2);
 }
 .landing-teens__vs-label {
   font-size: 11px;
@@ -1182,11 +1190,11 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 8px;
-  color: #888;
+  color: var(--cb-text-tertiary);
 }
 .landing-teens__vs-text {
   font-size: 13px;
-  color: #333;
+  color: var(--cb-text-secondary);
   line-height: 1.5;
   margin: 0 0 12px;
   font-style: italic;
@@ -1199,12 +1207,12 @@
   border-radius: 99px;
 }
 .landing-teens__vs-tag--bad {
-  background: #ffd6d6;
-  color: #b00;
+  background: rgba(200, 16, 46, 0.2);
+  color: var(--cb-danger);
 }
 .landing-teens__vs-tag--good {
-  background: #d6e4ff;
-  color: #00205b;
+  background: rgba(0, 32, 91, 0.14);
+  color: var(--cb-primary);
 }
 
 @media (max-width: 900px) {
@@ -1426,7 +1434,7 @@
 
 /* ── School / counselor ── */
 .landing-school {
-  background: #f0f3fa;
+  background: var(--cb-bg-secondary);
   padding: 100px 32px;
   border-top: 1px solid var(--cb-border);
 }
@@ -1536,7 +1544,7 @@
   width: 28px;
   height: 28px;
   border-radius: var(--cb-radius-full);
-  background: var(--cb-navy);
+  background: var(--cb-primary);
   color: #fff;
   font-size: 14px;
   font-weight: 800;

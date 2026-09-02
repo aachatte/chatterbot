@@ -23,6 +23,26 @@ export default function Landing() {
     }
   }, [messages, isTyping]);
 
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const elements = document.querySelectorAll('[data-reveal]');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2, rootMargin: '0px 0px -8% 0px' }
+    );
+
+    elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
+
   const playDemo = async (flow) => {
     setMessages([]);
     setParentAlert(null);
@@ -110,7 +130,7 @@ export default function Landing() {
       </nav>
 
       {/* ── HERO ── */}
-      <section className="landing-hero">
+      <section className="landing-hero" data-reveal>
         <div className="landing-hero__bg-grid" aria-hidden="true" />
         <div className="landing-hero__bg-blob landing-hero__bg-blob--1" aria-hidden="true" />
         <div className="landing-hero__bg-blob landing-hero__bg-blob--2" aria-hidden="true" />
@@ -160,7 +180,7 @@ export default function Landing() {
       </section>
 
       {/* ── GAMIFICATION ── */}
-      <section className="landing-gamification">
+      <section className="landing-gamification" data-reveal>
         <div className="landing-gamification__inner">
           <div className="landing-gamification__header">
             <p className="landing-section-eyebrow">Gamified support</p>
@@ -231,7 +251,7 @@ export default function Landing() {
       </section>
 
       {/* ── INTERACTIVE DEMO ── */}
-      <section className="landing-demo">
+      <section className="landing-demo" data-reveal>
         <div className="landing-demo__inner">
           <div className="landing-demo__left">
             <p className="landing-section-eyebrow">See it in action</p>
@@ -301,7 +321,7 @@ export default function Landing() {
       </section>
 
       {/* ── PILLARS / BENTO ── */}
-      <section className="landing-pillars">
+      <section className="landing-pillars" data-reveal>
         <div className="landing-pillars__inner">
           <div className="landing-pillars__header">
             <p className="landing-section-eyebrow">How it works</p>
@@ -369,7 +389,7 @@ export default function Landing() {
       </section>
 
       {/* ── FOR TEENS ── */}
-      <section className="landing-teens">
+      <section className="landing-teens" data-reveal>
         <div className="landing-teens__inner">
           <div className="landing-teens__content">
             <p className="landing-section-eyebrow landing-teens__eyebrow">Teen-first by design</p>
@@ -436,7 +456,7 @@ export default function Landing() {
       </section>
 
       {/* ── SOCIAL PROOF / PRESS ── */}
-      <section className="landing-press">
+      <section className="landing-press" data-reveal>
         <div className="landing-press__inner">
           <p className="landing-press__label">Recognized by</p>
           <div className="landing-press__logos">
@@ -448,7 +468,7 @@ export default function Landing() {
       </section>
 
       {/* ── PROBLEM / MARKET ── */}
-      <section className="landing-problem">
+      <section className="landing-problem" data-reveal>
         <div className="landing-problem__inner">
           <div className="landing-problem__stats">
             {[
@@ -467,7 +487,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="landing-resources">
+      <section className="landing-resources" data-reveal>
         <div className="landing-resources__inner">
           <p className="landing-section-eyebrow">Free resources</p>
           <h2 className="landing-section-heading">Help is always one text away.</h2>
@@ -495,7 +515,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="landing-school">
+      <section className="landing-school" data-reveal>
         <div className="landing-school__inner">
           <div className="landing-school__content">
             <p className="landing-section-eyebrow">For schools & institutions</p>
@@ -524,7 +544,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="landing-referral">
+      <section className="landing-referral" data-reveal>
         <div className="landing-referral__inner">
           <p className="landing-section-eyebrow">Refer a family</p>
           <h2 className="landing-section-heading">Share Chatterbot. Get a free month.</h2>
@@ -554,7 +574,7 @@ export default function Landing() {
       </section>
 
       {/* ── PRICING ── */}
-      <section className="landing-pricing">
+      <section className="landing-pricing" data-reveal>
         <div className="landing-pricing__inner">
           <p className="landing-section-eyebrow">Simple pricing</p>
           <h2 className="landing-section-heading">One family. One price.</h2>
@@ -607,7 +627,7 @@ export default function Landing() {
       </section>
 
       {/* ── COMPARISON ── */}
-      <section className="landing-compare">
+      <section className="landing-compare" data-reveal>
         <div className="landing-compare__inner">
           <p className="landing-section-eyebrow">Why Chatterbot</p>
           <h2 className="landing-section-heading">Not a monitoring app.<br/>A relationship tool.</h2>
@@ -638,7 +658,7 @@ export default function Landing() {
       </section>
 
       {/* ── MISSION ── */}
-      <section className="landing-mission">
+      <section className="landing-mission" data-reveal>
         <div className="landing-mission__inner">
           <div className="landing-mission__content">
             <p className="landing-section-eyebrow" style={{ color: 'rgba(255,255,255,0.5)' }}>Our mission</p>
@@ -669,7 +689,7 @@ export default function Landing() {
       </section>
 
       {/* ── TRUST SIGNALS ── */}
-      <section className="landing-trust">
+      <section className="landing-trust" data-reveal>
         <div className="landing-trust__inner">
           <p className="landing-section-eyebrow" style={{ textAlign: 'center' }}>Built with safeguards</p>
           <div className="landing-trust__grid">
@@ -692,7 +712,7 @@ export default function Landing() {
       </section>
 
       {/* ── FINAL CTA ── */}
-      <section className="landing-final-cta">
+      <section className="landing-final-cta" data-reveal>
         <div className="landing-final-cta__inner">
           <h2 className="landing-final-cta__heading">Start protecting your teen today.</h2>
           <p className="landing-final-cta__sub">Free 30-day trial. Setup takes under 5 minutes. No credit card required.</p>
@@ -707,7 +727,7 @@ export default function Landing() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="landing-footer">
+      <footer className="landing-footer" data-reveal>
         <div className="landing-footer__inner">
           <div className="landing-footer__brand">
             <ChatterbotLogo size={28} />
