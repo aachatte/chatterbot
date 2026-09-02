@@ -1,1 +1,55 @@
-name: Frontend Tests\non:\n  push:\n    branches: [main, develop]\n    paths:\n      - 'chatterbot-frontend/**'\n      - '.github/workflows/frontend-tests.yml'\n  pull_request:\n    branches: [main, develop]\n    paths:\n      - 'chatterbot-frontend/**'\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n    \n    steps:\n      - uses: actions/checkout@v4\n      \n      - name: Set up Node.js\n        uses: actions/setup-node@v4\n        with:\n          node-version: '18'\n          cache: 'npm'\n          cache-dependency-path: 'chatterbot-frontend/package-lock.json'\n      \n      - name: Install dependencies\n        run: |\n          cd chatterbot-frontend\n          npm ci\n      \n      - name: Build application\n        env:\n          VITE_API_URL: http://localhost:5000\n        run: |\n          cd chatterbot-frontend\n          npm run build\n      \n      - name: Archive build artifacts\n        uses: actions/upload-artifact@v3\n        with:\n          name: frontend-build\n          path: chatterbot-frontend/dist/\n"
+name: Frontend Tests
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'chatterbot-frontend/**'
+      - '.github/workflows/frontend-tests.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'chatterbot-frontend/**'
+      - '.github/workflows/frontend-tests.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+          cache-dependency-path: chatterbot-frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: chatterbot-frontend
+        run: npm ci
+
+      - name: Type-check frontend
+        working-directory: chatterbot-frontend
+        run: npm run typecheck
+
+      - name: Lint frontend
+        working-directory: chatterbot-frontend
+        run: npm run lint
+
+      - name: Run unit tests
+        working-directory: chatterbot-frontend
+        run: npm run test:run
+
+      - name: Build application
+        working-directory: chatterbot-frontend
+        env:
+          VITE_API_URL: http://localhost:5000
+        run: npm run build
+
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: chatterbot-frontend/dist/

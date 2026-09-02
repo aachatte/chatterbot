@@ -1,5 +1,5 @@
-import React from 'react';
-import logger from '../services/logger';
+import React from 'react'
+import logger from '../services/logger'
 
 /**
  * Error Boundary component to catch and handle React component errors
@@ -7,18 +7,18 @@ import logger from '../services/logger';
  */
 class ErrorBoundary extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorCount: 0
-    };
+      errorCount: 0,
+    }
   }
 
   static getDerivedStateFromError(error) {
     // Update state so the next render will show the fallback UI
-    return { hasError: true };
+    return { hasError: true }
   }
 
   componentDidCatch(error, errorInfo) {
@@ -26,23 +26,23 @@ class ErrorBoundary extends React.Component {
     logger.error('Component Error Caught', {
       error: error.toString(),
       componentStack: errorInfo.componentStack,
-      timestamp: new Date().toISOString()
-    });
+      timestamp: new Date().toISOString(),
+    })
 
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       error,
       errorInfo,
-      errorCount: prevState.errorCount + 1
-    }));
+      errorCount: prevState.errorCount + 1,
+    }))
   }
 
   handleReset = () => {
     this.setState({
       hasError: false,
       error: null,
-      errorInfo: null
-    });
-  };
+      errorInfo: null,
+    })
+  }
 
   render() {
     if (this.state.hasError) {
@@ -51,19 +51,22 @@ class ErrorBoundary extends React.Component {
           <div style={styles.errorBox}>
             <h1 style={styles.title}>⚠️ Something went wrong</h1>
             <p style={styles.message}>
-              We're sorry, but something unexpected happened. Please try refreshing the page.
+              We're sorry, but something unexpected happened. Please try
+              refreshing the page.
             </p>
-            
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+
+            {import.meta.env.DEV && this.state.error && (
               <details style={styles.details}>
-                <summary style={styles.summary}>Error Details (Development Only)</summary>
+                <summary style={styles.summary}>
+                  Error Details (Development Only)
+                </summary>
                 <pre style={styles.pre}>
                   {this.state.error.toString()}
                   {this.state.errorInfo?.componentStack}
                 </pre>
               </details>
             )}
-            
+
             <div style={styles.actions}>
               <button onClick={this.handleReset} style={styles.button}>
                 Try Again
@@ -78,15 +81,16 @@ class ErrorBoundary extends React.Component {
 
             {this.state.errorCount > 3 && (
               <p style={styles.warning}>
-                Multiple errors detected. Please refresh the page or contact support.
+                Multiple errors detected. Please refresh the page or contact
+                support.
               </p>
             )}
           </div>
         </div>
-      );
+      )
     }
 
-    return this.props.children;
+    return this.props.children
   }
 }
 
@@ -97,7 +101,7 @@ const styles = {
     justifyContent: 'center',
     minHeight: '100vh',
     backgroundColor: 'var(--cb-bg-secondary, #f5f5f5)',
-    padding: '20px'
+    padding: '20px',
   },
   errorBox: {
     backgroundColor: 'white',
@@ -105,29 +109,29 @@ const styles = {
     padding: '40px',
     maxWidth: '500px',
     boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   title: {
     fontSize: '24px',
     fontWeight: '600',
     color: 'var(--cb-text-primary, #333)',
-    marginBottom: '16px'
+    marginBottom: '16px',
   },
   message: {
     fontSize: '14px',
     color: 'var(--cb-text-secondary, #666)',
     marginBottom: '24px',
-    lineHeight: '1.5'
+    lineHeight: '1.5',
   },
   details: {
     marginBottom: '24px',
-    textAlign: 'left'
+    textAlign: 'left',
   },
   summary: {
     cursor: 'pointer',
     fontWeight: '500',
     color: 'var(--cb-primary, #007bff)',
-    marginBottom: '8px'
+    marginBottom: '8px',
   },
   pre: {
     backgroundColor: '#f5f5f5',
@@ -137,13 +141,13 @@ const styles = {
     overflow: 'auto',
     maxHeight: '200px',
     color: '#d32f2f',
-    fontFamily: 'monospace'
+    fontFamily: 'monospace',
   },
   actions: {
     display: 'flex',
     gap: '12px',
     justifyContent: 'center',
-    marginTop: '24px'
+    marginTop: '24px',
   },
   button: {
     padding: '10px 20px',
@@ -154,17 +158,17 @@ const styles = {
     cursor: 'pointer',
     fontSize: '14px',
     fontWeight: '500',
-    transition: 'background-color 0.2s'
+    transition: 'background-color 0.2s',
   },
   secondaryButton: {
     backgroundColor: 'var(--cb-bg-secondary, #f0f0f0)',
-    color: 'var(--cb-text-primary, #333)'
+    color: 'var(--cb-text-primary, #333)',
   },
   warning: {
     color: '#d32f2f',
     fontSize: '12px',
-    marginTop: '16px'
-  }
-};
+    marginTop: '16px',
+  },
+}
 
-export default ErrorBoundary;
+export default ErrorBoundary
