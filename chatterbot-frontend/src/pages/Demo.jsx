@@ -1,5 +1,18 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import {
+  BellRing,
+  Check,
+  CircleDollarSign,
+  ClipboardCheck,
+  HeartHandshake,
+  House,
+  MessageCircleHeart,
+  ShieldCheck,
+  Sparkles,
+  UserRoundCheck,
+  UsersRound,
+} from 'lucide-react'
 import { ChatterbotLogo } from '../components/ChatterbotLogo.jsx'
 import dailySparkBadge from '../assets/badges/daily-spark.webp'
 import calmNavigatorBadge from '../assets/badges/calm-navigator.webp'
@@ -42,7 +55,7 @@ const ALERTS = [
     teen: 'Maya',
     severity: 'High',
     status: 'Resolved',
-    keywords: 'Self-harm language detected',
+    keywords: 'Urgent wellbeing signal',
     created: 'Aug 18, 2024 · 9:42 PM',
     acknowledged: 'Aug 18, 2024 · 9:45 PM',
     resolved: 'Aug 18, 2024 · 10:02 PM',
@@ -54,7 +67,7 @@ const ALERTS = [
     teen: 'Ethan',
     severity: 'Medium',
     status: 'Acknowledged',
-    keywords: 'Expressions of hopelessness',
+    keywords: 'Elevated distress signal',
     created: 'Aug 20, 2024 · 3:14 PM',
     acknowledged: 'Aug 20, 2024 · 3:20 PM',
     resolved: null,
@@ -165,6 +178,42 @@ const GAMIFICATION_LEADERBOARD = [
   },
 ]
 
+const CARE_CIRCLE_MEMBERS = [
+  {
+    id: 1,
+    name: 'Alex Johnson',
+    initials: 'AJ',
+    role: 'Account guardian',
+    relationship: 'Parent',
+    status: 'Active',
+    access: 'Circle settings',
+    safety: true,
+    updates: true,
+  },
+  {
+    id: 2,
+    name: 'Sam Carter',
+    initials: 'SC',
+    role: 'Counselor',
+    relationship: 'School counselor',
+    status: 'Active',
+    access: 'Support signals',
+    safety: true,
+    updates: true,
+  },
+  {
+    id: 3,
+    name: 'Priya Shah',
+    initials: 'PS',
+    role: 'Family member',
+    relationship: 'Aunt',
+    status: 'Pending',
+    access: 'Safety only',
+    safety: true,
+    updates: false,
+  },
+]
+
 const GAMIFICATION_VIBES = [
   { id: 'bright', label: 'Bright' },
   { id: 'ocean', label: 'Ocean' },
@@ -177,6 +226,11 @@ const GAMIFICATION_MODES = [
 ]
 
 const CHAT_CONVO = [
+  {
+    sender: 'bot',
+    text: 'Hey Maya! Quick check in: how are you feeling about tomorrow?',
+    time: '4:00 PM',
+  },
   {
     sender: 'maya',
     text: "I'm kind of nervous about my math test tomorrow.",
@@ -207,23 +261,24 @@ const CHAT_CONVO = [
 
 /* ── Tab definitions ────────────────────────────────────── */
 const TABS = [
-  { id: 'overview', label: 'Overview', icon: '📊' },
-  { id: 'teens', label: 'Teens', icon: '👥' },
-  { id: 'alerts', label: 'Alerts', icon: '🛡️' },
-  { id: 'gamification', label: 'Gamification', icon: '🎮' },
-  { id: 'chat', label: 'AI Assistant', icon: '💬' },
-  { id: 'billing', label: 'Billing', icon: '💳' },
-  { id: 'enrollment', label: 'Enrollment', icon: '✅' },
+  { id: 'overview', label: 'Overview', icon: House },
+  { id: 'teens', label: 'Teens', icon: UsersRound },
+  { id: 'careCircle', label: 'Care Circle', icon: HeartHandshake },
+  { id: 'alerts', label: 'Safety', icon: ShieldCheck },
+  { id: 'gamification', label: 'Rewards', icon: Sparkles },
+  { id: 'chat', label: 'SMS experience', icon: MessageCircleHeart },
+  { id: 'enrollment', label: 'Enrollment', icon: ClipboardCheck },
+  { id: 'billing', label: 'Billing', icon: CircleDollarSign },
 ]
 
 const FEATURE_EXPLAINERS = {
   overview: {
-    title: 'Dashboard Overview',
+    title: 'Guardian command center',
     bullets: [
-      'Quick read on teen check-ins across your family',
-      'Safety counters stay clear and neutral for fast guardian triage',
-      'Activity feed highlights small wins and key moments',
-      'No chat transcripts—just high-level signals',
+      'See the week at a glance without reading conversations',
+      'Check in rhythm and broad wellbeing stay easy to understand',
+      'Important next steps rise above routine activity',
+      'The interface shares signals, not surveillance',
     ],
   },
   teens: {
@@ -236,7 +291,7 @@ const FEATURE_EXPLAINERS = {
     ],
   },
   alerts: {
-    title: 'Safety Alert Workflow',
+    title: 'Safety response',
     bullets: [
       'AI detects crisis language in real-time and escalates immediately',
       'Alert states: Triggered → Parent Notified → Acknowledged → Resolved',
@@ -245,7 +300,7 @@ const FEATURE_EXPLAINERS = {
     ],
   },
   gamification: {
-    title: 'Gamification Engine',
+    title: 'Healthy momentum',
     bullets: [
       'Wellness challenges turn daily habits into visible progress',
       'Mascots, badges, and streaks celebrate small wins',
@@ -254,12 +309,21 @@ const FEATURE_EXPLAINERS = {
     ],
   },
   chat: {
-    title: 'AI Check-in Assistant',
+    title: 'Teen SMS experience',
     bullets: [
       'Chatterbot texts the teen first—no app download required',
       'Conversations happen in native SMS, which teens already use daily',
-      'AI keeps tone short, positive, and casual ("you got this")',
-      'All content is private to the teen—guardians see signals, not transcripts',
+      'Chatterbot responds like a calm, familiar friend',
+      'This preview shows the teen experience, not guardian transcript access',
+    ],
+  },
+  careCircle: {
+    title: 'Care Circle',
+    bullets: [
+      'Guardians choose the trusted adults around each teen',
+      'Every member receives only the signals selected for their role',
+      'Invitations expire and access can be paused at any time',
+      'Full conversation text is never shared through Care Circle',
     ],
   },
   billing: {
@@ -286,17 +350,67 @@ const FEATURE_EXPLAINERS = {
 function OverviewTab() {
   return (
     <div className="demo-overview">
+      <section className="demo-week-card">
+        <div className="demo-week-card__topline">
+          <div>
+            <span className="demo-section-label">Maya&apos;s week</span>
+            <h2>Support is steady and on track.</h2>
+          </div>
+          <span className="demo-system-status">
+            <span /> All systems active
+          </span>
+        </div>
+
+        <div className="demo-week-card__profile">
+          <div className="demo-avatar demo-avatar--lg">M</div>
+          <div>
+            <strong>Maya Johnson</strong>
+            <span>Last check in today at 4:18 PM</span>
+          </div>
+          <span className="demo-badge demo-badge--green">Steady</span>
+        </div>
+
+        <div className="demo-week-card__metrics">
+          <div>
+            <span>Check in streak</span>
+            <strong>18 days</strong>
+            <small>Personal best</small>
+          </div>
+          <div>
+            <span>Weekly pulse</span>
+            <strong>Positive</strong>
+            <small>4 of 5 check ins</small>
+          </div>
+        </div>
+
+        <div className="demo-week-card__moment">
+          <span className="demo-week-card__check">
+            <Check size={18} aria-hidden="true" />
+          </span>
+          <div>
+            <strong>Today&apos;s check in completed</strong>
+            <span>Homework stress · coping plan created</span>
+          </div>
+          <time>4:18 PM</time>
+        </div>
+
+        <div className="demo-week-card__next">
+          <span>Next scheduled check in</span>
+          <strong>Tomorrow · 4:00 PM</strong>
+        </div>
+      </section>
+
       <div className="demo-stats">
         {[
-          { label: 'Active teens', value: '2', sub: 'enrolled & verified' },
-          { label: 'Messages · 7 days', value: '41', sub: 'across all teens' },
+          { label: 'Check ins this week', value: '9', sub: 'across 2 teens' },
+          { label: 'Care Circle', value: '2', sub: 'connected adults' },
           {
-            label: 'Active alerts',
+            label: 'Safety review',
             value: '1',
             sub: 'requires attention',
             danger: true,
           },
-          { label: 'Total alerts', value: '2', sub: 'all time' },
+          { label: 'Current streak', value: '18d', sub: 'new personal best' },
         ].map((s) => (
           <div
             key={s.label}
@@ -312,8 +426,11 @@ function OverviewTab() {
       <div className="demo-overview__grid">
         <div className="demo-card">
           <div className="demo-card__header">
-            <span className="demo-card__title">Teen activity</span>
-            <span className="demo-card__action">Manage →</span>
+            <div>
+              <span className="demo-section-label">Family</span>
+              <span className="demo-card__title">Support overview</span>
+            </div>
+            <span className="demo-card__action">2 active teens</span>
           </div>
           {TEENS.map((t) => (
             <div key={t.id} className="demo-teen-row">
@@ -321,7 +438,7 @@ function OverviewTab() {
               <div>
                 <div className="demo-teen-name">{t.name}</div>
                 <div className="demo-teen-meta">
-                  {t.messages7d} messages · {t.mood}
+                  {t.streak} day rhythm · {t.mood}
                 </div>
               </div>
               <div
@@ -337,8 +454,11 @@ function OverviewTab() {
 
         <div className="demo-card">
           <div className="demo-card__header">
-            <span className="demo-card__title">Safety alerts</span>
-            <span className="demo-card__action">View all →</span>
+            <div>
+              <span className="demo-section-label">Safety</span>
+              <span className="demo-card__title">Signals requiring care</span>
+            </div>
+            <span className="demo-card__action">No transcripts</span>
           </div>
           {ALERTS.map((a) => (
             <div key={a.id} className="demo-alert-row">
@@ -365,7 +485,10 @@ function OverviewTab() {
 
       <div className="demo-card">
         <div className="demo-card__header">
-          <span className="demo-card__title">Recent activity</span>
+          <div>
+            <span className="demo-section-label">Accountability</span>
+            <span className="demo-card__title">Recent activity</span>
+          </div>
         </div>
         {ACTIVITY.map((item, i) => (
           <div key={i} className="demo-activity-row">
@@ -379,6 +502,163 @@ function OverviewTab() {
           </div>
         ))}
       </div>
+    </div>
+  )
+}
+
+function CareCircleTab() {
+  const [selectedId, setSelectedId] = useState(2)
+  const [paused, setPaused] = useState(false)
+  const selected = CARE_CIRCLE_MEMBERS.find(
+    (member) => member.id === selectedId
+  )
+  const selectedStatus =
+    selected.id === 2 && paused ? 'Paused' : selected.status
+
+  return (
+    <div className="demo-circle">
+      <section className="demo-circle__hero">
+        <div>
+          <span className="demo-section-label">Maya&apos;s trusted team</span>
+          <h2>The right people, around the right signals.</h2>
+          <p>
+            Alex decides who can help and what they can receive. Maya&apos;s
+            complete conversations stay out of the dashboard.
+          </p>
+        </div>
+        <div className="demo-circle__score">
+          <strong>67%</strong>
+          <span>circle ready</span>
+          <small>1 invitation pending</small>
+        </div>
+      </section>
+
+      <div className="demo-circle__layout">
+        <section className="demo-card demo-circle__members">
+          <div className="demo-card__header">
+            <div>
+              <span className="demo-section-label">People</span>
+              <span className="demo-card__title">Care Circle members</span>
+            </div>
+            <span className="demo-card__action">3 people</span>
+          </div>
+          <div className="demo-circle__member-list">
+            {CARE_CIRCLE_MEMBERS.map((member) => {
+              const status =
+                member.id === 2 && paused ? 'Paused' : member.status
+              return (
+                <button
+                  type="button"
+                  key={member.id}
+                  className={`demo-circle__member${selectedId === member.id ? ' demo-circle__member--selected' : ''}`}
+                  onClick={() => setSelectedId(member.id)}
+                  aria-pressed={selectedId === member.id}
+                >
+                  <span className="demo-circle__member-avatar">
+                    {member.initials}
+                  </span>
+                  <span className="demo-circle__member-copy">
+                    <strong>{member.name}</strong>
+                    <small>
+                      {member.role} · {member.relationship}
+                    </small>
+                  </span>
+                  <span
+                    className={`demo-circle__status demo-circle__status--${status.toLowerCase()}`}
+                  >
+                    {status}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </section>
+
+        <section className="demo-card demo-circle__access">
+          <div className="demo-card__header">
+            <div>
+              <span className="demo-section-label">Selected member</span>
+              <span className="demo-card__title">{selected.name}</span>
+            </div>
+            <span
+              className={`demo-circle__status demo-circle__status--${selectedStatus.toLowerCase()}`}
+            >
+              {selectedStatus}
+            </span>
+          </div>
+          <div className="demo-circle__access-level">
+            <ShieldCheck size={20} aria-hidden="true" />
+            <div>
+              <span>Access level</span>
+              <strong>{selected.access}</strong>
+            </div>
+          </div>
+          <div className="demo-circle__permissions">
+            <div>
+              <span className={selected.safety ? 'is-on' : ''}>
+                {selected.safety ? <Check size={14} /> : null}
+              </span>
+              <div>
+                <strong>Urgent safety signals</strong>
+                <small>Minimal alert with no conversation text</small>
+              </div>
+            </div>
+            <div>
+              <span className={selected.updates ? 'is-on' : ''}>
+                {selected.updates ? <Check size={14} /> : null}
+              </span>
+              <div>
+                <strong>Check in updates</strong>
+                <small>Completion status and broad wellbeing signals</small>
+              </div>
+            </div>
+          </div>
+          {selected.id === 2 && (
+            <button
+              type="button"
+              className="demo-btn demo-btn--outline"
+              onClick={() => setPaused((current) => !current)}
+            >
+              {paused ? 'Restore access' : 'Pause access'}
+            </button>
+          )}
+          {selected.status === 'Pending' && (
+            <button
+              type="button"
+              className="demo-btn demo-btn--outline"
+              disabled
+            >
+              Invitation pending
+            </button>
+          )}
+        </section>
+      </div>
+
+      <section className="demo-card demo-circle__routing">
+        <div className="demo-card__header">
+          <div>
+            <span className="demo-section-label">Signal routing</span>
+            <span className="demo-card__title">Who sees what</span>
+          </div>
+        </div>
+        <div className="demo-circle__route-grid">
+          <div>
+            <BellRing size={18} aria-hidden="true" />
+            <span>Urgent safety signal</span>
+            <strong>{paused ? 'Alex' : 'Alex and Sam'}</strong>
+          </div>
+          <div>
+            <UserRoundCheck size={18} aria-hidden="true" />
+            <span>Check in update</span>
+            <strong>{paused ? 'Alex' : 'Alex and Sam'}</strong>
+          </div>
+          <div className="demo-circle__route-locked">
+            <ShieldCheck size={18} aria-hidden="true" />
+            <span>Full conversation text</span>
+            <strong>Never shared</strong>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
@@ -707,7 +987,7 @@ function GamificationTab() {
 function ChatTab() {
   const bottomRef = useRef(null)
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'auto' })
+    bottomRef.current?.scrollIntoView?.({ behavior: 'auto' })
   }, [])
   return (
     <div className="demo-chat-layout">
@@ -726,7 +1006,8 @@ function ChatTab() {
           </div>
         ))}
         <div className="demo-chat__disclaimer">
-          Guardians do not see conversation content. Activity signals only.
+          Teen phone preview. Guardians receive activity signals, not this
+          conversation.
         </div>
       </div>
 
@@ -735,7 +1016,7 @@ function ChatTab() {
           <div className="demo-avatar demo-avatar--sm">🌈</div>
           <div>
             <div style={{ fontWeight: 700, fontSize: 15 }}>
-              Maya's AI Thread
+              Maya&apos;s Chatterbot thread
             </div>
             <div className="demo-teen-meta">SMS · fictional example</div>
           </div>
@@ -760,7 +1041,7 @@ function ChatTab() {
         </div>
         <div className="demo-chat__input-bar">
           <div className="demo-chat__input-mock">
-            Read-only demo view — chats stay on the teen's phone
+            Teen phone preview · conversations are not shown to guardians
           </div>
         </div>
       </div>
@@ -1089,6 +1370,7 @@ export default function Demo() {
   const tabContent = {
     overview: <OverviewTab />,
     teens: <TeensTab />,
+    careCircle: <CareCircleTab />,
     alerts: <AlertsTab />,
     gamification: <GamificationTab />,
     chat: <ChatTab />,
@@ -1117,17 +1399,28 @@ export default function Demo() {
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="demo-hero">
-        <div className="demo-hero__inner">
-          <p className="demo-hero__eyebrow">Interactive product walkthrough</p>
-          <h1 className="demo-hero__heading">
-            The complete Chatterbot platform, <span>feature by feature.</span>
-          </h1>
-          <p className="demo-hero__sub">
-            Tap any tab for a live demo. Explore the flow, the copy, and the
-            small wins vibe.
-          </p>
+      {/* Guardian command bar */}
+      <section className="demo-command-bar">
+        <div className="demo-command-bar__inner">
+          <div>
+            <p className="demo-command-bar__eyebrow">Guardian command center</p>
+            <h1>Good afternoon, Alex.</h1>
+            <p>
+              See what matters, support the next step, and keep trust intact.
+            </p>
+          </div>
+          <div className="demo-command-bar__controls">
+            <span className="demo-system-status demo-system-status--dark">
+              <span /> All systems active
+            </span>
+            <label>
+              <span>Viewing</span>
+              <select defaultValue="maya" aria-label="Teen profile">
+                <option value="maya">Maya</option>
+                <option value="ethan">Ethan</option>
+              </select>
+            </label>
+          </div>
         </div>
       </section>
 
@@ -1137,10 +1430,12 @@ export default function Demo() {
           {TABS.map((t) => (
             <button
               key={t.id}
+              type="button"
               className={`demo-tab${activeTab === t.id ? ' demo-tab--active' : ''}`}
               onClick={() => setActiveTab(t.id)}
+              aria-pressed={activeTab === t.id}
             >
-              <span>{t.icon}</span>
+              <t.icon size={16} aria-hidden="true" />
               <span>{t.label}</span>
             </button>
           ))}
@@ -1150,9 +1445,12 @@ export default function Demo() {
       {/* Content */}
       <div className="demo-body">
         <div className="demo-body__inner">
+          {/* Tab content */}
+          <main className="demo-content">{tabContent[activeTab]}</main>
+
           {/* Feature explainer */}
           <aside className="demo-explainer">
-            <div className="demo-explainer__label">Feature explainer</div>
+            <div className="demo-explainer__label">What this shows</div>
             <h2 className="demo-explainer__title">{explainer.title}</h2>
             <ul className="demo-explainer__list">
               {explainer.bullets.map((b) => (
@@ -1170,13 +1468,10 @@ export default function Demo() {
                   gap: 8,
                 }}
               >
-                Get started free →
+                Start with Chatterbot →
               </Link>
             </div>
           </aside>
-
-          {/* Tab content */}
-          <main className="demo-content">{tabContent[activeTab]}</main>
         </div>
       </div>
 
