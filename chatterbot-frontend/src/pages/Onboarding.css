@@ -1,4 +1,9 @@
 .onboarding {
+  /* Onboarding uses a deliberately light card, so its brand tokens must not
+     inherit light text values from the signed-in dark theme. */
+  --cb-navy: #145a86;
+  --cb-red: #d33f5a;
+  color-scheme: light;
   min-height: 100vh;
   background: linear-gradient(135deg, var(--cb-navy) 0%, #1a3a8f 100%);
   display: flex;

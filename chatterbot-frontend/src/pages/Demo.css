@@ -300,6 +300,36 @@
 
 /* ── Root ─────────────────────────────────────────────────── */
 .demo-root {
+  /* The product demo is intentionally a light presentation surface. Keep its
+     palette self-contained when a signed-in visitor has dark mode enabled. */
+  --cb-bg: #f6f9fc;
+  --cb-bg-primary: #f6f9fc;
+  --cb-bg-secondary: #eaf2f8;
+  --cb-bg-elevated: #ffffff;
+  --cb-bg-glass: rgba(255, 255, 255, 0.95);
+  --cb-bg-muted: rgba(31, 111, 165, 0.08);
+  --cb-bg-strong: #d9e8f3;
+  --cb-text-primary: #102f4c;
+  --cb-text-secondary: #40566b;
+  --cb-text-tertiary: #596f83;
+  --cb-text-quaternary: #607589;
+  --cb-border: rgba(16, 47, 76, 0.16);
+  --cb-border-strong: rgba(16, 47, 76, 0.3);
+  --cb-primary: #145a86;
+  --cb-primary-hover: #0d466b;
+  --cb-primary-gradient: linear-gradient(135deg, #174f78 0%, #0a2540 100%);
+  --cb-navy: #145a86;
+  --cb-positive: #176b5b;
+  --cb-positive-soft: rgba(23, 107, 91, 0.12);
+  --cb-warning: #a66400;
+  --cb-warning-soft: rgba(166, 100, 0, 0.12);
+  --cb-danger: #d33f5a;
+  --cb-danger-soft: rgba(211, 63, 90, 0.11);
+  --cb-shadow-sm: 0 2px 8px rgba(16, 47, 76, 0.08);
+  --cb-shadow-md: 0 6px 18px rgba(16, 47, 76, 0.12);
+  --cb-shadow-lg: 0 12px 36px -8px rgba(16, 47, 76, 0.16);
+  --cb-shadow-glow: 0 8px 24px -4px rgba(211, 63, 90, 0.24);
+  color-scheme: light;
   min-height: 100vh;
   background: var(--cb-bg);
   color: var(--cb-text-primary);

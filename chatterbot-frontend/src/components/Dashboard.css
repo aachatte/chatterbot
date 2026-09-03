@@ -41,7 +41,7 @@
 
 /* ── Stat Card ───────────────────────────────────────────── */
 .db-stat-card {
-  background: #ffffff;
+  background: var(--cb-bg-elevated);
   border: 1px solid var(--cb-border);
   border-radius: var(--cb-radius-xl);
   padding: 24px;
@@ -107,7 +107,7 @@
 
 /* ── Card ────────────────────────────────────────────────── */
 .db-card {
-  background: #ffffff;
+  background: var(--cb-bg-elevated);
   border: 1px solid var(--cb-border);
   border-radius: var(--cb-radius-xl);
   padding: 28px;
@@ -348,4 +348,3 @@
   box-shadow: 0 2px 8px rgba(200,16,46,0.25);
 }
 .btn--primary-sm:hover { background: #a50d25; transform: translateY(-1px); }
-

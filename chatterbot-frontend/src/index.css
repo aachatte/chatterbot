@@ -16,8 +16,8 @@
   /* High-contrast, softer-than-black text */
   --cb-text-primary: #102f4c;
   --cb-text-secondary: #40566b;
-  --cb-text-tertiary: #61788d;
-  --cb-text-quaternary: #7d90a1;
+  --cb-text-tertiary: #596f83;
+  --cb-text-quaternary: #607589;
 
   /* Borders */
   --cb-border: rgba(16, 47, 76, 0.16);
@@ -77,7 +77,7 @@
   --cb-text-primary: #f8fafc;
   --cb-text-secondary: #cbd5e1;
   --cb-text-tertiary: #94a3b8;
-  --cb-text-quaternary: #64748b;
+  --cb-text-quaternary: #8495aa;
   --cb-border: rgba(148, 163, 184, 0.2);
   --cb-primary: #7aa8ff;
   --cb-primary-hover: #a7c4ff;
