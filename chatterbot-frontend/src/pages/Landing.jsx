@@ -1099,39 +1099,56 @@ export default function Landing() {
             className="landing-section-eyebrow"
             style={{ textAlign: 'center' }}
           >
-            Built with safeguards
+            The complete support platform
+          </p>
+          <h2 className="landing-section-heading" style={{ textAlign: 'center' }}>
+            Trust is a feature everyone can see.
+          </h2>
+          <p className="landing-section-body landing-trust__intro">
+            Chatterbot gives teens clear choices, parents understandable signals,
+            and every trusted adult a defined responsibility.
           </p>
           <div className="landing-trust__grid">
             {[
               {
                 icon: '01',
-                title: 'Guardian consent required',
-                body: 'No teen is enrolled without verified legal guardian authorization. Every step is auditable.',
+                title: 'Shared Trust Agreement',
+                body: 'Teens and parents see the same explanation of what stays protected, what can be shared, and why.',
               },
               {
                 icon: '02',
-                title: 'Structured safety pathways',
-                body: 'Risk signals can trigger a documented response flow, resource guidance, and guardian notification.',
+                title: 'Safety response simulator',
+                body: 'Families can explore how school stress, bullying, and urgent concerns move toward human support.',
               },
               {
                 icon: '03',
-                title: 'Privacy-first design',
-                body: 'Guardians see behavioral signals and alerts—never full conversation transcripts.',
+                title: 'Teen Control Center',
+                body: 'Teens shape check in timing, conversation tone, routine sharing, and requests for a trusted adult.',
               },
               {
                 icon: '04',
-                title: 'Built for accountable operations',
-                body: 'Ownership checks, bounded permissions, and audit-ready actions are part of the workflow.',
+                title: 'Human response chain',
+                body: 'Every family names a primary responder, backup contact, and final pathway before a difficult moment.',
               },
               {
                 icon: '05',
-                title: 'Configurable boundaries',
-                body: 'Families and organizations can control check-ins, notifications, and escalation preferences.',
+                title: 'Shared signal history',
+                body: 'Teens and guardians can review the same record of what was shared, with whom, and when.',
               },
               {
                 icon: '06',
-                title: 'Human handoff ready',
-                body: 'Chatterbot supports connection to trusted adults and professional resources—it does not replace care.',
+                title: 'Family progress reports',
+                body: 'Progress measures healthy action and real connection, never whether a teen had a positive mood.',
+              },
+              {
+                icon: '07',
+                title: 'Visible product boundaries',
+                body: 'Chatterbot does not pretend to be human, encourage dependence, diagnose, or reveal full transcripts.',
+              },
+              {
+                icon: '08',
+                title: 'Responsible partner pilots',
+                body: 'Families, schools, care teams, and youth groups begin with consent, trained responders, and measured outcomes.',
               },
             ].map((t) => (
               <div key={t.title} className="landing-trust__card">
@@ -1143,7 +1160,10 @@ export default function Landing() {
           </div>
           <div className="landing-trust__action">
             <Link to="/trust-center" className="btn btn--primary btn--lg">
-              Explore the complete safety model →
+              Explore the Trust Center →
+            </Link>
+            <Link to="/demo" className="btn btn--ghost btn--lg">
+              Try every feature in the demo
             </Link>
           </div>
         </div>

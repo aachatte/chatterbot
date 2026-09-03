@@ -12,6 +12,10 @@ import {
   Sparkles,
   UserRoundCheck,
   UsersRound,
+  Clock3,
+  LockKeyhole,
+  Database,
+  ChartColumnIncreasing,
 } from 'lucide-react'
 import { ChatterbotLogo } from '../components/ChatterbotLogo.jsx'
 import dailySparkBadge from '../assets/badges/daily-spark.webp'
@@ -264,6 +268,9 @@ const TABS = [
   { id: 'overview', label: 'Overview', icon: House },
   { id: 'teens', label: 'Teens', icon: UsersRound },
   { id: 'careCircle', label: 'Care Circle', icon: HeartHandshake },
+  { id: 'trust', label: 'Trust', icon: LockKeyhole },
+  { id: 'supportPlan', label: 'Support Plan', icon: Clock3 },
+  { id: 'progress', label: 'Progress', icon: ChartColumnIncreasing },
   { id: 'alerts', label: 'Safety', icon: ShieldCheck },
   { id: 'gamification', label: 'Rewards', icon: Sparkles },
   { id: 'chat', label: 'SMS experience', icon: MessageCircleHeart },
@@ -293,10 +300,10 @@ const FEATURE_EXPLAINERS = {
   alerts: {
     title: 'Safety response',
     bullets: [
-      'AI detects crisis language in real-time and escalates immediately',
-      'Alert states: Triggered → Parent Notified → Acknowledged → Resolved',
-      'Guardian must acknowledge before resolving—creating an audit trail',
-      'Integration with 988 Suicide & Crisis Lifeline is part of the AI response',
+      'Potential concerns move into a visible human response workflow',
+      'Alert states show who has accepted responsibility and what happens next',
+      'Automated signals can be incomplete and never replace human judgment',
+      'Emergency resources remain available throughout the response',
     ],
   },
   gamification: {
@@ -326,6 +333,33 @@ const FEATURE_EXPLAINERS = {
       'Full conversation text is never shared through Care Circle',
     ],
   },
+  trust: {
+    title: 'Shared trust agreement',
+    bullets: [
+      'Teens and guardians see the same plain language boundaries',
+      'Routine support signals never include complete conversation text',
+      'Urgent sharing explains what was sent, why, and to whom',
+      'Product limits are visible before a difficult moment occurs',
+    ],
+  },
+  supportPlan: {
+    title: 'Family support plan',
+    bullets: [
+      'Teens can shape timing, tone, and routine sharing preferences',
+      'Families name a primary responder and backup before an alert',
+      'Acknowledgement timing keeps urgent signals from ending at notification',
+      'Every action is designed to connect the teen with a real person',
+    ],
+  },
+  progress: {
+    title: 'Connection based progress',
+    bullets: [
+      'Reports measure healthy actions instead of rating a teen mood',
+      'Rewards recognize checking in, coping tools, and asking for help',
+      'Sharing history shows exactly which limited signals left the conversation',
+      'Teens are never ranked by disclosure, mood, or time spent chatting',
+    ],
+  },
   billing: {
     title: 'Subscription & Billing',
     bullets: [
@@ -341,9 +375,145 @@ const FEATURE_EXPLAINERS = {
       'Guardian confirms legal authority before any teen profile is created',
       "Teen's phone number is verified via a one-time SMS code (expires in 15 min)",
       'Consent status is stored and auditable—required before AI contact begins',
-      'COPPA/FERPA-aligned design: minimal data, explicit consent, guardian control',
+      'Minimal data and explicit consent support a responsible legal review',
     ],
   },
+}
+
+const DEMO_SCENARIOS = [
+  {
+    id: 'school',
+    label: 'School stress',
+    level: 'Support',
+    message: 'I am overwhelmed by this paper and do not know where to start.',
+    steps: ['Name the stress', 'Create one manageable plan', 'Share a broad support signal', 'Follow up tomorrow'],
+  },
+  {
+    id: 'bullying',
+    label: 'Bullying',
+    level: 'Elevated',
+    message: 'They keep posting about me and I am scared to go to school.',
+    steps: ['Check immediate safety', 'Offer trusted adult choices', 'Send a limited concern signal', 'Confirm human follow through'],
+  },
+  {
+    id: 'crisis',
+    label: 'Immediate danger',
+    level: 'Urgent',
+    message: 'I might hurt myself tonight.',
+    steps: ['Shift out of ordinary chat', 'Show immediate crisis resources', 'Alert approved safety contacts', 'Escalate until acknowledged'],
+  },
+]
+
+function TrustTab() {
+  const [scenarioId, setScenarioId] = useState('school')
+  const scenario = DEMO_SCENARIOS.find((item) => item.id === scenarioId)
+  const visibility = [
+    ['Complete conversation text', 'Visible', 'Not shared', 'Not shared'],
+    ['Check in completed', 'Visible', 'Visible', 'If permitted'],
+    ['Broad support topic', 'Visible before sharing', 'Summary only', 'If permitted'],
+    ['Urgent safety concern', 'Teen notified', 'Immediate signal', 'Safety roles only'],
+  ]
+  const boundaries = [
+    'Pretend to be human or a mental health professional',
+    'Encourage emotional dependence or romantic attachment',
+    'Reward a positive mood or longer conversation',
+    'Promise secrecy when urgent safety risk is detected',
+    'Sell teen information or show guardians full transcripts',
+    'Present an automated signal as a diagnosis',
+  ]
+
+  return (
+    <div className="demo-trust">
+      <section className="demo-card demo-trust__agreement">
+        <div className="demo-card__header"><div><span className="demo-section-label">Shared agreement</span><span className="demo-card__title">Everyone knows who can see what</span></div><span className="demo-badge demo-badge--green">Teen visible</span></div>
+        <div className="demo-trust__table-wrap"><table><thead><tr><th>Information</th><th>Teen</th><th>Guardian</th><th>Care Circle</th></tr></thead><tbody>{visibility.map((row) => <tr key={row[0]}>{row.map((cell, index) => index === 0 ? <th key={cell}>{cell}</th> : <td key={cell}>{cell}</td>)}</tr>)}</tbody></table></div>
+      </section>
+
+      <section className="demo-card demo-trust__simulator">
+        <div className="demo-card__header"><div><span className="demo-section-label">Safety response simulator</span><span className="demo-card__title">See what happens next</span></div></div>
+        <div className="demo-trust__scenario-buttons">{DEMO_SCENARIOS.map((item) => <button type="button" key={item.id} className={scenarioId === item.id ? 'is-active' : ''} onClick={() => setScenarioId(item.id)}><span>{item.level}</span>{item.label}</button>)}</div>
+        <div className="demo-trust__scenario"><div className="demo-trust__message"><small>Fictional teen message</small><strong>“{scenario.message}”</strong></div><div className="demo-trust__steps">{scenario.steps.map((step, index) => <div key={step}><span>{index + 1}</span><strong>{step}</strong></div>)}</div></div>
+        <p className="demo-trust__note">This illustrates the intended workflow. Automated signals can be incomplete or incorrect and do not replace emergency care or human judgment.</p>
+      </section>
+
+      <section className="demo-card demo-trust__boundaries">
+        <div className="demo-card__header"><div><span className="demo-section-label">Product boundaries</span><span className="demo-card__title">What Chatterbot will never do</span></div></div>
+        <div>{boundaries.map((boundary) => <p key={boundary}><span>Never</span>{boundary}</p>)}</div>
+        <div className="demo-trust__evaluation"><ShieldCheck size={20} /><div><strong>Evaluation before claims</strong><span>Safety results should include misses, false alerts, limitations, and the date of independent review.</span></div></div>
+      </section>
+    </div>
+  )
+}
+
+function DemoSwitch({ checked, onChange, label }) {
+  return <button type="button" className={`demo-support__switch${checked ? ' is-on' : ''}`} role="switch" aria-checked={checked} aria-label={label} onClick={() => onChange(!checked)}><span /></button>
+}
+
+function SupportPlanTab() {
+  const [checkInTime, setCheckInTime] = useState('4:00 PM')
+  const [tone, setTone] = useState('Encouraging')
+  const [paused, setPaused] = useState(false)
+  const [weeklySignal, setWeeklySignal] = useState(true)
+  const [circleUpdates, setCircleUpdates] = useState(true)
+  const [acknowledged, setAcknowledged] = useState(false)
+
+  return (
+    <div className="demo-support">
+      <div className="demo-overview__grid">
+        <section className="demo-card">
+          <div className="demo-card__header"><div><span className="demo-section-label">Teen controls</span><span className="demo-card__title">Maya shapes the relationship</span></div><span className={`demo-badge ${paused ? 'demo-badge--yellow' : 'demo-badge--green'}`}>{paused ? 'Paused' : 'Active'}</span></div>
+          <label className="demo-support__field">Preferred check in time<select value={checkInTime} onChange={(event) => setCheckInTime(event.target.value)}><option>4:00 PM</option><option>6:30 PM</option><option>8:00 PM</option></select></label>
+          <label className="demo-support__field">Conversation tone<select value={tone} onChange={(event) => setTone(event.target.value)}><option>Encouraging</option><option>Calm and direct</option><option>Playful</option></select></label>
+          <button type="button" className="demo-btn demo-btn--outline" onClick={() => setPaused((value) => !value)}>{paused ? 'Resume check ins' : 'Pause for 24 hours'}</button>
+        </section>
+        <section className="demo-card">
+          <div className="demo-card__header"><div><span className="demo-section-label">Sharing choices</span><span className="demo-card__title">Routine signals stay adjustable</span></div></div>
+          <div className="demo-support__setting"><div><strong>Weekly support signal</strong><span>Broad patterns without conversation text</span></div><DemoSwitch checked={weeklySignal} onChange={setWeeklySignal} label="Weekly support signal" /></div>
+          <div className="demo-support__setting"><div><strong>Care Circle updates</strong><span>Check in completion for approved adults</span></div><DemoSwitch checked={circleUpdates} onChange={setCircleUpdates} label="Care Circle updates" /></div>
+          <p className="demo-support__safety"><ShieldCheck size={16} /> Urgent safety signals follow the family response plan.</p>
+        </section>
+      </div>
+
+      <section className="demo-card demo-support__chain">
+        <div className="demo-card__header"><div><span className="demo-section-label">Human response chain</span><span className="demo-card__title">An urgent signal never ends at notification</span></div><span className={`demo-badge ${acknowledged ? 'demo-badge--green' : 'demo-badge--yellow'}`}>{acknowledged ? 'Owned by Alex' : 'Awaiting response'}</span></div>
+        <div className="demo-support__contacts">{[
+          ['01', 'Alex Johnson', 'Primary parent', 'Immediately'],
+          ['02', 'Sam Carter', 'Backup counselor', 'After 5 minutes'],
+          ['03', 'Local response plan', 'Final pathway', 'After 10 minutes'],
+        ].map(([number, name, role, timing]) => <div key={number}><span>{number}</span><div><strong>{name}</strong><small>{role}</small></div><div><small>Escalates</small><strong>{timing}</strong></div></div>)}</div>
+        <button type="button" className="demo-btn demo-btn--primary" onClick={() => setAcknowledged((value) => !value)}>{acknowledged ? 'Release acknowledgement' : 'Acknowledge as Alex'}</button>
+      </section>
+
+      <section className="demo-card demo-support__people">
+        <div className="demo-card__header"><div><span className="demo-section-label">Ask a real person</span><span className="demo-card__title">Human support is one action away</span></div></div>
+        <div>{[['AJ', 'Alex · parent'], ['SC', 'Sam · counselor'], ['PS', 'Priya · aunt']].map(([initials, person]) => <button type="button" key={person}><span>{initials}</span><strong>{person}</strong><MessageCircleHeart size={17} /></button>)}</div>
+      </section>
+    </div>
+  )
+}
+
+function ProgressTab() {
+  const signals = [
+    ['Today · 4:18 PM', 'Check in completed', 'Completion only', 'Guardian'],
+    ['Tuesday · 7:32 PM', 'Support requested', 'School stress · no transcript', 'Sam and guardian'],
+    ['Monday · 4:22 PM', 'Coping plan created', 'Broad progress signal', 'Guardian'],
+  ]
+  return (
+    <div className="demo-progress">
+      <div className="demo-stats">{[
+        ['5', 'Check ins completed', 'one more than last week'],
+        ['2', 'Coping tools practiced', 'breathing and planning'],
+        ['1', 'Trusted adult connection', 'requested by Maya'],
+        ['8 min', 'Care Circle response', 'human follow through'],
+      ].map(([value, label, sub]) => <div className="demo-stat-card" key={label}><div className="demo-stat-card__label">{label}</div><div className="demo-stat-card__value">{value}</div><div className="demo-stat-card__sub">{sub}</div></div>)}</div>
+      <section className="demo-card demo-progress__win"><MessageCircleHeart size={22} /><div><span className="demo-section-label">Small win</span><h2>Maya asked Sam for help before the school day started.</h2><p>Progress celebrates healthy action, not a positive mood or longer conversation.</p></div></section>
+      <section className="demo-card demo-progress__history">
+        <div className="demo-card__header"><div><span className="demo-section-label">Shared signal history</span><span className="demo-card__title">The teen and guardian see the same record</span></div><span className="demo-card__action">No transcripts</span></div>
+        <div className="demo-progress__history-head"><span>Signal</span><span>Information included</span><span>Audience</span></div>{signals.map(([date, title, detail, audience]) => <div className="demo-progress__history-row" key={date}><div><strong>{title}</strong><small>{date}</small></div><span>{detail}</span><span>{audience}</span></div>)}
+      </section>
+      <div className="demo-overview__grid"><section className="demo-card demo-progress__rules"><div className="demo-card__title">Healthy reward rules</div>{['Reward checking in and asking for help', 'Never reward a positive mood', 'Never compare teens against each other', 'Never optimize for longer conversations'].map((rule) => <p key={rule}><Check size={15} />{rule}</p>)}</section><section className="demo-card demo-progress__data"><Database size={24} /><h2>Teen data controls</h2><p>Review sharing history, request a secure download, or begin a deletion request from one place.</p><button type="button" className="demo-btn demo-btn--outline">Review data choices</button></section></div>
+    </div>
+  )
 }
 
 /* ── Sub-views ──────────────────────────────────────────── */
@@ -1371,6 +1541,9 @@ export default function Demo() {
     overview: <OverviewTab />,
     teens: <TeensTab />,
     careCircle: <CareCircleTab />,
+    trust: <TrustTab />,
+    supportPlan: <SupportPlanTab />,
+    progress: <ProgressTab />,
     alerts: <AlertsTab />,
     gamification: <GamificationTab />,
     chat: <ChatTab />,
@@ -1394,6 +1567,9 @@ export default function Demo() {
             </span>
             <Link to="/" className="demo-header__back">
               ← Back to site
+            </Link>
+            <Link to="/trust-center" className="demo-header__back">
+              Trust Center
             </Link>
           </div>
         </div>
