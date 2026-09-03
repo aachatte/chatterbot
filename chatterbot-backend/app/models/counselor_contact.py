@@ -1,6 +1,6 @@
 """School counselor contact model for crisis CC alerts."""
-from datetime import datetime
 from app import db
+from app.utils.time import utc_now
 
 
 class CounselorContact(db.Model):
@@ -12,7 +12,7 @@ class CounselorContact(db.Model):
     counselor_email = db.Column(db.String(200), nullable=False)
     school_name = db.Column(db.String(200), nullable=True)
     cc_on_crisis = db.Column(db.Boolean, default=False, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
+    created_at = db.Column(db.DateTime, default=utc_now, nullable=True)
 
     def to_dict(self):
         return {

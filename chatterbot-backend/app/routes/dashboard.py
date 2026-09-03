@@ -1,6 +1,4 @@
 """Guardian Dashboard API routes."""
-from datetime import datetime
-
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
@@ -11,6 +9,7 @@ from app.models.crisis_alert import CrisisAlert, CrisisStatus
 from app.models.subscription import Subscription
 from app.services.crisis_service import CrisisDetectionService
 from app.services.twilio_service import TwilioService
+from app.utils.time import utc_now
 
 dashboard_bp = Blueprint("dashboard", __name__)
 MAX_AUDIT_NOTES_LENGTH = 2_000
@@ -69,7 +68,7 @@ def dashboard_overview():
     user_id = _get_authenticated_user_id()
     if user_id is None:
         return jsonify({"error": "Invalid authentication token"}), 401
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
 
     if not user:
         return jsonify({"error": "User not found"}), 404
@@ -384,7 +383,7 @@ def confirm_teen_consent(teen_id):
 
     if not teen.consent_verified:
         teen.consent_verified = True
-        teen.consent_verified_at = datetime.utcnow()
+        teen.consent_verified_at = utc_now()
         teen.consent_status = "guardian_confirmed"
         db.session.commit()
 
@@ -550,7 +549,7 @@ def acknowledge_alert(alert_id):
         return jsonify({"error": error}), 400
 
     if not alert.acknowledged_at:
-        alert.acknowledged_at = datetime.utcnow()
+        alert.acknowledged_at = utc_now()
         alert.acknowledged_by = user_id
     if notes:
         alert.acknowledgement_notes = notes

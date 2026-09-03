@@ -1,6 +1,6 @@
 """Conversation and message models."""
-from datetime import datetime
 from app import db
+from app.utils.time import utc_now
 
 
 class Conversation(db.Model):
@@ -10,8 +10,8 @@ class Conversation(db.Model):
     teen_id = db.Column(db.Integer, db.ForeignKey("teens.id"), nullable=False, index=True)
 
     # Metadata
-    started_at = db.Column(db.DateTime, default=datetime.utcnow)
-    last_message_at = db.Column(db.DateTime, default=datetime.utcnow)
+    started_at = db.Column(db.DateTime, default=utc_now)
+    last_message_at = db.Column(db.DateTime, default=utc_now)
     message_count = db.Column(db.Integer, default=0)
 
     # Status
@@ -52,7 +52,7 @@ class Message(db.Model):
     sentiment_score = db.Column(db.Float, nullable=True)  # -1.0 to 1.0
 
     # Metadata
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    created_at = db.Column(db.DateTime, default=utc_now, index=True)
     twilio_sid = db.Column(db.String(100), nullable=True)  # Twilio message SID for audit
 
     def to_dict(self, include_content=True):

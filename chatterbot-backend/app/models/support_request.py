@@ -1,7 +1,6 @@
 """Persisted support requests submitted by authenticated guardians."""
-from datetime import datetime
-
 from app import db
+from app.utils.time import utc_now
 
 
 class SupportRequest(db.Model):
@@ -13,7 +12,7 @@ class SupportRequest(db.Model):
     subject = db.Column(db.String(200), nullable=False)
     message = db.Column(db.Text, nullable=False)
     status = db.Column(db.String(30), default="open", nullable=False, index=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utc_now, nullable=False)
     updated_at = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+        db.DateTime, default=utc_now, onupdate=utc_now, nullable=False
     )

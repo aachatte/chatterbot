@@ -1,6 +1,6 @@
 """Gamification routes."""
 import hmac
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -8,6 +8,7 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from app import db
 from app.models.gamification import PointTransaction
 from app.models.user import User
+from app.utils.time import utc_now
 from config import settings
 
 gam_bp = Blueprint("gamification", __name__)
@@ -68,7 +69,7 @@ def award_login():
     if not _feature_enabled_for(user):
         return jsonify({"message": "Gamification is disabled for this account"}), 403
 
-    now = datetime.utcnow()
+    now = utc_now()
     today = now.date()
     last_login_date = user.last_login_at.date() if user.last_login_at else None
 

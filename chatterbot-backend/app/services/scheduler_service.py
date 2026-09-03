@@ -6,6 +6,7 @@ from app.models.teen import Teen
 from app.services.twilio_service import TwilioService
 from app.services.openai_service import OpenAIService
 from app.services.context_service import ContextMemoryService
+from app.utils.time import utc_now
 import logging
 
 logger = logging.getLogger(__name__)
@@ -39,7 +40,7 @@ class SchedulerService:
 
     def process_due_nudges(self):
         """Process all nudges that are due to be sent. Called by Celery beat."""
-        now = datetime.utcnow()
+        now = utc_now()
 
         due_nudges = ScheduledNudge.query.filter(
             ScheduledNudge.is_active == True,
@@ -52,7 +53,7 @@ class SchedulerService:
 
     def _send_nudge(self, nudge: ScheduledNudge):
         """Send a single nudge and update state."""
-        teen = Teen.query.get(nudge.teen_id)
+        teen = db.session.get(Teen, nudge.teen_id)
         if not teen or not teen.is_active:
             nudge.is_active = False
             db.session.commit()
@@ -69,7 +70,7 @@ class SchedulerService:
 
         if result["success"]:
             nudge.send_count += 1
-            nudge.last_sent_at = datetime.utcnow()
+            nudge.last_sent_at = utc_now()
 
             # Schedule next send based on trigger condition
             nudge.next_send_at = self._calculate_next_send(nudge)
@@ -89,7 +90,7 @@ class SchedulerService:
                 twilio_sid=result.get("sid"),
             )
             db.session.add(msg)
-            conv.last_message_at = datetime.utcnow()
+            conv.last_message_at = utc_now()
             conv.message_count += 1
 
             db.session.commit()
@@ -130,22 +131,22 @@ Personalized message:"""
             # Daily at specific time: "time:16:30"
             time_str = condition.split(":", 1)[1]
             hour, minute = map(int, time_str.split(":"))
-            next_day = datetime.utcnow() + timedelta(days=1)
+            next_day = utc_now() + timedelta(days=1)
             return next_day.replace(hour=hour, minute=minute, second=0, microsecond=0)
 
         elif condition.startswith("interval:"):
             # Every X hours: "interval:24"
             hours = int(condition.split(":", 1)[1])
-            return datetime.utcnow() + timedelta(hours=hours)
+            return utc_now() + timedelta(hours=hours)
 
         elif condition.startswith("silence:"):
             # After X hours of no response: "silence:24"
             hours = int(condition.split(":", 1)[1])
-            return datetime.utcnow() + timedelta(hours=hours)
+            return utc_now() + timedelta(hours=hours)
 
         else:
             # Default: next day
-            return datetime.utcnow() + timedelta(days=1)
+            return utc_now() + timedelta(days=1)
 
     def schedule_default_nudges(self, teen_id: int):
         """Schedule default proactive nudges for a new teen."""

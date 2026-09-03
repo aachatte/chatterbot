@@ -1,8 +1,8 @@
 """Referral program model."""
 import secrets
 import string
-from datetime import datetime
 from app import db
+from app.utils.time import utc_now
 
 
 def _generate_code():
@@ -19,7 +19,7 @@ class Referral(db.Model):
     code = db.Column(db.String(20), unique=True, nullable=False, default=_generate_code)
     used = db.Column(db.Boolean, default=False, nullable=False)
     used_at = db.Column(db.DateTime, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
+    created_at = db.Column(db.DateTime, default=utc_now, nullable=True)
 
     def to_dict(self):
         return {

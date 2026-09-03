@@ -1,10 +1,10 @@
 """Crisis detection and escalation service."""
 import re
-from datetime import datetime
 from config import settings
 from app import db
 from app.models.crisis_alert import CrisisAlert, CrisisStatus
 from app.services.twilio_service import TwilioService
+from app.utils.time import utc_now
 import logging
 
 logger = logging.getLogger(__name__)
@@ -155,7 +155,7 @@ class CrisisDetectionService:
                 alert_id=alert.id,
             )
             if result["success"]:
-                alert.parent_notified_at = datetime.utcnow()
+                alert.parent_notified_at = utc_now()
                 alert.parent_notification_method = "sms"
                 alert.status = CrisisStatus.PARENT_NOTIFIED.value
                 db.session.commit()
@@ -176,7 +176,7 @@ class CrisisDetectionService:
             return False
 
         alert.status = CrisisStatus.RESOLVED.value
-        alert.resolved_at = datetime.utcnow()
+        alert.resolved_at = utc_now()
         alert.resolved_by = user_id
         alert.resolution_notes = notes
         db.session.commit()

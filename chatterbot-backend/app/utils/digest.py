@@ -1,19 +1,20 @@
 """Weekly digest payload builder."""
-from datetime import datetime, timedelta
+from datetime import timedelta
 from app import db
 from app.models.teen import Teen
 from app.models.mood_entry import MoodEntry
 from app.models.crisis_alert import CrisisAlert
 from app.models.user import User
+from app.utils.time import utc_now
 
 
 def build_digest_payload(guardian_id: int) -> dict:
-    guardian = User.query.get(guardian_id)
+    guardian = db.session.get(User, guardian_id)
     if not guardian:
         return {}
 
     teens = Teen.query.filter_by(parent_id=guardian_id).all()
-    week_ago = datetime.utcnow() - timedelta(days=7)
+    week_ago = utc_now() - timedelta(days=7)
 
     teen_summaries = []
     all_scores = []

@@ -1,10 +1,9 @@
 """Guardian user model."""
-from datetime import datetime
-
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db
 from app.models.gamification import user_badges
+from app.utils.time import utc_now
 
 
 class User(db.Model):
@@ -29,11 +28,11 @@ class User(db.Model):
     last_login_at = db.Column(db.DateTime, nullable=True)
     gamification_enabled = db.Column(db.Boolean, default=True, nullable=False)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utc_now, nullable=False)
     updated_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=utc_now,
+        onupdate=utc_now,
         nullable=False,
     )
 

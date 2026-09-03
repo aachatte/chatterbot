@@ -1,6 +1,6 @@
 """Weekly digest log model."""
-from datetime import datetime
 from app import db
+from app.utils.time import utc_now
 
 
 class DigestLog(db.Model):
@@ -8,7 +8,7 @@ class DigestLog(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     guardian_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True, index=True)
-    sent_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
+    sent_at = db.Column(db.DateTime, default=utc_now, nullable=True)
     teen_count = db.Column(db.Integer, default=0)
     alert_count = db.Column(db.Integer, default=0)
     mood_avg = db.Column(db.Float, nullable=True)

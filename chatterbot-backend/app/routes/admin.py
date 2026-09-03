@@ -1,6 +1,5 @@
 """Admin routes for internal operations."""
 import hmac
-from datetime import datetime
 
 from flask import Blueprint, request, jsonify
 from sqlalchemy import text
@@ -13,6 +12,7 @@ from app.models.crisis_alert import CrisisAlert
 from app.models.subscription import Subscription
 from app.services.scheduler_service import SchedulerService
 from app.services.twilio_service import TwilioService
+from app.utils.time import utc_now
 import logging
 
 admin_bp = Blueprint("admin", __name__)
@@ -123,7 +123,7 @@ def list_all_alerts():
 @admin_bp.route("/alerts/<int:alert_id>", methods=["PUT"])
 def update_alert(alert_id):
     """Update alert status (human-in-the-loop)."""
-    alert = CrisisAlert.query.get(alert_id)
+    alert = db.session.get(CrisisAlert, alert_id)
     if not alert:
         return jsonify({"error": "Alert not found"}), 404
 
@@ -194,5 +194,5 @@ def admin_health():
     return jsonify({
         "status": "ok",
         "database": db_status,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": utc_now().isoformat(),
     }), 200

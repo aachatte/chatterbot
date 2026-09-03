@@ -1,6 +1,6 @@
 """Scheduled proactive nudge model."""
-from datetime import datetime
 from app import db
+from app.utils.time import utc_now
 
 
 class ScheduledNudge(db.Model):
@@ -24,7 +24,7 @@ class ScheduledNudge(db.Model):
     max_sends = db.Column(db.Integer, default=1)  # 0 = unlimited
 
     # Metadata
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utc_now)
 
     def to_dict(self):
         return {

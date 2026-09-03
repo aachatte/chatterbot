@@ -1,7 +1,7 @@
 """Crisis alert model — tracks safety escalations."""
-from datetime import datetime
 from enum import Enum as PyEnum
 from app import db
+from app.utils.time import utc_now
 
 
 class CrisisStatus(PyEnum):
@@ -44,8 +44,8 @@ class CrisisAlert(db.Model):
     resolution_notes = db.Column(db.Text, nullable=True)
 
     # Metadata
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utc_now)
+    updated_at = db.Column(db.DateTime, default=utc_now, onupdate=utc_now)
 
     def to_dict(self):
         return {

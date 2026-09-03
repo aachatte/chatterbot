@@ -1,9 +1,9 @@
 """Referral program routes."""
-from datetime import datetime
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
 from app.models.referral import Referral
+from app.utils.time import utc_now
 
 referral_bp = Blueprint("referral", __name__)
 
@@ -37,7 +37,7 @@ def redeem_referral():
     if not referral:
         return jsonify({"error": "Invalid or already used referral code"}), 404
     referral.used = True
-    referral.used_at = datetime.utcnow()
+    referral.used_at = utc_now()
     referral.referree_email = email
     db.session.commit()
     return jsonify({"success": True, "message": "Referral redeemed! You both get one free month."})

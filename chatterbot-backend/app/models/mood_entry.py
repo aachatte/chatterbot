@@ -1,6 +1,6 @@
 """Mood tracking model for teen check-ins."""
-from datetime import datetime
 from app import db
+from app.utils.time import utc_now
 
 
 class MoodEntry(db.Model):
@@ -10,7 +10,7 @@ class MoodEntry(db.Model):
     teen_id = db.Column(db.Integer, db.ForeignKey("teens.id"), nullable=True, index=True)
     score = db.Column(db.Integer, nullable=True)  # 1-10
     note = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=True, index=True)
+    created_at = db.Column(db.DateTime, default=utc_now, nullable=True, index=True)
 
     def to_dict(self):
         return {

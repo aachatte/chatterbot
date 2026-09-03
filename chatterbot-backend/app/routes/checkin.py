@@ -1,10 +1,11 @@
 """Check-in schedule routes."""
-from datetime import datetime, timedelta
+from datetime import timedelta
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
 from app.models.checkin_schedule import CheckinSchedule
 from app.models.teen import Teen
+from app.utils.time import utc_now
 
 checkin_bp = Blueprint("checkin", __name__)
 
@@ -37,7 +38,7 @@ def upsert_schedule(teen_id):
     if "interval_days" in data:
         schedule.interval_days = max(1, int(data["interval_days"]))
     if not schedule.next_send_at:
-        schedule.next_send_at = datetime.utcnow() + timedelta(days=schedule.interval_days)
+        schedule.next_send_at = utc_now() + timedelta(days=schedule.interval_days)
     db.session.commit()
     return jsonify(schedule.to_dict()), 201
 
@@ -45,7 +46,7 @@ def upsert_schedule(teen_id):
 @checkin_bp.route("/api/checkins/send-due", methods=["POST"])
 @jwt_required()
 def send_due_checkins():
-    now = datetime.utcnow()
+    now = utc_now()
     due = CheckinSchedule.query.filter(
         CheckinSchedule.enabled == True,
         CheckinSchedule.next_send_at <= now,

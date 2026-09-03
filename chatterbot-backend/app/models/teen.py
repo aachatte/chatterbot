@@ -2,8 +2,9 @@
 import hashlib
 import hmac
 import secrets
-from datetime import datetime, timedelta
+from datetime import timedelta
 from app import db
+from app.utils.time import utc_now
 
 
 class Teen(db.Model):
@@ -47,8 +48,8 @@ class Teen(db.Model):
     message_count = db.Column(db.Integer, default=0)
     crisis_alert_count = db.Column(db.Integer, default=0)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utc_now)
+    updated_at = db.Column(db.DateTime, default=utc_now, onupdate=utc_now)
 
     # Relationships
     conversations = db.relationship("Conversation", backref="teen", lazy="dynamic", cascade="all, delete-orphan")
@@ -111,7 +112,7 @@ class Teen(db.Model):
             token.encode("utf-8")
         ).hexdigest()
         self.phone_verification_status = "pending"
-        self.phone_verification_expires_at = datetime.utcnow() + expires_in
+        self.phone_verification_expires_at = utc_now() + expires_in
         self.phone_verified_at = None
         return token
 
@@ -121,7 +122,7 @@ class Teen(db.Model):
             not isinstance(token, str)
             or not self.phone_verification_token_hash
             or not self.phone_verification_expires_at
-            or self.phone_verification_expires_at < datetime.utcnow()
+            or self.phone_verification_expires_at < utc_now()
         ):
             return False
 
@@ -130,7 +131,7 @@ class Teen(db.Model):
             return False
 
         self.phone_verification_status = "verified"
-        self.phone_verified_at = datetime.utcnow()
+        self.phone_verified_at = utc_now()
         self.phone_verification_token_hash = None
         self.phone_verification_expires_at = None
         return True
@@ -141,7 +142,7 @@ class Teen(db.Model):
         from app.models.conversation import Message
         recent_msgs = Message.query.filter(
             Message.conversation.has(teen_id=self.id),
-            Message.created_at >= datetime.utcnow() - timedelta(days=7)
+            Message.created_at >= utc_now() - timedelta(days=7)
         ).order_by(Message.created_at.desc()).limit(50).all()
 
         # Simple sentiment heuristic

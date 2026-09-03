@@ -2,6 +2,7 @@
 from functools import wraps
 from flask import jsonify
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
+from app import db
 from app.models.user import User
 from app.models.subscription import Subscription
 
@@ -13,7 +14,7 @@ def require_premium(f):
         verify_jwt_in_request()
         user_id = int(get_jwt_identity())
 
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
         if not user:
             return jsonify({"error": "User not found"}), 404
 
@@ -32,7 +33,7 @@ def require_active_user(f):
         verify_jwt_in_request()
         user_id = int(get_jwt_identity())
 
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
         if not user or not user.is_active:
             return jsonify({"error": "Account is deactivated"}), 403
 

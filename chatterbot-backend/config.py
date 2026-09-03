@@ -1,10 +1,12 @@
 """Add global enable_gamification setting."""
-from pydantic import validator, ValidationError
+from pydantic import ConfigDict, ValidationError, field_validator, model_validator
 from pydantic_settings import BaseSettings
 
 from datetime import datetime
 
 class Settings(BaseSettings):
+    model_config = ConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+
     # App
     app_name: str = "Chatterbot"
     app_url: str = "http://localhost:5000"
@@ -51,57 +53,47 @@ class Settings(BaseSettings):
     # Gamification feature flag
     enable_gamification: bool = True
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        extra = "ignore"
-
-    @validator('secret_key', 'jwt_secret_key')
-    def validate_production_secrets(cls, v, values):
-        """Enforce secure secrets in production environment."""
-        flask_env = values.get('flask_env', 'development')
-        if flask_env == 'production':
-            if not v or v.startswith('dev-') or len(v) < 32:
-                raise ValueError(
-                    f'Production environment requires secure secrets '
-                    f'(minimum 32 characters, no "dev-" prefix)'
-                )
-        return v
-
-    @validator('flask_debug')
-    def validate_production_debug(cls, v, values):
-        """Prevent Flask's interactive debugger from being enabled in production."""
-        if values.get('flask_env', 'development') == 'production' and v:
-            raise ValueError('FLASK_DEBUG must be disabled in production')
-        return v
-
-    @validator('jwt_access_token_expires')
+    @field_validator('jwt_access_token_expires')
+    @classmethod
     def validate_jwt_expiry(cls, v):
         """Require a positive access-token lifetime."""
         if v <= 0:
             raise ValueError('JWT_ACCESS_TOKEN_EXPIRES must be greater than zero')
         return v
 
-    @validator('admin_api_key')
-    def validate_production_admin_key(cls, v, values):
-        """Require a non-default administrative credential in production."""
-        if values.get('flask_env', 'development') == 'production' and len(v) < 32:
-            raise ValueError('Production requires an ADMIN_API_KEY of at least 32 characters')
-        return v
-
-    @validator('openai_api_key')
-    def validate_openai_key(cls, v, values):
+    @field_validator('openai_api_key')
+    @classmethod
+    def validate_openai_key(cls, v):
         """Validate OpenAI API key if provided."""
         if v and not v.startswith('sk-'):
             raise ValueError('Invalid OpenAI API key format')
         return v
 
-    @validator('stripe_secret_key')
-    def validate_stripe_key(cls, v, values):
+    @field_validator('stripe_secret_key')
+    @classmethod
+    def validate_stripe_key(cls, v):
         """Validate Stripe API key if provided."""
         if v and not v.startswith('sk_'):
             raise ValueError('Invalid Stripe API key format')
         return v
+
+    @model_validator(mode='after')
+    def validate_production_settings(self):
+        """Reject insecure credentials and debug mode in production."""
+        if self.flask_env != 'production':
+            return self
+        for field_name in ('secret_key', 'jwt_secret_key'):
+            value = getattr(self, field_name)
+            if not value or value.startswith('dev-') or len(value) < 32:
+                raise ValueError(
+                    'Production requires secure secrets '
+                    '(minimum 32 characters, no "dev-" prefix)'
+                )
+        if self.flask_debug:
+            raise ValueError('FLASK_DEBUG must be disabled in production')
+        if len(self.admin_api_key) < 32:
+            raise ValueError('Production requires an ADMIN_API_KEY of at least 32 characters')
+        return self
 
 
 try:

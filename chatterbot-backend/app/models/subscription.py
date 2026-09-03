@@ -1,6 +1,6 @@
 """Stripe subscription model."""
-from datetime import datetime
 from app import db
+from app.utils.time import utc_now
 
 
 class Subscription(db.Model):
@@ -28,13 +28,13 @@ class Subscription(db.Model):
     cancel_at_period_end = db.Column(db.Boolean, default=False)
 
     # Metadata
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utc_now)
+    updated_at = db.Column(db.DateTime, default=utc_now, onupdate=utc_now)
 
     def is_active(self) -> bool:
         return self.status == "active" and (
             self.current_period_end is None or 
-            self.current_period_end > datetime.utcnow()
+            self.current_period_end > utc_now()
         )
 
     def to_dict(self):

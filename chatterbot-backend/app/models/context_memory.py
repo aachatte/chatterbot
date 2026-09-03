@@ -1,6 +1,6 @@
 """Context memory model — stores conversation context for LLM recall."""
-from datetime import datetime
 from app import db
+from app.utils.time import utc_now
 
 
 class ContextMemory(db.Model):
@@ -19,8 +19,8 @@ class ContextMemory(db.Model):
     confidence = db.Column(db.Float, default=0.8)  # 0.0-1.0
 
     # Temporal
-    first_observed_at = db.Column(db.DateTime, default=datetime.utcnow)
-    last_confirmed_at = db.Column(db.DateTime, default=datetime.utcnow)
+    first_observed_at = db.Column(db.DateTime, default=utc_now)
+    last_confirmed_at = db.Column(db.DateTime, default=utc_now)
     expires_at = db.Column(db.DateTime, nullable=True)  # Some memories expire (e.g., temp events)
 
     # Source
