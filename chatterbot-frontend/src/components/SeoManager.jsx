@@ -16,6 +16,14 @@ const ROUTE_META = {
     title: 'Chatterbot Demo | Guardian safety dashboard',
     description: 'See how Chatterbot conversations and alerts work in a live guardian dashboard demo.',
   },
+  '/trust-center': {
+    title: 'Trust Center | Chatterbot',
+    description: 'Understand what Chatterbot shares, how safety signals work, and how teens stay connected to trusted people.',
+  },
+  '/partners': {
+    title: 'Partner with Chatterbot',
+    description: 'Explore responsible Chatterbot pilots for families, schools, care teams, and youth organizations.',
+  },
   '/privacy': {
     title: 'Privacy Center | Chatterbot',
     description: 'Learn what data Chatterbot uses and how guardians can manage account and privacy preferences.',

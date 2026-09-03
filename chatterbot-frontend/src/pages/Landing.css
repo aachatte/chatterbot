@@ -1776,6 +1776,12 @@
   gap: 20px;
   margin-top: 48px;
 }
+
+.landing-trust__action {
+  display: flex;
+  justify-content: center;
+  margin-top: 34px;
+}
 .landing-trust__card {
   background: var(--cb-bg-elevated);
   border: 1px solid var(--cb-border);

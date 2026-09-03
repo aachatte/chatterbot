@@ -26,6 +26,9 @@ const ConversationHistory = lazy(() => import('./pages/ConversationHistory.jsx')
 const Notifications = lazy(() => import('./pages/Notifications.jsx'))
 const CareCircle = lazy(() => import('./pages/CareCircle.jsx'))
 const JoinCareCircle = lazy(() => import('./pages/JoinCareCircle.jsx'))
+const TrustCenter = lazy(() => import('./pages/TrustCenter.jsx'))
+const Partners = lazy(() => import('./pages/Partners.jsx'))
+const SupportPlan = lazy(() => import('./pages/SupportPlan.jsx'))
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
@@ -54,6 +57,8 @@ function App() {
         <Route path="/safety" element={<PublicInfo />} />
         <Route path="/support" element={<PublicInfo />} />
         <Route path="/demo" element={<Demo />} />
+        <Route path="/trust-center" element={<TrustCenter />} />
+        <Route path="/partners" element={<Partners />} />
         <Route path="/care-circle/join/:token" element={<JoinCareCircle />} />
         <Route path="/dashboard" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route index element={<Dashboard />} />
@@ -65,6 +70,7 @@ function App() {
           <Route path="alerts/:id" element={<AlertDetail />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="care-circle" element={<CareCircle />} />
+          <Route path="support-plan" element={<SupportPlan />} />
           <Route path="settings" element={<Settings />} />
           <Route path="support" element={<Support />} />
           <Route path="billing" element={<Billing />} />

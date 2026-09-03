@@ -179,12 +179,12 @@ export default function Landing() {
             <a href="#platform" className="landing-nav__link">
               Platform
             </a>
-            <a href="#safety" className="landing-nav__link">
-              Safety
-            </a>
-            <a href="#schools" className="landing-nav__link">
-              For schools
-            </a>
+            <Link to="/trust-center" className="landing-nav__link">
+              Trust Center
+            </Link>
+            <Link to="/partners" className="landing-nav__link">
+              Partners
+            </Link>
             <Link to="/login" className="landing-nav__link">
               Sign in
             </Link>
@@ -1141,6 +1141,11 @@ export default function Landing() {
               </div>
             ))}
           </div>
+          <div className="landing-trust__action">
+            <Link to="/trust-center" className="btn btn--primary btn--lg">
+              Explore the complete safety model →
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -1189,6 +1194,8 @@ export default function Landing() {
             <Link to="/privacy">Privacy</Link>
             <Link to="/terms">Terms</Link>
             <Link to="/safety">Safety</Link>
+            <Link to="/trust-center">Trust Center</Link>
+            <Link to="/partners">Partners</Link>
             <Link to="/support">Support</Link>
             <Link to="/demo">Demo</Link>
           </nav>
