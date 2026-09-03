@@ -7,6 +7,7 @@ from app.models.subscription import Subscription
 from app.models.context_memory import ContextMemory
 from app.models.scheduled_nudge import ScheduledNudge
 from app.models.support_request import SupportRequest
+from app.models.care_circle import CareCircleActivity, CareCircleMember
 
 __all__ = [
     "User",
@@ -18,4 +19,6 @@ __all__ = [
     "ContextMemory",
     "ScheduledNudge",
     "SupportRequest",
+    "CareCircleMember",
+    "CareCircleActivity",
 ]

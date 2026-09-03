@@ -20,6 +20,16 @@ export default function Settings() {
         </Link>
       </section>
 
+      <section className="glass-card" style={{ marginBottom: 'var(--cb-space-5)' }}>
+        <h2 style={{ fontSize: 20, marginBottom: 'var(--cb-space-2)' }}>Care Circle access</h2>
+        <p style={{ color: 'var(--cb-text-secondary)', lineHeight: 1.6, marginBottom: 'var(--cb-space-4)' }}>
+          Invite trusted adults, set exactly which signals they receive, pause access, and review every change.
+        </p>
+        <Link to="/dashboard/care-circle" style={{ display: 'inline-block', background: 'var(--cb-primary)', borderRadius: 'var(--cb-radius-md)', color: 'white', fontWeight: 600, padding: '10px 16px', textDecoration: 'none' }}>
+          Manage Care Circle
+        </Link>
+      </section>
+
       <section className="glass-card">
         <h2 style={{ fontSize: 20, marginBottom: 'var(--cb-space-2)' }}>Emergency support</h2>
         <p style={{ color: 'var(--cb-text-secondary)', lineHeight: 1.6 }}>

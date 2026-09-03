@@ -133,6 +133,30 @@ export const api = {
   addCounselor: (data) => request('/counselors', { method: 'POST', body: data }),
   deleteCounselor: (id) => request(`/counselors/${id}`, { method: 'DELETE' }),
 
+  // Care Circle
+  getCareCircle: (teenId) => {
+    const query = teenId ? `?teen_id=${encodeURIComponent(teenId)}` : ''
+    return request(`/care-circle${query}`)
+  },
+  createCareCircleMember: (data) => request('/care-circle/members', {
+    method: 'POST',
+    body: data,
+  }),
+  updateCareCircleMember: (id, data) => request(`/care-circle/members/${id}`, {
+    method: 'PATCH',
+    body: data,
+  }),
+  deleteCareCircleMember: (id) => request(`/care-circle/members/${id}`, {
+    method: 'DELETE',
+  }),
+  refreshCareCircleInvitation: (id) => request(`/care-circle/members/${id}/invitation`, {
+    method: 'POST',
+  }),
+  getCareCircleInvitation: (token) => request(`/care-circle/invitations/${encodeURIComponent(token)}`),
+  acceptCareCircleInvitation: (token) => request(`/care-circle/invitations/${encodeURIComponent(token)}/accept`, {
+    method: 'POST',
+  }),
+
   // Referrals
   generateReferral: () => request('/referrals/generate', { method: 'POST' }),
   getReferrals: () => request('/referrals'),

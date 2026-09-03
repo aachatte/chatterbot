@@ -1,6 +1,8 @@
 # Chatterbot
 
-Chatterbot is an SMS first support platform for teens and their guardians. Teens receive conversational check ins by text, while guardians use a privacy conscious dashboard for enrollment, preferences, summaries, and safety alerts.
+Chatterbot is an SMS first support platform for teens and their guardians. Teens receive conversational check ins by text, while guardians use a privacy conscious dashboard for enrollment, Care Circle permissions, summaries, and safety alerts.
+
+Care Circle lets a guardian create a teen specific network of trusted adults, issue expiring invitation links, choose which support signals each member can receive, pause or remove access, and review a privacy safe activity history. Accepted members with SMS safety alerts enabled can receive a minimal safety signal without conversation text.
 
 ## Project structure
 
@@ -61,6 +63,8 @@ cd chatterbot-backend
 .venv/bin/python -m pytest
 .venv/bin/python -m pip check
 ```
+
+The application creates the Care Circle tables during normal startup. Deployments with externally managed schemas can use the included Care Circle migration as the schema reference.
 
 ## Production notes
 

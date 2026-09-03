@@ -69,7 +69,22 @@ export default function SeoManager() {
   const { pathname } = useLocation()
 
   useEffect(() => {
-    const meta = { ...DEFAULT_META, ...(ROUTE_META[pathname] || {}) }
+    const isCareCircleInvite = pathname.startsWith('/care-circle/join/')
+    const isDashboard = pathname.startsWith('/dashboard')
+    const protectedMeta = isCareCircleInvite
+      ? {
+          title: 'Care Circle invitation | Chatterbot',
+          description: 'Review a secure Chatterbot Care Circle invitation.',
+          robots: 'noindex, nofollow',
+        }
+      : isDashboard
+        ? { robots: 'noindex, nofollow' }
+        : {}
+    const meta = {
+      ...DEFAULT_META,
+      ...(ROUTE_META[pathname] || {}),
+      ...protectedMeta,
+    }
     document.title = meta.title
 
     setOrCreateMeta('description', meta.description)
@@ -81,7 +96,7 @@ export default function SeoManager() {
     setOrCreateMeta('twitter:card', 'summary_large_image')
     setOrCreateMeta('twitter:title', meta.title)
     setOrCreateMeta('twitter:description', meta.description)
-    setCanonical(pathname)
+    setCanonical(isCareCircleInvite || isDashboard ? '/' : pathname)
   }, [pathname])
 
   return null

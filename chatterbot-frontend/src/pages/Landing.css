@@ -715,6 +715,11 @@
   margin-bottom: 60px;
 }
 
+.landing-pillars__header .landing-section-heading {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .landing-bento {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

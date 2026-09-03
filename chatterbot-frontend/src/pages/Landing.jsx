@@ -649,7 +649,7 @@ export default function Landing() {
                 },
                 {
                   icon: '🔒',
-                  title: 'Private space, clear guardrails',
+                  title: 'A safe friend, with clear guardrails',
                   body: "Teens aren't watched line by line. Guardians get signals and safety alerts, not full transcripts.",
                 },
                 {

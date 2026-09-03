@@ -56,6 +56,18 @@ class Teen(db.Model):
     context_memories = db.relationship("ContextMemory", backref="teen", lazy="dynamic", cascade="all, delete-orphan")
     scheduled_nudges = db.relationship("ScheduledNudge", backref="teen", lazy="dynamic", cascade="all, delete-orphan")
     crisis_alerts = db.relationship("CrisisAlert", backref="teen", lazy="dynamic", cascade="all, delete-orphan")
+    care_circle_members = db.relationship(
+        "CareCircleMember",
+        back_populates="teen",
+        lazy="dynamic",
+        cascade="all, delete-orphan",
+    )
+    care_circle_activities = db.relationship(
+        "CareCircleActivity",
+        back_populates="teen",
+        lazy="dynamic",
+        cascade="all, delete-orphan",
+    )
 
     def to_dict(self):
         return {

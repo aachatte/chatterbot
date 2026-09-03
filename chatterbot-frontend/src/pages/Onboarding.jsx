@@ -24,8 +24,11 @@ export default function Onboarding() {
     phone_verified: false,
     notifications_enabled: true,
   })
+  const [inviteName, setInviteName] = useState('')
   const [inviteEmail, setInviteEmail] = useState('')
+  const [inviteRole, setInviteRole] = useState('family_member')
   const [invites, setInvites] = useState([])
+  const [inviting, setInviting] = useState(false)
   const [firstWeekChecklist, setFirstWeekChecklist] = useState({
     complete_consent: false,
     send_first_nudge: false,
@@ -129,18 +132,51 @@ export default function Onboarding() {
     if (saved) navigate('/dashboard')
   }
 
-  const inviteCollaborator = () => {
+  const inviteCollaborator = async () => {
+    const name = inviteName.trim()
     const email = inviteEmail.trim()
     const atIndex = email.indexOf('@')
     const hasBasicEmailShape = atIndex > 0 && email.indexOf('.', atIndex) > atIndex + 1
-    if (!email || !hasBasicEmailShape) return
-    if (invites.includes(email)) {
-      setInviteEmail('')
+    if (!name || !email || !hasBasicEmailShape || !teenId) {
+      setError('Enter a name and valid email for your support partner.')
       return
     }
-    setInvites((prev) => [...prev, email])
-    setInviteEmail('')
-    setFirstWeekChecklist((prev) => ({ ...prev, add_support_partner: true }))
+    setInviting(true)
+    setError('')
+    try {
+      const response = await api.createCareCircleMember({
+        teen_id: teenId,
+        name,
+        email,
+        role: inviteRole,
+        access_level: 'safety_only',
+        notify_safety_alerts: true,
+        notify_checkin_updates: false,
+      })
+      setInvites((prev) => [
+        ...prev,
+        {
+          ...response.member,
+          invite_url: `${window.location.origin}/care-circle/join/${response.invite_token}`,
+        },
+      ])
+      setInviteName('')
+      setInviteEmail('')
+      setInviteRole('family_member')
+      setFirstWeekChecklist((prev) => ({ ...prev, add_support_partner: true }))
+    } catch (inviteError) {
+      setError(inviteError?.data?.error || 'Could not create the Care Circle invitation.')
+    } finally {
+      setInviting(false)
+    }
+  }
+
+  const copyInviteLink = async (inviteUrl) => {
+    try {
+      await navigator.clipboard.writeText(inviteUrl)
+    } catch {
+      setError('Could not copy the invitation link. Open Care Circle to create a fresh link.')
+    }
   }
 
   return (
@@ -243,20 +279,54 @@ export default function Onboarding() {
             </div>
 
             <div style={{ borderTop: '1px solid var(--cb-border)', paddingTop: 14, marginTop: 6 }}>
-              <h3 style={{ marginBottom: 8, fontSize: 15 }}>Family collaboration setup</h3>
-              <div style={{ display: 'flex', gap: 8 }}>
+              <h3 style={{ marginBottom: 8, fontSize: 15 }}>Start a Care Circle</h3>
+              <p style={{ margin: '0 0 10px', color: 'var(--cb-text-secondary)', fontSize: 12, lineHeight: 1.5 }}>
+                Add one trusted adult for safety alerts. You can fine-tune their access in Care Circle.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                 <input
-                  value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
-                  placeholder="Invite co-guardian by email"
+                  value={inviteName}
+                  onChange={(e) => setInviteName(e.target.value)}
+                  placeholder="Name"
                   className="onboarding__input"
                   style={{ margin: 0 }}
                 />
-                <button type="button" className="onboarding__btn" onClick={inviteCollaborator}>Invite</button>
+                <input
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  placeholder="Email"
+                  className="onboarding__input"
+                  style={{ margin: 0 }}
+                />
+                <select
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value)}
+                  className="onboarding__input"
+                  style={{ margin: 0 }}
+                >
+                  <option value="family_member">Family member</option>
+                  <option value="co_guardian">Co-guardian</option>
+                  <option value="counselor">Counselor</option>
+                  <option value="mentor">Mentor or coach</option>
+                </select>
+                <button type="button" className="onboarding__btn" disabled={inviting} onClick={inviteCollaborator}>
+                  {inviting ? 'Creating…' : 'Create invite'}
+                </button>
               </div>
               {invites.length > 0 && (
-                <ul style={{ marginTop: 8, color: 'var(--cb-text-secondary)', fontSize: 13 }}>
-                  {invites.map((invite) => <li key={invite}>{invite}</li>)}
+                <ul style={{ display: 'grid', gap: 6, marginTop: 10, padding: 0, listStyle: 'none', color: 'var(--cb-text-secondary)', fontSize: 13 }}>
+                  {invites.map((invite) => (
+                    <li key={invite.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, border: '1px solid var(--cb-border)', borderRadius: 8, padding: '8px 10px' }}>
+                      <span>{invite.name} · invitation pending</span>
+                      <button
+                        type="button"
+                        onClick={() => copyInviteLink(invite.invite_url)}
+                        style={{ border: '1px solid var(--cb-border)', borderRadius: 7, background: 'var(--cb-bg-elevated)', color: 'var(--cb-text-primary)', padding: '5px 8px', fontSize: 11, fontWeight: 700 }}
+                      >
+                        Copy link
+                      </button>
+                    </li>
+                  ))}
                 </ul>
               )}
             </div>

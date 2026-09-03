@@ -15,6 +15,7 @@ import {
   Users,
   X,
   ChartColumn,
+  HeartHandshake,
 } from 'lucide-react'
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
@@ -28,6 +29,7 @@ import './Layout.css'
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/dashboard/teens', label: 'Teens', icon: Users },
+  { path: '/dashboard/care-circle', label: 'Care Circle', icon: HeartHandshake },
   { path: '/dashboard/chat', label: 'Assistant', icon: MessageSquareText },
   { path: '/dashboard/alerts', label: 'Alerts', icon: Shield },
   { path: '/dashboard/notifications', label: 'Notifications', icon: Bell },
@@ -52,6 +54,11 @@ const quickActions = [
     label: 'Manage teen profiles',
     path: '/dashboard/teens',
     keywords: 'teens profiles consent verification',
+  },
+  {
+    label: 'Manage Care Circle',
+    path: '/dashboard/care-circle',
+    keywords: 'care circle trusted adults counselors permissions invitations',
   },
   {
     label: 'Notifications center',

@@ -1,11 +1,12 @@
 """Crisis detection and escalation service."""
+import logging
 import re
-from config import settings
+
 from app import db
+from app.models.care_circle import CareCircleActivity, CareCircleMember
 from app.models.crisis_alert import CrisisAlert, CrisisStatus
 from app.services.twilio_service import TwilioService
 from app.utils.time import utc_now
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -121,7 +122,8 @@ class CrisisDetectionService:
             return (
                 f"Chatterbot detected language related to self-harm from {teen.first_name}. "
                 f"Immediate parental check-in is strongly recommended. "
-                f"The exact message content is not displayed to protect {teen.first_name}\'s privacy, "
+                "The exact message content is not displayed to protect "
+                f"{teen.first_name}\'s privacy, "
                 f"but the conversation has been flagged for safety review."
             )
         elif "severe_bullying" in categories:
@@ -131,7 +133,8 @@ class CrisisDetectionService:
             )
         elif "violence" in categories:
             return (
-                f"Chatterbot detected concerning language related to violence from {teen.first_name}. "
+                "Chatterbot detected concerning language related to violence "
+                f"from {teen.first_name}. "
                 f"This requires immediate attention and possibly school/counselor involvement."
             )
         else:
@@ -163,11 +166,57 @@ class CrisisDetectionService:
         # TODO: Add email notification via SendGrid/AWS SES
         # TODO: Add push notification via Firebase/OneSignal
 
+        self._notify_care_circle(teen, alert)
+
         # For critical alerts, consider notifying authorities
         if alert.severity == "critical":
             # This would integrate with crisis hotline APIs or local authorities
             # NEVER do this without clear legal framework and user consent
-            logger.critical(f"CRITICAL alert #{alert.id}: Authority notification protocol would trigger here.")
+            logger.critical(
+                "CRITICAL alert #%s: Authority notification protocol would trigger here.",
+                alert.id,
+            )
+
+    def _notify_care_circle(self, teen, alert: CrisisAlert):
+        """Route a minimal safety signal to accepted, permissioned SMS contacts."""
+        members = CareCircleMember.query.filter_by(
+            guardian_id=teen.parent_id,
+            teen_id=teen.id,
+            status="active",
+            notify_safety_alerts=True,
+        ).all()
+
+        for member in members:
+            if not member.phone:
+                continue
+            body = (
+                "Chatterbot Care Circle safety alert\n\n"
+                f"A safety signal for {teen.first_name} may need attention. "
+                "Please follow your agreed support plan or contact their guardian.\n\n"
+                "No conversation text is included in this alert."
+            )
+            result = self.twilio.send_sms(member.phone, body)
+            if not result.get("success"):
+                logger.warning(
+                    "Care Circle safety alert delivery failed for member %s",
+                    member.id,
+                )
+                continue
+
+            member.last_notified_at = utc_now()
+            db.session.add(
+                CareCircleActivity(
+                    guardian_id=teen.parent_id,
+                    teen_id=teen.id,
+                    member_id=member.id,
+                    member_name=member.name,
+                    action="safety_signal_routed",
+                    detail=f"A safety signal was routed to {member.name}.",
+                    actor_name="Chatterbot",
+                )
+            )
+
+        db.session.commit()
 
     def resolve_alert(self, alert_id: int, user_id: int, notes: str = "") -> bool:
         """Mark a crisis alert as resolved."""
