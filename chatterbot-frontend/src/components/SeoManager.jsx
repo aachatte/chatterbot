@@ -9,7 +9,7 @@ const DEFAULT_META = {
 
 const ROUTE_META = {
   '/': {
-    title: 'Chatterbot | a friend for teens. Peace of mind for parents',
+    title: 'Chatterbot | A friend for teens. Peace of mind for parents',
     description: 'Daily SMS check-ins, guardian dashboards, and instant safety alerts to help families support teens.',
   },
   '/demo': {

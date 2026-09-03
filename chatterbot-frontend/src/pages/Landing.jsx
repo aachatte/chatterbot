@@ -221,7 +221,7 @@ export default function Landing() {
             </div>
 
             <h1 className="landing-hero__heading">
-              a friend for teens.{' '}
+              A friend for teens.{' '}
               <span className="landing-hero__heading-accent">Peace of mind for parents</span>
             </h1>
 
