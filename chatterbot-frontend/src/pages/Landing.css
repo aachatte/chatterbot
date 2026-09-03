@@ -1944,6 +1944,22 @@
   --landing-coral: #ff6f68;
   --landing-mint: #65d7c0;
   --landing-cream: #fff8ed;
+  --cb-bg: #f7fafc;
+  --cb-bg-primary: #f7fafc;
+  --cb-bg-secondary: #edf4f8;
+  --cb-bg-elevated: #ffffff;
+  --cb-bg-muted: rgba(20, 90, 134, 0.08);
+  --cb-bg-strong: #dce9f2;
+  --cb-text-primary: #102f4c;
+  --cb-text-secondary: #40566b;
+  --cb-text-tertiary: #5d7387;
+  --cb-text-quaternary: #708397;
+  --cb-border: rgba(16, 47, 76, 0.16);
+  --cb-border-strong: rgba(16, 47, 76, 0.3);
+  --cb-primary: #145a86;
+  --cb-primary-hover: #0d466b;
+  --cb-danger: #d33f5a;
+  color-scheme: light;
   background: #f7fafc;
 }
 
@@ -2516,10 +2532,16 @@
 
 .landing-referral__inner {
   max-width: 1080px;
+  color: var(--landing-ink);
 }
 
 .landing-referral__inner > .landing-section-heading {
   margin-inline: auto;
+  color: var(--landing-ink);
+}
+
+.landing-referral__inner > .landing-section-body {
+  color: #40566b;
 }
 
 .landing-referral__network {
@@ -2574,6 +2596,10 @@
   background: #236f62;
 }
 
+.landing-referral__person strong {
+  color: var(--landing-ink);
+}
+
 .landing-referral__hub {
   min-height: 180px;
   color: #fff;
@@ -2582,8 +2608,12 @@
 
 .landing-referral__person small,
 .landing-referral__hub small {
-  color: #718498;
+  color: #52697e;
   font-size: 10px;
+}
+
+.landing-referral__hub strong {
+  color: #fff;
 }
 
 .landing-referral__hub small {
@@ -2593,7 +2623,13 @@
 .landing-referral__step {
   align-items: flex-start;
   text-align: left;
+  color: var(--landing-ink);
+  background: #fff;
   border-radius: 18px;
+}
+
+.landing-referral__step-text {
+  color: #294760;
 }
 
 .landing-referral__step-number {
@@ -2633,12 +2669,29 @@
 }
 
 .landing-final-cta {
+  color: var(--landing-ink);
   background: var(--landing-cream);
 }
 
 .landing-final-cta__heading {
+  color: var(--landing-ink);
   font-size: clamp(38px, 5vw, 58px);
   letter-spacing: -0.05em;
+}
+
+.landing-final-cta__sub {
+  color: #40566b;
+}
+
+.landing-final-cta__actions .btn--ghost {
+  color: var(--landing-ink);
+  background: #fff;
+  border-color: #c9d7e2;
+}
+
+.landing-final-cta__actions .btn--ghost:hover {
+  color: var(--landing-ink);
+  background: #edf5fa;
 }
 
 @media (max-width: 1080px) {

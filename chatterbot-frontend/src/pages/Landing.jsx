@@ -221,14 +221,13 @@ export default function Landing() {
             </div>
 
             <h1 className="landing-hero__heading">
-              Built for a generation that{' '}
-              <span className="landing-hero__heading-accent">texts first.</span>
+              A safe friend for teens.{' '}
+              <span className="landing-hero__heading-accent">Peace of mind for parents.</span>
             </h1>
 
             <p className="landing-hero__sub">
-              Chatterbot turns everyday SMS conversations into consistent
-              support, meaningful progress, and clear next steps for the adults
-              who care—without turning trust into surveillance.
+              Chatterbot starts each SMS check-in and shares only the signals that
+              matter, giving teens room to talk and parents a trusted path to support.
             </p>
 
             <div className="landing-hero__actions">
