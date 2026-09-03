@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { fetchMyGamification, claimDailyLoginReward } from '../services/gamification.js'
+import dailySparkBadge from '../assets/badges/daily-spark.webp'
+import calmNavigatorBadge from '../assets/badges/calm-navigator.webp'
+import momentumMakerBadge from '../assets/badges/momentum-maker.webp'
 import './PointsBadge.css'
 
 const MASCOTS = [
-  { name: 'Spark Fox', emoji: '🦊' },
-  { name: 'Nova Owl', emoji: '🦉' },
-  { name: 'Wave Whale', emoji: '🐳' },
-  { name: 'Glow Koala', emoji: '🐨' },
+  { name: 'Daily Spark', image: dailySparkBadge },
+  { name: 'Calm Navigator', image: calmNavigatorBadge },
+  { name: 'Momentum Maker', image: momentumMakerBadge },
 ]
 
 function pickMascot(seed) {
@@ -17,6 +19,8 @@ function pickMascot(seed) {
 
 export default function PointsBadge() {
   const [state, setState] = useState({ loading: true, error: null, data: null })
+  const [claiming, setClaiming] = useState(false)
+  const [feedback, setFeedback] = useState('')
   useEffect(() => {
     let mounted = true
     fetchMyGamification()
@@ -32,15 +36,16 @@ export default function PointsBadge() {
 
   const claim = async () => {
     try {
-      setState((s) => ({ ...s, loading: true }))
+      setClaiming(true)
+      setFeedback('')
       const res = await claimDailyLoginReward()
-      // refresh
       const latest = await fetchMyGamification()
       setState({ loading: false, error: null, data: latest })
-      // small feedback (replace with in-app toasts if available)
-      alert(res.message || 'Small win claimed — you got this!')
+      setFeedback(res.message || 'Small win claimed')
     } catch (err) {
-      setState((s) => ({ ...s, loading: false, error: err.message || 'Claim failed' }))
+      setFeedback(err.message || 'Unable to claim this win')
+    } finally {
+      setClaiming(false)
     }
   }
 
@@ -55,11 +60,16 @@ export default function PointsBadge() {
       <div className="points-header">
         <div className="points-value">{points}</div>
         <div className="points-meta">Level {level} • Streak {streak_count}d • {streakMascot.name}</div>
-        <div className="points-streak-avatar" aria-hidden="true">{streakMascot.emoji}</div>
+        <div className="points-streak-avatar">
+          <img src={streakMascot.image} alt={`${streakMascot.name} badge`} />
+        </div>
       </div>
 
       <div className="points-actions">
-        <button className="btn btn--sm" onClick={claim}>Claim small win</button>
+        <button className="btn btn--sm" onClick={claim} disabled={claiming}>
+          {claiming ? 'Claiming…' : 'Claim small win'}
+        </button>
+        {feedback && <span className="points-feedback" role="status">{feedback}</span>}
       </div>
 
       <div className="badge-list">
@@ -67,7 +77,13 @@ export default function PointsBadge() {
           const mascot = pickMascot(b.code || b.name)
           return (
           <div key={b.code} className="badge-item" title={b.description}>
-            {b.icon ? <img src={b.icon} alt={b.name} /> : <div className="badge-fallback" aria-hidden="true">{mascot.emoji}</div>}
+            {b.icon && /^(https?:|\/)/.test(b.icon) ? (
+              <img src={b.icon} alt={b.name} />
+            ) : (
+              <div className="badge-fallback">
+                <img src={mascot.image} alt={`${mascot.name} badge`} />
+              </div>
+            )}
             <div className="badge-name">{b.name}</div>
             <div className="badge-mascot">{mascot.name}</div>
           </div>

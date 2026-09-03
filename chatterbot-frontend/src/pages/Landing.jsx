@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { ChatterbotLogo } from '../components/ChatterbotLogo.jsx'
+import dailySparkBadge from '../assets/badges/daily-spark.webp'
+import calmNavigatorBadge from '../assets/badges/calm-navigator.webp'
+import momentumMakerBadge from '../assets/badges/momentum-maker.webp'
 import './Landing.css'
 
 export default function Landing() {
@@ -173,6 +176,15 @@ export default function Landing() {
             <span>Chatterbot</span>
           </Link>
           <div className="landing-nav__links">
+            <a href="#platform" className="landing-nav__link">
+              Platform
+            </a>
+            <a href="#safety" className="landing-nav__link">
+              Safety
+            </a>
+            <a href="#schools" className="landing-nav__link">
+              For schools
+            </a>
             <Link to="/login" className="landing-nav__link">
               Sign in
             </Link>
@@ -201,159 +213,187 @@ export default function Landing() {
           aria-hidden="true"
         />
 
-        <div className="landing-hero__content">
-          <div className="landing-hero__badge">
-            <span className="pulse-dot pulse-dot--red" />
-            SMS-first support for teens
+        <div className="landing-hero__shell">
+          <div className="landing-hero__content">
+            <div className="landing-hero__badge">
+              <span className="landing-hero__badge-mark" aria-hidden="true" />
+              The teen wellbeing support layer
+            </div>
+
+            <h1 className="landing-hero__heading">
+              Built for a generation that{' '}
+              <span className="landing-hero__heading-accent">texts first.</span>
+            </h1>
+
+            <p className="landing-hero__sub">
+              Chatterbot turns everyday SMS conversations into consistent
+              support, meaningful progress, and clear next steps for the adults
+              who care—without turning trust into surveillance.
+            </p>
+
+            <div className="landing-hero__actions">
+              <Link to="/register" className="btn btn--primary btn--lg">
+                Start with Chatterbot
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </Link>
+              <Link to="/demo" className="btn btn--ghost btn--lg">
+                Explore the live product
+              </Link>
+            </div>
+
+            <div className="landing-hero__assurance">
+              <span>Zero teen-side downloads</span>
+              <span>Consent-led onboarding</span>
+              <span>Privacy-conscious by design</span>
+            </div>
           </div>
 
-          <h1 className="landing-hero__heading">
-            Support teens where they already are.
-            <br />
-            <span className="landing-hero__heading-accent">
-              Right in their texts.
-            </span>
-          </h1>
-
-          <p className="landing-hero__sub">
-            Thoughtful SMS check-ins, guardian-set boundaries, and fast safety
-            alerts— so teens get support that feels natural, and guardians get
-            visibility they can trust.
-          </p>
-
-          <div className="landing-hero__actions">
-            <Link to="/register" className="btn btn--primary btn--lg">
-              Start free trial
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </Link>
-            <Link to="/demo" className="btn btn--ghost btn--lg">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <polygon points="10 8 16 12 10 16 10 8" />
-              </svg>
-              See demo dashboard
-            </Link>
-          </div>
-
-          <div className="landing-hero__stats">
-            {[
-              { value: '0', label: 'new apps for teens' },
-              { value: 'SMS', label: 'support in their everyday flow' },
-              { value: '24 / 7', label: 'check-ins + risk monitoring' },
-              { value: '988', label: 'crisis-ready escalation' },
-            ].map((s) => (
-              <div className="landing-hero__stat" key={s.label}>
-                <span className="landing-hero__stat-value">{s.value}</span>
-                <span className="landing-hero__stat-label">{s.label}</span>
+          <div className="landing-command" aria-label="Guardian command center preview">
+            <div className="landing-command__topbar">
+              <div>
+                <span className="landing-command__eyebrow">Guardian command center</span>
+                <strong>Good afternoon, Alex</strong>
               </div>
-            ))}
+              <span className="landing-command__live">
+                <i aria-hidden="true" /> All systems active
+              </span>
+            </div>
+            <div className="landing-command__profile">
+              <div className="landing-command__avatar">M</div>
+              <div>
+                <strong>Maya’s week</strong>
+                <span>Last check-in today at 4:18 PM</span>
+              </div>
+              <span className="landing-command__steady">Steady</span>
+            </div>
+            <div className="landing-command__metrics">
+              <div>
+                <span>Check-in streak</span>
+                <strong>12 days</strong>
+                <small>Personal best</small>
+              </div>
+              <div>
+                <span>Weekly pulse</span>
+                <strong>Positive</strong>
+                <small>4 of 5 check-ins</small>
+              </div>
+            </div>
+            <div className="landing-command__signal">
+              <div className="landing-command__signal-icon">✓</div>
+              <div>
+                <strong>Today’s check-in completed</strong>
+                <span>Homework stress · coping plan created</span>
+              </div>
+              <span>4:18 PM</span>
+            </div>
+            <div className="landing-command__footer">
+              <span>Next scheduled check-in</span>
+              <strong>Tomorrow · 4:00 PM</strong>
+            </div>
           </div>
+        </div>
+        <div className="landing-hero__stats">
+          {[
+            { value: 'SMS native', label: 'No new teen app' },
+            { value: 'Signal based', label: 'Not transcript based' },
+            { value: 'Always on', label: 'Between-session support' },
+            { value: 'Action ready', label: 'Clear escalation paths' },
+          ].map((s) => (
+            <div className="landing-hero__stat" key={s.label}>
+              <span className="landing-hero__stat-value">{s.value}</span>
+              <span className="landing-hero__stat-label">{s.label}</span>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* ── GAMIFICATION ── */}
-      <section className="landing-gamification">
+      <section className="landing-gamification" id="platform">
         <div className="landing-gamification__inner">
           <div className="landing-gamification__header">
-            <p className="landing-section-eyebrow">Gamified support</p>
+            <p className="landing-section-eyebrow">A healthier engagement loop</p>
             <h2 className="landing-section-heading">
-              Turn small wins into real momentum.
+              Progress teens can see and feel.
             </h2>
             <p className="landing-section-body">
-              Teens don't skip therapy because they don't care—they skip because
-              it doesn't feel rewarding. Chatterbot uses streaks, badges, and
-              bite-sized challenges to make showing up feel like progress, not a
-              chore. Consistent engagement is how trust is built over time.
+              Chatterbot rewards the actions that matter: checking in, naming a
+              feeling, practicing a coping skill, and coming back tomorrow. No
+              leaderboards. No shame. Just visible momentum.
             </p>
           </div>
           <div className="landing-gamification__grid">
             {[
               {
-                icon: '🔥',
-                title: 'Daily streaks',
-                body: 'One check-in a day keeps the streak alive. The consistency habit that builds over weeks is the same habit that keeps teens talking when things get hard.',
-                tag: 'Habit loop',
-                mascot: 'Spark Fox',
-                mascotEmoji: '🦊',
+                image: dailySparkBadge,
+                title: 'Daily Spark',
+                body: 'Build a steady check-in habit one honest conversation at a time.',
+                tag: 'Consistency',
+                unlock: '7 day check-in streak',
+                progress: 86,
               },
               {
-                icon: '🏅',
-                title: 'Achievement badges',
-                body: 'Unlock badges for coping wins, sleep goals, and honest reflection. Visible progress gives teens a sense of ownership over their own wellbeing journey.',
-                tag: 'Progress milestones',
-                mascot: 'Nova Owl',
-                mascotEmoji: '🦉',
+                image: calmNavigatorBadge,
+                title: 'Calm Navigator',
+                body: 'Recognize moments when a teen pauses, reflects, and chooses a coping tool.',
+                tag: 'Self regulation',
+                unlock: 'Complete 5 reset exercises',
+                progress: 64,
               },
               {
-                icon: '🎯',
-                title: 'Mini challenges',
-                body: '2-minute wellness missions—hydration, gratitude, a quick breathing exercise. Small enough to actually do; meaningful enough to make a real difference.',
-                tag: 'Quick wins',
-                mascot: 'Wave Whale',
-                mascotEmoji: '🐳',
+                image: momentumMakerBadge,
+                title: 'Momentum Maker',
+                body: 'Celebrate small wellness goals that turn intention into repeatable action.',
+                tag: 'Healthy action',
+                unlock: 'Finish 10 mini challenges',
+                progress: 42,
               },
             ].map((item) => (
               <article key={item.title} className="landing-gamification__card">
-                <div className="landing-gamification__icon" aria-hidden="true">
-                  {item.icon}
+                <div className="landing-gamification__art">
+                  <img src={item.image} alt={`${item.title} achievement badge`} />
+                  <span>{item.tag}</span>
                 </div>
                 <h3 className="landing-gamification__title">{item.title}</h3>
                 <p className="landing-gamification__body">{item.body}</p>
-                <div className="landing-gamification__mascot">
-                  <span aria-hidden="true">{item.mascotEmoji}</span>
-                  <span>{item.mascot}</span>
+                <div className="landing-gamification__progress-copy">
+                  <span>{item.unlock}</span>
+                  <strong>{item.progress}%</strong>
                 </div>
-                <div className="landing-gamification__tag">{item.tag}</div>
+                <div className="landing-gamification__progress" aria-hidden="true">
+                  <span style={{ width: `${item.progress}%` }} />
+                </div>
               </article>
             ))}
           </div>
           <div className="landing-gamification__why">
-            <div className="landing-gamification__why-label">Why it works</div>
+            <div className="landing-gamification__why-label">Designed with intention</div>
             <div className="landing-gamification__why-items">
               {[
                 {
-                  icon: '📈',
-                  stat: '3×',
-                  desc: 'more likely to complete a check-in when a streak is at stake',
+                  stat: 'Private by default',
+                  desc: 'Progress is personal. There are no public scores or social comparisons.',
                 },
                 {
-                  icon: '💬',
-                  stat: '68%',
-                  desc: 'of teens say rewards make mental health tools feel less awkward',
+                  stat: 'Effort over outcomes',
+                  desc: 'Badges reward healthy participation, never a “good” mood or perfect week.',
                 },
                 {
-                  icon: '🔒',
-                  stat: '100%',
-                  desc: 'guardian-visible—points and badges show up in your dashboard',
+                  stat: 'Guardian aware',
+                  desc: 'Guardians see momentum without gaining access to private conversations.',
                 },
               ].map((item, idx) => (
                 <div key={idx} className="landing-gamification__why-item">
-                  <span
-                    className="landing-gamification__why-icon"
-                    aria-hidden="true"
-                  >
-                    {item.icon}
-                  </span>
                   <span className="landing-gamification__why-stat">
                     {item.stat}
                   </span>
@@ -658,17 +698,17 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── SOCIAL PROOF / PRESS ── */}
+      {/* ── ECOSYSTEM ── */}
       <section className="landing-press">
         <div className="landing-press__inner">
-          <p className="landing-press__label">Recognized by</p>
+          <p className="landing-press__label">One support layer. Every care setting.</p>
           <div className="landing-press__logos">
             {[
-              'TechCrunch',
-              'EdSurge',
-              'Common Sense Media',
-              'The74',
-              'ParentMap',
+              'Families',
+              'Schools',
+              'Counselors',
+              'Care teams',
+              'Community programs',
             ].map((p) => (
               <div key={p} className="landing-press__logo">
                 {p}
@@ -678,31 +718,38 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── PROBLEM / MARKET ── */}
-      <section className="landing-problem">
+      {/* ── PLATFORM LAYER ── */}
+      <section className="landing-problem" id="safety">
         <div className="landing-problem__inner">
+          <div className="landing-problem__header">
+            <p className="landing-section-eyebrow">The Chatterbot advantage</p>
+            <h2 className="landing-section-heading">From daily signal to coordinated action.</h2>
+            <p className="landing-section-body">
+              Most tools own one moment. Chatterbot connects the full support
+              loop without asking teens to change how they communicate.
+            </p>
+          </div>
           <div className="landing-problem__stats">
             {[
               {
-                value: '1 in 5',
-                label: 'teens experience a mental health disorder each year',
-                source: 'CDC, 2023',
+                value: '01',
+                label: 'Engage naturally',
+                source: 'Proactive SMS check-ins meet teens in an everyday channel.',
               },
               {
-                value: '90%',
-                label: 'of teens already text daily—no new app needed',
-                source: 'Pew Research, 2024',
+                value: '02',
+                label: 'Understand patterns',
+                source: 'Context and mood signals build a clearer longitudinal view.',
               },
               {
-                value: '$280B',
-                label: 'US adolescent mental health market by 2030',
-                source: 'Grand View Research',
+                value: '03',
+                label: 'Guide the next step',
+                source: 'Age-aware support turns difficult moments into manageable actions.',
               },
               {
-                value: '72%',
-                label:
-                  'of parents want earlier warning signals before a crisis',
-                source: 'APA Family Survey, 2023',
+                value: '04',
+                label: 'Escalate responsibly',
+                source: 'Consent, ownership checks, and audit trails support accountable response.',
               },
             ].map((s) => (
               <div key={s.value} className="landing-problem__stat">
@@ -776,7 +823,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="landing-school">
+      <section className="landing-school" id="schools">
         <div className="landing-school__inner">
           <div className="landing-school__content">
             <p className="landing-section-eyebrow">
@@ -802,7 +849,7 @@ export default function Landing() {
             <ul className="landing-school__features">
               {[
                 'Counselor opt-in crisis CC',
-                'FERPA-compliant data handling',
+                'Privacy review ready workflows',
                 'Bulk guardian enrollment',
                 'District analytics dashboard',
                 'Dedicated onboarding support',
@@ -821,43 +868,45 @@ export default function Landing() {
 
       <section className="landing-referral">
         <div className="landing-referral__inner">
-          <p className="landing-section-eyebrow">Refer a family</p>
+          <p className="landing-section-eyebrow">Care Circle</p>
           <h2 className="landing-section-heading">
-            Share Chatterbot. Get a free month.
+            The right people, aligned around the right signal.
           </h2>
           <p className="landing-section-body" style={{ textAlign: 'center' }}>
-            For every family you refer who signs up, you both get one month
-            free. No limits.
+            Give guardians, counselors, and approved supporters a shared view
+            of next steps—while keeping each teen’s private conversations private.
           </p>
-          <div className="landing-referral__card">
-            <div className="landing-referral__code-box">XXXXXXXX</div>
-            <button
-              type="button"
-              className="btn btn--outline-navy landing-referral__copy-btn"
-            >
-              Copy link
-            </button>
-            <p className="landing-referral__share-text">
-              Share your unique link with other parents
-            </p>
+          <div className="landing-referral__network" aria-label="Care Circle workflow">
+            <div className="landing-referral__person landing-referral__person--guardian">
+              <span>AG</span>
+              <strong>Guardian</strong>
+              <small>Controls consent</small>
+            </div>
+            <div className="landing-referral__hub">
+              <ChatterbotLogo size={38} />
+              <strong>Care Circle</strong>
+              <small>Permissioned signals</small>
+            </div>
+            <div className="landing-referral__person landing-referral__person--counselor">
+              <span>SC</span>
+              <strong>Counselor</strong>
+              <small>Receives handoffs</small>
+            </div>
           </div>
           <div className="landing-referral__steps">
             {[
-              'Share your link with a parent',
-              'They sign up for Chatterbot',
-              'You both get a free month',
+              'Guardian chooses who can participate',
+              'Chatterbot routes privacy-safe signals',
+              'Every action stays visible and accountable',
             ].map((step, index) => (
               <div key={step} className="landing-referral__step">
-                <div className="landing-referral__step-icon" aria-hidden="true">
-                  🔗
-                </div>
                 <div className="landing-referral__step-number">{index + 1}</div>
                 <p className="landing-referral__step-text">{step}</p>
               </div>
             ))}
           </div>
-          <Link to="/dashboard" className="btn btn--primary btn--lg">
-            Get my referral link
+          <Link to="/demo" className="btn btn--primary btn--lg">
+            Explore the care workflow
           </Link>
         </div>
       </section>
@@ -918,7 +967,7 @@ export default function Landing() {
               </Link>
             </div>
             <div className="landing-pricing__card">
-              <div className="landing-pricing__plan">Interactive Plus</div>
+              <div className="landing-pricing__plan">Organizations</div>
               <div className="landing-pricing__price">Custom</div>
               <div className="landing-pricing__desc">
                 Schools, districts & health systems
@@ -1006,18 +1055,18 @@ export default function Landing() {
               Our mission
             </p>
             <h2 className="landing-mission__heading">
-              We built Chatterbot because{' '}
-              <span>teen mental health can't wait.</span>
+              The space between “I’m fine” and{' '}
+              <span>“I need help” matters.</span>
             </h2>
             <p className="landing-mission__body">
-              Every day, 3,000 American teens attempt suicide. Most showed
-              warning signs that went unnoticed. Existing tools either invade
-              privacy and destroy trust, or do nothing until a crisis hits.
+              Support should not begin only after a crisis. It should be built
+              through familiar, low-pressure moments that make it easier to
+              speak honestly and ask for help.
             </p>
             <p className="landing-mission__body">
-              Chatterbot sits in the middle: daily low-stakes check-ins that
-              build a relationship with your teen, guardian-facing signals that
-              preserve that trust, and a crisis protocol that actually works.
+              Chatterbot creates that connective tissue: consistent check-ins
+              for teens, useful signals for guardians, and accountable pathways
+              when a situation needs more support.
             </p>
             <Link to="/safety" className="btn btn--ghost btn--lg">
               Read our safety approach →
@@ -1026,14 +1075,14 @@ export default function Landing() {
           <div className="landing-mission__numbers">
             {[
               {
-                value: '3,000',
-                label: 'teen suicide attempts per day in the US',
+                value: 'Daily',
+                label: 'small moments that build trust over time',
               },
               {
-                value: '85%',
-                label: 'of crisis cases showed prior warning signs',
+                value: 'Private',
+                label: 'signals for guardians, not conversation transcripts',
               },
-              { value: '0', label: 'apps your teen needs to download' },
+              { value: 'Ready', label: 'clear escalation paths when risk rises' },
             ].map((s) => (
               <div key={s.value} className="landing-mission__number">
                 <div className="landing-mission__number-value">{s.value}</div>
@@ -1056,34 +1105,34 @@ export default function Landing() {
           <div className="landing-trust__grid">
             {[
               {
-                icon: '🔐',
+                icon: '01',
                 title: 'Guardian consent required',
                 body: 'No teen is enrolled without verified legal guardian authorization. Every step is auditable.',
               },
               {
-                icon: '🏥',
-                title: '988 crisis integration',
-                body: 'Crisis language triggers an immediate multi-step response including a 988 Lifeline referral.',
+                icon: '02',
+                title: 'Structured safety pathways',
+                body: 'Risk signals can trigger a documented response flow, resource guidance, and guardian notification.',
               },
               {
-                icon: '🔒',
+                icon: '03',
                 title: 'Privacy-first design',
                 body: 'Guardians see behavioral signals and alerts—never full conversation transcripts.',
               },
               {
-                icon: '📋',
-                title: 'COPPA-aligned',
-                body: 'Minimal data retention, explicit consent, guardian control. Designed for minors from day one.',
+                icon: '04',
+                title: 'Built for accountable operations',
+                body: 'Ownership checks, bounded permissions, and audit-ready actions are part of the workflow.',
               },
               {
-                icon: '🛡️',
-                title: 'Twilio-verified delivery',
-                body: "SMS delivery and webhook security are powered by Twilio's enterprise-grade infrastructure.",
+                icon: '05',
+                title: 'Configurable boundaries',
+                body: 'Families and organizations can control check-ins, notifications, and escalation preferences.',
               },
               {
-                icon: '👩‍⚕️',
-                title: 'Clinical advisory board',
-                body: 'Crisis response protocols reviewed by licensed mental health professionals.',
+                icon: '06',
+                title: 'Human handoff ready',
+                body: 'Chatterbot supports connection to trusted adults and professional resources—it does not replace care.',
               },
             ].map((t) => (
               <div key={t.title} className="landing-trust__card">
@@ -1100,11 +1149,11 @@ export default function Landing() {
       <section className="landing-final-cta">
         <div className="landing-final-cta__inner">
           <h2 className="landing-final-cta__heading">
-            Start protecting your teen today.
+            Give your teen another place to turn.
           </h2>
           <p className="landing-final-cta__sub">
-            Free 30-day trial. Setup takes under 5 minutes. No credit card
-            required.
+            Start with one thoughtful check-in and build a healthier support
+            rhythm from there.
           </p>
           <div className="landing-final-cta__actions">
             <Link to="/register" className="btn btn--primary btn--lg">

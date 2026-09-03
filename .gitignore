@@ -2,6 +2,7 @@ chatterbot-frontend/node_modules/
 chatterbot-frontend/dist/
 chatterbot-frontend/coverage/
 chatterbot-frontend/storybook-static/
+generated_images/
 node_modules/
 chatterbot-backend/.venv/
 **/__pycache__/

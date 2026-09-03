@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ChatterbotLogo } from '../components/ChatterbotLogo.jsx'
+import dailySparkBadge from '../assets/badges/daily-spark.webp'
+import calmNavigatorBadge from '../assets/badges/calm-navigator.webp'
+import momentumMakerBadge from '../assets/badges/momentum-maker.webp'
 import './Demo.css'
 
 /* ── Fictional data ─────────────────────────────────────── */
@@ -116,8 +119,8 @@ const GAMIFICATION_CHALLENGES = [
     progress: '5 / 7 days',
     reward: '+120 XP',
     status: 'On a roll',
-    mascot: 'Spark Fox',
-    mascotEmoji: '🦊',
+    mascot: 'Daily Spark',
+    badgeImage: dailySparkBadge,
   },
   {
     id: 2,
@@ -126,8 +129,8 @@ const GAMIFICATION_CHALLENGES = [
     progress: '7 / 7 days',
     reward: 'New badge',
     status: 'Completed',
-    mascot: 'Nova Owl',
-    mascotEmoji: '🦉',
+    mascot: 'Calm Navigator',
+    badgeImage: calmNavigatorBadge,
   },
   {
     id: 3,
@@ -136,8 +139,8 @@ const GAMIFICATION_CHALLENGES = [
     progress: '4 / 5 nights',
     reward: '+80 XP',
     status: 'On a roll',
-    mascot: 'Wave Whale',
-    mascotEmoji: '🐳',
+    mascot: 'Momentum Maker',
+    badgeImage: momentumMakerBadge,
   },
 ]
 
@@ -147,18 +150,18 @@ const GAMIFICATION_LEADERBOARD = [
     teen: 'Maya',
     points: 1820,
     streak: 18,
-    badge: 'Focus Fox',
-    mascotEmoji: '🦊',
-    mascot: 'Spark Fox',
+    badge: 'Daily Spark',
+    badgeImage: dailySparkBadge,
+    mascot: 'Daily Spark',
   },
   {
     rank: 2,
     teen: 'Ethan',
     points: 1490,
     streak: 11,
-    badge: 'Calm Coder',
-    mascotEmoji: '🦉',
-    mascot: 'Nova Owl',
+    badge: 'Calm Navigator',
+    badgeImage: calmNavigatorBadge,
+    mascot: 'Calm Navigator',
   },
 ]
 
@@ -650,7 +653,7 @@ function GamificationTab() {
                     {challenge.teen} · {challenge.progress}
                   </div>
                   <div className="demo-gamification__mascot">
-                    <span aria-hidden="true">{challenge.mascotEmoji}</span>
+                    <img src={challenge.badgeImage} alt="" />
                     <span>{challenge.mascot}</span>
                   </div>
                 </div>
@@ -680,8 +683,8 @@ function GamificationTab() {
                 className="demo-gamification__leaderboard-row"
               >
                 <span className="demo-gamification__rank">#{entry.rank}</span>
-                <div className="demo-gamification__avatar" aria-hidden="true">
-                  {entry.mascotEmoji}
+                <div className="demo-gamification__avatar">
+                  <img src={entry.badgeImage} alt={`${entry.badge} badge`} />
                 </div>
                 <div>
                   <div className="demo-teen-name">{entry.teen}</div>
