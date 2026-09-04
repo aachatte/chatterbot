@@ -6,6 +6,7 @@ from app.models.checkin_schedule import CheckinSchedule
 from app.models.conversation import Conversation, Message
 from app.models.mood_entry import MoodEntry
 from app.models.privacy import DataDeletionRequest, PrivacyEvent
+from app.models.operations import OperationalHeartbeat, RefreshSession
 from app.models.safety_operations import FamilySafetyPlan
 from app.models.teen import Teen
 from app.utils.time import utc_now
@@ -90,9 +91,19 @@ def purge_due_deletions(now=None):
 
 
 def run_privacy_jobs(now=None):
+    current_time = now or utc_now()
     result = {
-        "messages_redacted": redact_expired_messages(now),
-        "deletions_completed": purge_due_deletions(now),
+        "messages_redacted": redact_expired_messages(current_time),
+        "deletions_completed": purge_due_deletions(current_time),
+        "expired_sessions_deleted": RefreshSession.query.filter(
+            RefreshSession.expires_at <= current_time
+        ).delete(synchronize_session=False),
     }
+    heartbeat = OperationalHeartbeat.query.filter_by(name="privacy_jobs").first()
+    if heartbeat is None:
+        heartbeat = OperationalHeartbeat(name="privacy_jobs")
+        db.session.add(heartbeat)
+    heartbeat.last_success_at = current_time
+    heartbeat.detail = result
     db.session.commit()
     return result

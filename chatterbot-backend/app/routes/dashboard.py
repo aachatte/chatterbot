@@ -14,6 +14,7 @@ from app.utils.time import utc_now
 from app.models.safety_operations import SafetyAlertEvent
 from app.models.privacy import DataDeletionRequest
 from app.services.privacy_service import record_privacy_event
+from app.services.pilot_service import refresh_pilot_enrollment
 from config import settings
 
 dashboard_bp = Blueprint("dashboard", __name__)
@@ -308,6 +309,7 @@ def delete_teen(teen_id):
         teen.id,
         {"request_id": deletion.id, "scheduled_for": deletion.scheduled_for.isoformat()},
     )
+    refresh_pilot_enrollment(user_id)
     db.session.commit()
 
     return jsonify({"deletion_request": deletion.to_dict()}), 202
@@ -442,6 +444,8 @@ def confirm_teen_consent(teen_id):
     data = _get_json_object()
     if data is None or data.get("guardian_confirmation") is not True:
         return jsonify({"error": "guardian_confirmation must be true"}), 400
+    if DataDeletionRequest.query.filter_by(teen_id=teen.id, status="scheduled").first():
+        return jsonify({"error": "Cancel the scheduled deletion before restoring consent"}), 409
 
     if not teen.consent_verified:
         teen.consent_verified = True
@@ -454,6 +458,7 @@ def confirm_teen_consent(teen_id):
             teen.id,
             {"method": "authenticated_guardian_confirmation"},
         )
+        refresh_pilot_enrollment(user_id)
         db.session.commit()
 
     return jsonify({"enrollment": teen.enrollment_to_dict()}), 200
@@ -506,6 +511,7 @@ def confirm_phone_verification(teen_id):
     if not teen.verify_phone_token(token):
         return jsonify({"error": "Verification token is invalid or expired"}), 400
 
+    refresh_pilot_enrollment(user_id)
     db.session.commit()
     return jsonify({"enrollment": teen.enrollment_to_dict()}), 200
 

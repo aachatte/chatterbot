@@ -15,6 +15,7 @@ from app.services.context_service import ContextMemoryService
 from app.services.scheduler_service import SchedulerService
 from app.routes.safety_plan import teen_visible_summary
 from app.utils.time import utc_now
+from app.services.pilot_service import pilot_allows_guardian
 import logging
 
 sms_bp = Blueprint("sms", __name__)
@@ -57,13 +58,13 @@ def twilio_webhook():
     body = inbound["body"]
     message_sid = inbound["message_sid"]
 
-    logger.info(f"Inbound SMS from {from_number}: {body[:50]}...")
+    logger.info("Inbound SMS received sid=%s", message_sid or "missing")
 
     # Find teen by phone
     teen = Teen.query.filter_by(phone=from_number).first()
 
     if not teen:
-        logger.warning(f"No teen found for phone {from_number}")
+        logger.warning("Inbound SMS did not match an enrolled teen")
         # Send welcome message for unknown numbers
         twilio_svc.send_sms(from_number, "Hi! This is Chatterbot. It looks like you\'re not registered yet. Ask your parent to sign up at chatterbot.app")
         return twilio_svc.create_empty_response(), 200
@@ -78,6 +79,17 @@ def twilio_webhook():
         twilio_svc.send_sms(
             from_number,
             "Chatterbot isn’t active on this number yet. Ask your guardian to finish consent and phone verification in the dashboard.",
+        )
+        return twilio_svc.create_empty_response(), 200
+
+    if not pilot_allows_guardian(teen.parent_id):
+        logger.warning(
+            "Blocked SMS for guardian %s because pilot access is paused or incomplete",
+            teen.parent_id,
+        )
+        twilio_svc.send_sms(
+            from_number,
+            "Chatterbot is temporarily paused while your family setup is reviewed. Ask your guardian to check the dashboard.",
         )
         return twilio_svc.create_empty_response(), 200
 

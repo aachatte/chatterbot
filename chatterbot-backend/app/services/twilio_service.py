@@ -62,7 +62,7 @@ class TwilioService:
             f"We detected concerning language from {teen_name}. "
             f"Please check in with them immediately.\n\n"
             f"Alert ID: {alert_id}\n"
-            f"Dashboard: {settings.app_url}/dashboard/alerts/{alert_id}"
+            f"Dashboard: {settings.frontend_url}/dashboard/alerts/{alert_id}"
         )
         return self.send_sms(
             parent_phone,

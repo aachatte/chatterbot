@@ -1,0 +1,68 @@
+name: Backend and Security Checks
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: chatterbot-backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: chatterbot-backend/requirements.txt
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run backend and safety tests
+        env:
+          PYTHONPATH: .
+          REDIS_URL: ''
+        run: pytest -q
+      - name: Validate migration chain
+        env:
+          PYTHONPATH: .
+          REDIS_URL: ''
+        run: flask --app run.py db heads | grep 20260907_add_security_and_pilot_ops
+      - name: Compile Python source
+        run: python -m compileall -q app
+
+  dependency-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: chatterbot-frontend/package-lock.json
+      - name: Audit Python dependencies
+        run: |
+          python -m pip install pip-audit
+          pip-audit -r chatterbot-backend/requirements.txt
+      - name: Audit production frontend dependencies
+        working-directory: chatterbot-frontend
+        run: npm audit --audit-level=high --omit=dev
+      - name: Scan tracked source for secrets
+        run: python chatterbot-backend/scripts/scan_secrets.py
+
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build production container
+        run: docker build chatterbot-backend

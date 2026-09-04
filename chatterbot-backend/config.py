@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     # App
     app_name: str = "Chatterbot"
     app_url: str = "http://localhost:5000"
+    frontend_url: str = "http://localhost:5173"
     flask_env: str = "development"
     flask_debug: bool = False
     secret_key: str = "dev-secret-key-change-in-production"
@@ -57,8 +58,9 @@ class Settings(BaseSettings):
     privacy_policy_version: str = "privacy-2026-09-05-draft"
     message_retention_days: int = 90
     deletion_grace_days: int = 7
-    pilot_mode: bool = True
+    pilot_mode: bool = False
     pilot_family_capacity: int = 50
+    enable_admin_broadcast: bool = False
 
     @field_validator('message_retention_days', 'deletion_grace_days', 'pilot_family_capacity')
     @classmethod
@@ -107,6 +109,8 @@ class Settings(BaseSettings):
             raise ValueError('FLASK_DEBUG must be disabled in production')
         if len(self.admin_api_key) < 32:
             raise ValueError('Production requires an ADMIN_API_KEY of at least 32 characters')
+        if not self.app_url.startswith('https://') or not self.frontend_url.startswith('https://'):
+            raise ValueError('Production APP_URL and FRONTEND_URL must use HTTPS')
         return self
 
 

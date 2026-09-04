@@ -6,9 +6,11 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from app import db
 from app.models.privacy import DataDeletionRequest, PrivacyEvent
+from app.models.operations import PilotEnrollment
 from app.models.teen import Teen
 from app.models.user import User
 from app.services.privacy_service import build_guardian_export, record_privacy_event
+from app.services.pilot_service import refresh_pilot_enrollment
 from app.utils.time import utc_now
 from config import settings
 
@@ -26,13 +28,16 @@ def overview():
     guardian_id = _guardian_id()
     if guardian_id is None:
         return jsonify({"error": "Invalid authentication token"}), 401
-    active_families = User.query.filter_by(is_active=True).count()
+    active_families = PilotEnrollment.query.filter(
+        PilotEnrollment.status.in_(["enrolled", "ready", "paused"])
+    ).count()
     requests = DataDeletionRequest.query.filter_by(guardian_id=guardian_id).order_by(
         DataDeletionRequest.requested_at.desc()
     ).all()
     events = PrivacyEvent.query.filter_by(guardian_id=guardian_id).order_by(
         PrivacyEvent.created_at.desc()
     ).limit(50).all()
+    enrollment = PilotEnrollment.query.filter_by(guardian_id=guardian_id).first()
     return jsonify({
         "policy_version": settings.privacy_policy_version,
         "message_retention_days": settings.message_retention_days,
@@ -45,6 +50,7 @@ def overview():
             "family_capacity": settings.pilot_family_capacity,
             "active_families": active_families,
             "remaining_capacity": max(settings.pilot_family_capacity - active_families, 0),
+            "enrollment": enrollment.to_dict() if enrollment else None,
         },
     })
 
@@ -96,6 +102,7 @@ def request_deletion(teen_id):
         teen.id,
         {"request_id": deletion.id, "scheduled_for": deletion.scheduled_for.isoformat()},
     )
+    refresh_pilot_enrollment(guardian_id)
     db.session.commit()
     return jsonify({"deletion_request": deletion.to_dict()}), 202
 
@@ -114,6 +121,7 @@ def cancel_deletion(request_id):
     teen = db.session.get(Teen, deletion.teen_id) if deletion.teen_id else None
     if teen:
         teen.is_active = True
+    refresh_pilot_enrollment(guardian_id)
     record_privacy_event(
         guardian_id,
         "deletion_canceled",
@@ -136,5 +144,6 @@ def withdraw_consent(teen_id):
     teen.consent_status = "withdrawn"
     teen.is_active = False
     record_privacy_event(guardian_id, "consent_withdrawn", teen.id)
+    refresh_pilot_enrollment(guardian_id)
     db.session.commit()
     return jsonify({"enrollment": teen.enrollment_to_dict()})

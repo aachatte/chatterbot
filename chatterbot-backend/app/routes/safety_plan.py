@@ -8,6 +8,7 @@ from app.models.safety_operations import FamilySafetyPlan
 from app.models.teen import Teen
 from app.models.user import User
 from app.utils.time import utc_now
+from app.services.pilot_service import refresh_pilot_enrollment
 
 safety_plan_bp = Blueprint("safety_plan", __name__)
 ALLOWED_PLAN_KEYS = {
@@ -111,6 +112,7 @@ def safety_plan(teen_id):
     plan.is_active = activate
     plan.teen_acknowledged_at = None
     plan.updated_at = utc_now()
+    refresh_pilot_enrollment(guardian_id)
     db.session.commit()
     return jsonify({
         "safety_plan": plan.to_dict(reachable),

@@ -2,20 +2,23 @@
 import hmac
 from datetime import datetime, timedelta
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, g, request, jsonify
 from sqlalchemy import text
 from config import settings
-from app import db
+from app import db, limiter
 from app.models.user import User
 from app.models.teen import Teen
 from app.models.conversation import Conversation, Message
 from app.models.crisis_alert import CrisisAlert
 from app.models.safety_operations import SafetyAlertEvent
 from app.models.privacy import DataDeletionRequest, PrivacyEvent
+from app.models.operations import OperationalHeartbeat, PilotEnrollment
 from app.models.subscription import Subscription
 from app.services.scheduler_service import SchedulerService
 from app.services.twilio_service import TwilioService
 from app.services.privacy_service import REDACTED_CONTENT
+from app.services.pilot_service import get_pilot_control, refresh_pilot_enrollment
+from app.services.readiness_service import readiness_report
 from app.utils.time import utc_now
 import logging
 
@@ -49,17 +52,48 @@ def privacy_readiness():
         DataDeletionRequest.scheduled_for <= utc_now(),
     ).count()
     active_families = User.query.filter_by(is_active=True).count()
+    heartbeat = OperationalHeartbeat.query.filter_by(name="privacy_jobs").first()
     return jsonify({
         "policy_version": settings.privacy_policy_version,
         "pending_message_redactions": pending_redaction,
         "overdue_deletions": overdue_deletions,
         "privacy_events": PrivacyEvent.query.count(),
+        "privacy_job_last_success_at": (
+            heartbeat.last_success_at.isoformat() if heartbeat else None
+        ),
         "pilot": {
             "enabled": settings.pilot_mode,
             "active_families": active_families,
             "capacity": settings.pilot_family_capacity,
             "at_capacity": active_families >= settings.pilot_family_capacity,
         },
+    })
+
+
+@admin_bp.route("/pilot", methods=["GET", "PATCH"])
+def pilot_operations():
+    """Inspect or pause the controlled family pilot without a deployment."""
+    control = get_pilot_control()
+    if request.method == "PATCH":
+        data = request.get_json(silent=True)
+        if not isinstance(data, dict) or not isinstance(data.get("enabled"), bool):
+            return jsonify({"error": "enabled must be true or false"}), 400
+        reason = data.get("reason")
+        if reason is not None and (not isinstance(reason, str) or len(reason.strip()) > 300):
+            return jsonify({"error": "reason must be 300 characters or fewer"}), 400
+        control.enabled = data["enabled"]
+        control.reason = reason.strip() if reason else None
+        control.updated_by = g.admin_actor
+        for enrollment in PilotEnrollment.query.all():
+            refresh_pilot_enrollment(enrollment.guardian_id)
+        db.session.commit()
+    enrollments = PilotEnrollment.query.order_by(PilotEnrollment.enrolled_at.asc()).all()
+    return jsonify({
+        "enabled": control.enabled,
+        "reason": control.reason,
+        "updated_by": control.updated_by,
+        "capacity": settings.pilot_family_capacity,
+        "enrollments": [item.to_dict() for item in enrollments],
     })
 
 
@@ -72,9 +106,15 @@ def _check_admin_auth():
 
 
 @admin_bp.before_request
+@limiter.limit("30 per minute")
 def require_admin():
     if not _check_admin_auth():
         return jsonify({"error": "Unauthorized"}), 401
+    if request.method not in {"GET", "HEAD", "OPTIONS"}:
+        actor = request.headers.get("X-Admin-Actor", "").strip()
+        if not 2 <= len(actor) <= 120:
+            return jsonify({"error": "X-Admin-Actor is required for changes"}), 400
+        g.admin_actor = actor
 
 
 @admin_bp.route("/stats", methods=["GET"])
@@ -213,7 +253,7 @@ def update_alert(alert_id):
     db.session.add(SafetyAlertEvent(
         alert_id=alert.id,
         actor_type="staff",
-        actor_name="Safety staff",
+        actor_name=g.get("admin_actor", "Safety staff"),
         action="workflow_updated",
         from_status=previous,
         to_status=status,
@@ -240,6 +280,8 @@ def run_scheduler():
 @admin_bp.route("/send-broadcast", methods=["POST"])
 def send_broadcast():
     """Send broadcast SMS to all active teens (emergency use only)."""
+    if not settings.enable_admin_broadcast:
+        return jsonify({"error": "Administrative broadcasts are disabled"}), 403
     data = request.get_json()
     message = data.get("message")
 
@@ -254,7 +296,6 @@ def send_broadcast():
         result = twilio.send_sms(teen.phone, message)
         results.append({
             "teen_id": teen.id,
-            "phone": teen.phone,
             "success": result["success"],
         })
 
@@ -268,15 +309,10 @@ def send_broadcast():
 
 @admin_bp.route("/health", methods=["GET"])
 def admin_health():
-    """Extended health check with DB connectivity."""
-    try:
-        db.session.execute(text("SELECT 1"))
-        db_status = "connected"
-    except Exception as e:
-        db_status = f"error: {str(e)}"
-
-    return jsonify({
-        "status": "ok",
-        "database": db_status,
-        "timestamp": utc_now().isoformat(),
-    }), 200
+    """Extended dependency readiness without exposing connection details."""
+    report = readiness_report(
+        check_migration=settings.flask_env == "production",
+        check_redis=settings.flask_env == "production",
+    )
+    report["timestamp"] = utc_now().isoformat()
+    return jsonify(report), 200 if report["ready"] else 503

@@ -16,6 +16,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(20), nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
+    session_version = db.Column(db.Integer, default=0, nullable=False)
 
     # Guardian preferences
     crisis_alerts_enabled = db.Column(db.Boolean, default=True, nullable=False)

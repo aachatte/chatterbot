@@ -36,7 +36,14 @@ def create_app(config_override=None):
     Returns:
         Flask application instance
     """
+    from app.services.security_service import (
+        apply_security_headers,
+        assign_request_id,
+        install_log_redaction,
+    )
+
     app = Flask(__name__)
+    install_log_redaction()
 
     # Config
     app.config["SECRET_KEY"] = settings.secret_key
@@ -48,12 +55,15 @@ def create_app(config_override=None):
     )
     app.config["DEBUG"] = settings.flask_debug
     app.config["JSON_SORT_KEYS"] = False
+    app.config["SESSION_COOKIE_SECURE"] = settings.flask_env == "production"
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
     
     # Set CORS based on environment
     if settings.flask_env == "development":
         cors_origins = ["http://localhost:5173", "http://localhost:3000", "http://localhost:5000"]
     else:
-        cors_origins = [settings.app_url, "https://chatterbot-topaz.vercel.app"]
+        cors_origins = [settings.frontend_url]
     
     app.config["CORS_ORIGINS"] = cors_origins
 
@@ -64,7 +74,32 @@ def create_app(config_override=None):
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-    cors.init_app(app, resources={r"/api/*": {"origins": cors_origins}})
+    cors.init_app(
+        app,
+        resources={r"/api/*": {"origins": cors_origins}},
+        supports_credentials=True,
+    )
+
+    @jwt.token_in_blocklist_loader
+    def token_is_invalid(_header, payload):
+        from app.models.user import User
+
+        identity = str(payload.get("sub", ""))
+        if not identity.isdigit():
+            return True
+        user = db.session.get(User, int(identity))
+        return (
+            user is None
+            or not user.is_active
+            or payload.get("sv") != (user.session_version or 0)
+        )
+
+    app.before_request(assign_request_id)
+    app.after_request(
+        lambda response: apply_security_headers(
+            response, production=settings.flask_env == "production"
+        )
+    )
     
     # Only init limiter if redis is available
     if settings.redis_url:
@@ -150,26 +185,27 @@ def create_app(config_override=None):
             "message": message
         }, 500
 
-    # Health check endpoint
+    @app.route("/health/live")
+    def liveness():
+        """Confirm that the API process can serve requests."""
+        return {"status": "alive", "service": "chatterbot-api"}, 200
+
+    @app.route("/health/ready")
+    def readiness():
+        """Confirm production dependencies, schema, and privacy jobs are ready."""
+        from app.services.readiness_service import readiness_report
+
+        production = settings.flask_env == "production"
+        report = readiness_report(
+            check_migration=production,
+            check_redis=production,
+        )
+        return report, 200 if report["ready"] else 503
+
     @app.route("/health")
     def health():
-        """Health check endpoint for load balancers and monitoring."""
-        try:
-            # Test database connection
-            db.session.execute(text("SELECT 1"))
-            db.session.close()
-            return {
-                "status": "healthy",
-                "service": "chatterbot-api",
-                "environment": settings.flask_env
-            }, 200
-        except Exception as e:
-            logger.error(f"Health check failed: {e}")
-            return {
-                "status": "unhealthy",
-                "service": "chatterbot-api",
-                "error": "Database connection failed"
-            }, 503
+        """Backward compatible deployment readiness endpoint."""
+        return readiness()
 
     # Developer/test databases remain convenient to bootstrap. Production
     # schema changes must run through the reviewed Alembic migration chain.

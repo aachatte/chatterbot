@@ -140,6 +140,19 @@ export default function Settings() {
             ? `${privacy.pilot.active_families} of ${privacy.pilot.family_capacity} family spaces are active.`
             : 'Pilot capacity controls are not currently enabled.'}
         </p>
+        {privacy?.pilot?.enrollment && (
+          <p
+            style={{
+              color: 'var(--cb-text-tertiary)',
+              fontSize: 13,
+              marginTop: 10,
+            }}
+          >
+            Family status: {privacy.pilot.enrollment.status} · Ready teen
+            profiles:{' '}
+            {privacy.pilot.enrollment.readiness?.ready_teen_count || 0}
+          </p>
+        )}
       </section>
 
       <section

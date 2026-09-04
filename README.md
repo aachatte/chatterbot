@@ -9,6 +9,12 @@ teen message text, configurable content redaction, recoverable deletion
 requests, and controlled pilot capacity. Run the privacy lifecycle command on a
 daily schedule in deployed environments.
 
+Security operations use durable refresh session rotation, account wide token
+invalidation, strict production origins and response headers, privacy safe
+request logging, dependency readiness checks, explicit pilot enrollment, and a
+global pilot pause control. Backend and security checks run in continuous
+integration alongside the frontend workflow.
+
 ## Project structure
 
 | Directory | Stack | Purpose |

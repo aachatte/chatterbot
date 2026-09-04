@@ -14,6 +14,12 @@ from app.models.safety_operations import (
     SafetyAlertEvent,
 )
 from app.models.privacy import DataDeletionRequest, PrivacyEvent
+from app.models.operations import (
+    OperationalHeartbeat,
+    PilotControl,
+    PilotEnrollment,
+    RefreshSession,
+)
 
 __all__ = [
     "User",
@@ -32,4 +38,8 @@ __all__ = [
     "SafetyAlertEvent",
     "DataDeletionRequest",
     "PrivacyEvent",
+    "RefreshSession",
+    "OperationalHeartbeat",
+    "PilotControl",
+    "PilotEnrollment",
 ]

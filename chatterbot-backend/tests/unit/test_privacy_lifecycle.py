@@ -40,6 +40,14 @@ def app():
         )
         db.session.add(guardian)
         db.session.flush()
+        other_guardian = User(
+            email="other@example.com",
+            password_hash="unused",
+            first_name="Jordan",
+            last_name="Lee",
+        )
+        db.session.add(other_guardian)
+        db.session.flush()
         teen = Teen(
             parent_id=guardian.id,
             first_name="Maya",
@@ -60,7 +68,11 @@ def app():
             twilio_sid="SM-private",
         ))
         db.session.commit()
-        app.config.update(guardian_id=guardian.id, teen_id=teen.id)
+        app.config.update(
+            guardian_id=guardian.id,
+            other_guardian_id=other_guardian.id,
+            teen_id=teen.id,
+        )
     yield app
     with app.app_context():
         db.session.remove()
@@ -144,3 +156,22 @@ def test_withdrawing_consent_disables_service_and_is_audited(app, client):
         teen = db.session.get(Teen, app.config["teen_id"])
         assert teen.is_active is False
         assert PrivacyEvent.query.filter_by(event_type="consent_withdrawn").count() == 1
+
+
+def test_other_guardian_cannot_schedule_or_withdraw_for_teen(app, client):
+    headers = _headers(app)
+    with app.app_context():
+        token = create_access_token(identity=str(app.config["other_guardian_id"]))
+    headers = {"Authorization": f"Bearer {token}"}
+    teen_id = app.config["teen_id"]
+    deletion = client.post(
+        f"/api/privacy/teens/{teen_id}/deletion-requests",
+        json={"confirmation": "Maya"},
+        headers=headers,
+    )
+    withdrawal = client.delete(
+        f"/api/privacy/teens/{teen_id}/consent",
+        headers=headers,
+    )
+    assert deletion.status_code == 404
+    assert withdrawal.status_code == 404

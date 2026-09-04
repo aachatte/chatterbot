@@ -29,9 +29,22 @@ class TestSettings:
             secret_key="a" * 32,
             jwt_secret_key="b" * 32,
             admin_api_key="c" * 32,
+            app_url="https://api.chatterbot.example",
+            frontend_url="https://chatterbot.example",
         )
         assert settings.flask_env == "production"
         assert len(settings.secret_key) == 32
+
+    def test_production_urls_require_https(self):
+        with pytest.raises(ValidationError):
+            Settings(
+                flask_env="production",
+                secret_key="a" * 32,
+                jwt_secret_key="b" * 32,
+                admin_api_key="c" * 32,
+                app_url="http://api.chatterbot.example",
+                frontend_url="https://chatterbot.example",
+            )
 
     def test_production_debug_is_rejected(self):
         """Test that production cannot enable Flask's interactive debugger."""

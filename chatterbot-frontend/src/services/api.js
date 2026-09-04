@@ -1,4 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
+let accessToken = null
 
 class ApiError extends Error {
   constructor(message, status, data) {
@@ -10,12 +11,12 @@ class ApiError extends Error {
 }
 
 async function request(path, options = {}) {
-  const token = localStorage.getItem('cb_token')
   const response = await fetch(`${API_BASE}${path}`, {
+    credentials: 'include',
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       ...options.headers,
     },
     body:
@@ -35,6 +36,10 @@ async function request(path, options = {}) {
 }
 
 export const api = {
+  setAccessToken: (token) => {
+    accessToken = token || null
+  },
+  getAccessToken: () => accessToken,
   login: (email, password) =>
     request('/auth/login', {
       method: 'POST',
@@ -45,6 +50,8 @@ export const api = {
       method: 'POST',
       body: data,
     }),
+  refreshSession: () => request('/auth/refresh', { method: 'POST' }),
+  logout: () => request('/auth/logout', { method: 'POST' }),
   getMe: () => request('/auth/me'),
   updateMe: (data) =>
     request('/auth/me', {

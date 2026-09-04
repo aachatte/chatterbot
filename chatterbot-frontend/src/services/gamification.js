@@ -1,7 +1,9 @@
 const GAM_API = '/api/gamification'
 
+import { api } from './api.js'
+
 export async function fetchMyGamification() {
-  const token = localStorage.getItem('cb_token')
+  const token = api.getAccessToken()
   const res = await fetch(`${GAM_API}/me`, {
     headers: {
       'Content-Type': 'application/json',
@@ -16,7 +18,7 @@ export async function fetchMyGamification() {
 }
 
 export async function claimDailyLoginReward() {
-  const token = localStorage.getItem('cb_token')
+  const token = api.getAccessToken()
   const res = await fetch(`${GAM_API}/award-login`, {
     method: 'POST',
     headers: {
