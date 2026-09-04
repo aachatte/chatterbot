@@ -8,6 +8,11 @@ from app.models.context_memory import ContextMemory
 from app.models.scheduled_nudge import ScheduledNudge
 from app.models.support_request import SupportRequest
 from app.models.care_circle import CareCircleActivity, CareCircleMember
+from app.models.safety_operations import (
+    FamilySafetyPlan,
+    NotificationDelivery,
+    SafetyAlertEvent,
+)
 
 __all__ = [
     "User",
@@ -21,4 +26,7 @@ __all__ = [
     "SupportRequest",
     "CareCircleMember",
     "CareCircleActivity",
+    "FamilySafetyPlan",
+    "NotificationDelivery",
+    "SafetyAlertEvent",
 ]

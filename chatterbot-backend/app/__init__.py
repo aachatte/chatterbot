@@ -87,6 +87,7 @@ def create_app(config_override=None):
     from app.routes.referral import referral_bp
     from app.routes.gamification import gam_bp
     from app.routes.care_circle import care_circle_bp
+    from app.routes.safety_plan import safety_plan_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(sms_bp, url_prefix="/api/sms")
@@ -102,6 +103,7 @@ def create_app(config_override=None):
     app.register_blueprint(referral_bp)
     app.register_blueprint(gam_bp, url_prefix="/api/gamification")
     app.register_blueprint(care_circle_bp, url_prefix="/api/care-circle")
+    app.register_blueprint(safety_plan_bp, url_prefix="/api/safety-plans")
 
     # Error handlers
     @app.errorhandler(400)
@@ -156,13 +158,15 @@ def create_app(config_override=None):
                 "error": "Database connection failed"
             }, 503
 
-    # Create tables
-    with app.app_context():
-        try:
-            db.create_all()
-            logger.info("Database tables initialized")
-        except Exception as e:
-            logger.error(f"Failed to initialize database: {e}")
-            raise
+    # Developer/test databases remain convenient to bootstrap. Production
+    # schema changes must run through the reviewed Alembic migration chain.
+    if settings.flask_env != "production":
+        with app.app_context():
+            try:
+                db.create_all()
+                logger.info("Database tables initialized")
+            except Exception as e:
+                logger.error(f"Failed to initialize database: {e}")
+                raise
 
     return app

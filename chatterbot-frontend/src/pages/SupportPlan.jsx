@@ -8,14 +8,12 @@ import {
   HandHeart,
   LockKeyhole,
   MessageCircleHeart,
-  Plus,
   ShieldCheck,
   Trash2,
   UserRoundCheck,
 } from 'lucide-react'
 import './SupportPlan.css'
-
-const STORAGE_KEY = 'cb_support_plan'
+import { api } from '../services/api.js'
 
 const defaultPlan = {
   checkInTime: '4:00 PM',
@@ -86,17 +84,6 @@ const progress = [
   },
 ]
 
-function loadPlan() {
-  try {
-    return {
-      ...defaultPlan,
-      ...JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'),
-    }
-  } catch {
-    return defaultPlan
-  }
-}
-
 function Switch({ checked, onChange, label }) {
   return (
     <button
@@ -114,41 +101,87 @@ function Switch({ checked, onChange, label }) {
 
 export default function SupportPlan() {
   const [activeTab, setActiveTab] = useState('controls')
-  const [plan, setPlan] = useState(loadPlan)
+  const [plan, setPlan] = useState(defaultPlan)
   const [notice, setNotice] = useState('')
-  const [newContact, setNewContact] = useState('')
+  const [teenId, setTeenId] = useState(null)
+  const [teenName, setTeenName] = useState('your teen')
+  const [saving, setSaving] = useState(false)
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(plan))
-  }, [plan])
-
-  const update = (key, value) =>
-    setPlan((current) => ({ ...current, [key]: value }))
   const showNotice = (message) => {
     setNotice(message)
     window.setTimeout(() => setNotice(''), 3000)
   }
-  const addContact = () => {
-    const name = newContact.trim()
-    if (!name) return
-    update('contacts', [
-      ...plan.contacts,
-      {
-        id: Date.now(),
-        name,
-        role: 'Trusted adult',
-        stage: 'Backup',
-        channel: 'SMS',
-      },
-    ])
-    setNewContact('')
-    showNotice(`${name} was added as a backup responder.`)
+
+  useEffect(() => {
+    let active = true
+    api
+      .getTeens()
+      .then(async ({ teens = [] }) => {
+        const teen = teens[0]
+        if (!teen || !active) return
+        const [saved, circle] = await Promise.all([
+          api.getSafetyPlan(teen.id),
+          api.getCareCircle(teen.id),
+        ])
+        if (!active) return
+        const contacts = [
+          circle.owner && {
+            id: `guardian-${circle.owner.id}`,
+            name: circle.owner.name,
+            role: 'Primary guardian',
+            stage: 'Primary',
+            channel: 'SMS and call',
+          },
+          ...(circle.members || [])
+            .filter((member) => member.status === 'active' && member.phone)
+            .map((member) => ({
+              id: `member-${member.id}`,
+              name: member.name,
+              role: member.relationship || member.role.replaceAll('_', ' '),
+              stage: 'Backup',
+              channel: 'SMS',
+            })),
+          {
+            id: 'emergency-pathway',
+            name: 'Local response plan',
+            role: 'Emergency pathway',
+            stage: 'Final',
+            channel: 'Family instructions',
+          },
+        ].filter(Boolean)
+        setTeenId(teen.id)
+        setTeenName(teen.first_name)
+        setPlan((current) => ({
+          ...current,
+          ...(saved.safety_plan?.plan || {}),
+          contacts,
+        }))
+      })
+      .catch(() => showNotice('Could not load the saved family plan.'))
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const update = (key, value) =>
+    setPlan((current) => ({ ...current, [key]: value }))
+  const savePlan = async () => {
+    if (!teenId || saving) return
+    setSaving(true)
+    try {
+      const serverPlan = Object.fromEntries(
+        Object.entries(plan).filter(([key]) => key !== 'contacts')
+      )
+      const result = await api.saveSafetyPlan(teenId, serverPlan, true)
+      showNotice(
+        `Response plan saved securely. Version ${result.safety_plan.version}.`
+      )
+    } catch (error) {
+      showNotice(error?.data?.error || 'Could not save the response plan.')
+    } finally {
+      setSaving(false)
+    }
   }
-  const removeContact = (id) =>
-    update(
-      'contacts',
-      plan.contacts.filter((contact) => contact.id !== id)
-    )
   const planReadiness = useMemo(() => {
     const checks = [
       plan.contacts.some((contact) => contact.stage === 'Primary'),
@@ -165,7 +198,7 @@ export default function SupportPlan() {
           <p>Family support system</p>
           <h1>Support Plan</h1>
           <span>
-            Give Maya control over her Chatterbot while making every human
+            Give {teenName} control over Chatterbot while making every human
             response clear and accountable.
           </span>
         </div>
@@ -378,27 +411,14 @@ export default function SupportPlan() {
                       <option>Family instructions</option>
                     </select>
                   </label>
-                  {plan.contacts.length > 3 && (
-                    <button
-                      type="button"
-                      aria-label={`Remove ${contact.name}`}
-                      onClick={() => removeContact(contact.id)}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  )}
                 </div>
               ))}
             </div>
             <div className="response-builder__add">
-              <input
-                value={newContact}
-                onChange={(event) => setNewContact(event.target.value)}
-                placeholder="Trusted adult name"
-              />
-              <button type="button" onClick={addContact}>
-                <Plus size={16} /> Add backup
-              </button>
+              <p>
+                Responders come from the verified Care Circle. Add or remove
+                trusted adults there so delivery status stays accountable.
+              </p>
             </div>
           </section>
           <aside className="support-card response-builder__rules">
@@ -439,10 +459,11 @@ export default function SupportPlan() {
             </div>
             <button
               type="button"
-              onClick={() => showNotice('Response plan saved on this device.')}
+              onClick={savePlan}
+              disabled={saving || !teenId}
               className="support-primary"
             >
-              Save response plan
+              {saving ? 'Saving...' : 'Save and activate plan'}
             </button>
           </aside>
         </div>

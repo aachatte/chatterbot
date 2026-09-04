@@ -7,11 +7,14 @@ from app import db
 from app.models.teen import Teen
 from app.models.conversation import Conversation, Message
 from app.models.crisis_alert import CrisisAlert
+from app.models.safety_operations import NotificationDelivery, SafetyAlertEvent
 from app.services.twilio_service import TwilioService
 from app.services.openai_service import OpenAIService
 from app.services.crisis_service import CrisisDetectionService
 from app.services.context_service import ContextMemoryService
 from app.services.scheduler_service import SchedulerService
+from app.routes.safety_plan import teen_visible_summary
+from app.utils.time import utc_now
 import logging
 
 sms_bp = Blueprint("sms", __name__)
@@ -81,6 +84,10 @@ def twilio_webhook():
     # Twilio retries webhooks. Replays must not create duplicate alerts.
     if message_sid and Message.query.filter_by(twilio_sid=message_sid).first():
         logger.info("Ignored duplicate Twilio message %s", message_sid)
+        return twilio_svc.create_empty_response(), 200
+
+    if body.strip().upper() == "PLAN":
+        twilio_svc.send_sms(teen.phone, teen_visible_summary(teen))
         return twilio_svc.create_empty_response(), 200
 
     # Update teen stats
@@ -173,6 +180,43 @@ def twilio_webhook():
     db.session.commit()
 
     return twilio_svc.create_empty_response(), 200
+
+
+@sms_bp.route("/delivery-status", methods=["POST"])
+def delivery_status():
+    """Record Twilio's final delivery evidence without exposing destinations."""
+    if not _valid_twilio_signature():
+        return jsonify({"error": "Invalid Twilio signature"}), 403
+    provider_sid = request.form.get("MessageSid", "")
+    provider_status = request.form.get("MessageStatus", "").lower()
+    delivery = NotificationDelivery.query.filter_by(provider_sid=provider_sid).first()
+    if not delivery:
+        return jsonify({"status": "ignored"}), 200
+    mapped = {
+        "queued": "sent",
+        "accepted": "sent",
+        "sending": "sent",
+        "sent": "sent",
+        "delivered": "delivered",
+        "undelivered": "failed",
+        "failed": "failed",
+    }.get(provider_status)
+    if not mapped:
+        return jsonify({"status": "ignored"}), 200
+    if delivery.status == mapped and mapped in {"delivered", "failed"}:
+        return jsonify({"status": mapped}), 200
+    delivery.status = mapped
+    delivery.last_error = request.form.get("ErrorMessage") or None
+    if mapped == "delivered":
+        delivery.delivered_at = utc_now()
+    if mapped in {"delivered", "failed"}:
+        db.session.add(SafetyAlertEvent(
+            alert_id=delivery.alert_id,
+            action=f"notification_{mapped}",
+            notes=f"{delivery.recipient_type} SMS {mapped}.",
+        ))
+    db.session.commit()
+    return jsonify({"status": mapped}), 200
 
 
 @sms_bp.route("/send", methods=["POST"])

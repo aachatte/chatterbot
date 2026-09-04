@@ -1,12 +1,15 @@
 """Deterministic safety detection, response, and escalation services."""
 import logging
 import re
+from datetime import timedelta
 
 from app import db
 from app.models.care_circle import CareCircleActivity, CareCircleMember
 from app.models.crisis_alert import CrisisAlert, CrisisStatus
+from app.models.safety_operations import NotificationDelivery, SafetyAlertEvent
 from app.services.twilio_service import TwilioService
 from app.utils.time import utc_now
+from config import settings
 
 logger = logging.getLogger(__name__)
 DETECTION_VERSION = "rules-2026-09-04"
@@ -18,7 +21,7 @@ RISK_PATTERNS = {
         r"\bend\s+(?:my\s+life|it\s+all)\b",
         r"\bkill\s+myself\b",
         r"\b(?:suicide|suicidal)\b",
-        r"\bdon['’]?t\s+want\s+to\s+(?:be\s+here|live|exist)\b",
+        r"\b(?:don['’]?t|do\s+not)\s+want\s+to\s+(?:be\s+here|live|exist)\b",
         r"\bbetter\s+off\s+dead\b",
         r"\bno\s+point\s+in\s+living\b",
     ],
@@ -54,6 +57,11 @@ THIRD_PARTY_PATTERNS = [
 
 def _matches(patterns, text):
     return [pattern for pattern in patterns if re.search(pattern, text, re.IGNORECASE)]
+
+
+def _masked_phone(phone):
+    digits = re.sub(r"\D", "", phone or "")
+    return f"••• ••• {digits[-4:]}" if len(digits) >= 4 else None
 
 
 class CrisisDetectionService:
@@ -152,8 +160,18 @@ class CrisisDetectionService:
             confidence=detection_result.get("confidence"),
             detection_version=detection_result.get("detection_version", DETECTION_VERSION),
             context_summary=self._generate_context_summary(teen, detection_result),
+            response_due_at=utc_now() + timedelta(
+                minutes=5 if detection_result["severity"] == "critical" else 15
+            ),
         )
         db.session.add(alert)
+        db.session.flush()
+        db.session.add(SafetyAlertEvent(
+            alert_id=alert.id,
+            action="alert_created",
+            to_status=CrisisStatus.TRIGGERED.value,
+            notes=f"Detector {alert.detection_version} classified severity {alert.severity}.",
+        ))
         teen.crisis_alert_count += 1
         db.session.commit()
         self._notify_guardian_and_care_circle(teen, alert)
@@ -194,10 +212,28 @@ class CrisisDetectionService:
                 teen_name=teen.first_name,
                 alert_id=alert.id,
             )
+            delivery = NotificationDelivery(
+                alert_id=alert.id,
+                recipient_type="guardian",
+                recipient_id=guardian.id,
+                recipient_name=guardian.first_name,
+                masked_destination=_masked_phone(guardian.phone),
+                provider_sid=result.get("sid"),
+                status="sent" if result.get("success") else "failed",
+                last_error=result.get("error"),
+            )
+            db.session.add(delivery)
             if result.get("success"):
                 alert.parent_notified_at = utc_now()
                 alert.parent_notification_method = "sms"
                 alert.status = CrisisStatus.PARENT_NOTIFIED.value
+                db.session.add(SafetyAlertEvent(
+                    alert_id=alert.id,
+                    action="guardian_notification_sent",
+                    from_status=CrisisStatus.TRIGGERED.value,
+                    to_status=CrisisStatus.PARENT_NOTIFIED.value,
+                    notes="Provider accepted the guardian SMS for delivery.",
+                ))
         alert.care_circle_notified_count = self._notify_care_circle(teen, alert)
         db.session.commit()
 
@@ -222,7 +258,21 @@ class CrisisDetectionService:
                 "Please follow your agreed support plan or contact their guardian.\n\n"
                 "No conversation text is included in this alert."
             )
-            result = self.twilio.send_sms(member.phone, body)
+            result = self.twilio.send_sms(
+                member.phone,
+                body,
+                status_callback=f"{settings.app_url}/api/sms/delivery-status",
+            )
+            db.session.add(NotificationDelivery(
+                alert_id=alert.id,
+                recipient_type="care_circle",
+                recipient_id=member.id,
+                recipient_name=member.name,
+                masked_destination=_masked_phone(member.phone),
+                provider_sid=result.get("sid"),
+                status="sent" if result.get("success") else "failed",
+                last_error=result.get("error"),
+            ))
             if not result.get("success"):
                 logger.warning("Care Circle delivery failed for member %s", member.id)
                 continue
@@ -243,10 +293,22 @@ class CrisisDetectionService:
         alert = db.session.get(CrisisAlert, alert_id)
         if not alert:
             return False
+        previous = alert.status
         alert.status = CrisisStatus.RESOLVED.value
         alert.resolved_at = utc_now()
         alert.resolved_by = user_id
         alert.resolution_notes = notes
+        alert.resolution_reason = "guardian_follow_up"
+        db.session.add(SafetyAlertEvent(
+            alert_id=alert.id,
+            actor_type="guardian",
+            actor_id=user_id,
+            actor_name="Guardian",
+            action="alert_resolved",
+            from_status=previous,
+            to_status=CrisisStatus.RESOLVED.value,
+            notes=notes or None,
+        ))
         db.session.commit()
         logger.info("Safety alert %s resolved by user %s", alert_id, user_id)
         return True

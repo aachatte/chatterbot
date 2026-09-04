@@ -248,7 +248,7 @@ def test_accepted_safety_contacts_receive_minimal_sms_signal(app, client, monkey
         monkeypatch.setattr(
             service.twilio,
             "send_sms",
-            lambda phone, body: sent_messages.append((phone, body))
+            lambda phone, body, **_kwargs: sent_messages.append((phone, body))
             or {"success": True, "sid": "SM-care-circle"},
         )
         service._notify_parent(teen, alert)

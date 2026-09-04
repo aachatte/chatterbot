@@ -4,7 +4,9 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '20260902_add_gamification_pref'
-down_revision = '20260901_add_gamification'
+# This is the first migration committed to the repository. Earlier deployments
+# created the base schema with SQLAlchemy's create_all().
+down_revision = None
 branch_labels = None
 dependencies = None
 

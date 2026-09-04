@@ -10,10 +10,17 @@ from app.models.subscription import Subscription
 from app.services.crisis_service import CrisisDetectionService
 from app.services.twilio_service import TwilioService
 from app.utils.time import utc_now
+from app.models.safety_operations import SafetyAlertEvent
 
 dashboard_bp = Blueprint("dashboard", __name__)
 MAX_AUDIT_NOTES_LENGTH = 2_000
 VALID_NUDGE_FREQUENCIES = {"low", "moderate", "high"}
+VALID_ALERT_OWNERS = {
+    "unassigned",
+    "primary_guardian",
+    "support_guardian",
+    "counselor",
+}
 
 
 def _get_json_object():
@@ -317,6 +324,37 @@ def get_alert_detail(alert_id):
     return jsonify({"alert": alert.to_dict()}), 200
 
 
+@dashboard_bp.route("/alerts/<int:alert_id>/workflow", methods=["PATCH"])
+@jwt_required()
+def update_alert_workflow(alert_id):
+    """Persist guardian alert ownership instead of browser-only state."""
+    user_id = _get_authenticated_user_id()
+    if user_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
+    alert = _get_owned_alert(alert_id, user_id)
+    if not alert:
+        return jsonify({"error": "Alert not found"}), 404
+    data = _get_json_object()
+    if data is None:
+        return jsonify({"error": "Request body must be a JSON object"}), 400
+    owner = data.get("assigned_to")
+    if owner not in VALID_ALERT_OWNERS:
+        return jsonify({"error": "Choose a valid alert owner"}), 400
+
+    previous = alert.assigned_to or "unassigned"
+    alert.assigned_to = None if owner == "unassigned" else owner
+    db.session.add(SafetyAlertEvent(
+        alert_id=alert.id,
+        actor_type="guardian",
+        actor_id=user_id,
+        actor_name="Guardian",
+        action="owner_changed",
+        notes=f"Owner changed from {previous} to {owner}.",
+    ))
+    db.session.commit()
+    return jsonify({"alert": alert.to_dict()}), 200
+
+
 @dashboard_bp.route("/alerts/<int:alert_id>/resolve", methods=["POST"])
 @jwt_required()
 def resolve_alert(alert_id):
@@ -548,6 +586,17 @@ def acknowledge_alert(alert_id):
         alert.acknowledged_by = user_id
     if notes:
         alert.acknowledgement_notes = notes
+    previous = alert.status
     alert.status = CrisisStatus.ACKNOWLEDGED.value
+    db.session.add(SafetyAlertEvent(
+        alert_id=alert.id,
+        actor_type="guardian",
+        actor_id=user_id,
+        actor_name="Guardian",
+        action="alert_acknowledged",
+        from_status=previous,
+        to_status=CrisisStatus.ACKNOWLEDGED.value,
+        notes=notes or None,
+    ))
     db.session.commit()
     return jsonify({"alert": alert.to_dict()}), 200

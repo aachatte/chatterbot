@@ -1,5 +1,6 @@
 """Admin routes for internal operations."""
 import hmac
+from datetime import datetime
 
 from flask import Blueprint, request, jsonify
 from sqlalchemy import text
@@ -9,6 +10,7 @@ from app.models.user import User
 from app.models.teen import Teen
 from app.models.conversation import Conversation, Message
 from app.models.crisis_alert import CrisisAlert
+from app.models.safety_operations import SafetyAlertEvent
 from app.models.subscription import Subscription
 from app.services.scheduler_service import SchedulerService
 from app.services.twilio_service import TwilioService
@@ -17,6 +19,19 @@ import logging
 
 admin_bp = Blueprint("admin", __name__)
 logger = logging.getLogger(__name__)
+VALID_ALERT_STATUSES = {
+    "triggered",
+    "parent_notified",
+    "acknowledged",
+    "resolved",
+    "false_positive",
+}
+VALID_RESOLUTION_REASONS = {
+    "guardian_follow_up",
+    "care_circle_follow_up",
+    "professional_handoff",
+    "false_positive",
+}
 
 def _check_admin_auth():
     """Check admin API key."""
@@ -107,6 +122,7 @@ def list_all_alerts():
     """List all crisis alerts."""
     status = request.args.get("status")
     severity = request.args.get("severity")
+    assigned_to = request.args.get("assigned_to")
 
     query = CrisisAlert.query
 
@@ -114,6 +130,8 @@ def list_all_alerts():
         query = query.filter_by(status=status)
     if severity:
         query = query.filter_by(severity=severity)
+    if assigned_to:
+        query = query.filter_by(assigned_to=assigned_to)
 
     alerts = query.order_by(CrisisAlert.created_at.desc()).all()
 
@@ -122,19 +140,55 @@ def list_all_alerts():
 
 @admin_bp.route("/alerts/<int:alert_id>", methods=["PUT"])
 def update_alert(alert_id):
-    """Update alert status (human-in-the-loop)."""
+    """Apply a validated staff workflow transition and retain an audit event."""
     alert = db.session.get(CrisisAlert, alert_id)
     if not alert:
         return jsonify({"error": "Alert not found"}), 404
 
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "Request body must be a JSON object"}), 400
+    status = data.get("status", alert.status)
+    if status not in VALID_ALERT_STATUSES:
+        return jsonify({"error": "Choose a valid alert status"}), 400
+    reason = data.get("resolution_reason")
+    if status in {"resolved", "false_positive"} and reason not in VALID_RESOLUTION_REASONS:
+        return jsonify({"error": "A valid resolution_reason is required"}), 400
+    notes = data.get("notes", "")
+    if not isinstance(notes, str) or len(notes.strip()) > 2000:
+        return jsonify({"error": "notes must be 2000 characters or fewer"}), 400
+    assigned_to = data.get("assigned_to", alert.assigned_to)
+    if assigned_to is not None and (
+        not isinstance(assigned_to, str) or not 1 <= len(assigned_to.strip()) <= 120
+    ):
+        return jsonify({"error": "assigned_to must be 120 characters or fewer"}), 400
 
-    if "status" in data:
-        alert.status = data["status"]
-    if "resolution_notes" in data:
-        alert.resolution_notes = data["resolution_notes"]
-    if "severity" in data:
-        alert.severity = data["severity"]
+    follow_up_at = data.get("follow_up_at")
+    if follow_up_at:
+        try:
+            alert.follow_up_at = datetime.fromisoformat(follow_up_at.replace("Z", "+00:00")).replace(tzinfo=None)
+        except (TypeError, ValueError):
+            return jsonify({"error": "follow_up_at must be an ISO 8601 datetime"}), 400
+
+    previous = alert.status
+    alert.status = status
+    alert.assigned_to = assigned_to.strip() if assigned_to else None
+    alert.resolution_reason = reason
+    alert.resolution_notes = notes.strip() or None
+    if status == "false_positive":
+        alert.false_positive_reason = notes.strip() or "No reason provided"
+        alert.resolved_at = utc_now()
+    elif status == "resolved":
+        alert.resolved_at = utc_now()
+    db.session.add(SafetyAlertEvent(
+        alert_id=alert.id,
+        actor_type="staff",
+        actor_name="Safety staff",
+        action="workflow_updated",
+        from_status=previous,
+        to_status=status,
+        notes=notes.strip() or None,
+    ))
 
     db.session.commit()
 

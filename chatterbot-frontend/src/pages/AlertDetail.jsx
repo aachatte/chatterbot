@@ -45,7 +45,7 @@ export default function AlertDetail() {
       const data = await api.acknowledgeAlert(id, notes)
       setAlert(data.alert)
     } catch (err) {
-      alert(err.data?.error || 'Failed to acknowledge alert')
+      window.alert(err.data?.error || 'Failed to acknowledge alert')
     } finally {
       setAcknowledging(false)
     }
@@ -54,14 +54,10 @@ export default function AlertDetail() {
   const handleResolve = async () => {
     setResolving(true)
     try {
-      await api.resolveAlert(id, notes)
-      setAlert((prev) => ({
-        ...prev,
-        status: 'resolved',
-        resolved_at: new Date().toISOString(),
-      }))
+      const data = await api.resolveAlert(id, notes)
+      setAlert(data.alert)
     } catch (err) {
-      alert(err.data?.error || 'Failed to resolve')
+      window.alert(err.data?.error || 'Failed to resolve')
     } finally {
       setResolving(false)
     }
@@ -201,6 +197,26 @@ export default function AlertDetail() {
               marginBottom: 'var(--cb-space-3)',
             }}
           >
+            Response accountability
+          </h3>
+          <p style={{ fontSize: 14, color: 'var(--cb-text-secondary)' }}>
+            Owner: {(alert.assigned_to || 'unassigned').replaceAll('_', ' ')}
+            {alert.response_due_at &&
+              ` · response due ${new Date(alert.response_due_at).toLocaleString()}`}
+          </p>
+        </div>
+
+        <div style={{ marginBottom: 'var(--cb-space-5)' }}>
+          <h3
+            style={{
+              fontSize: 13,
+              fontWeight: 500,
+              color: 'var(--cb-text-tertiary)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+              marginBottom: 'var(--cb-space-3)',
+            }}
+          >
             Context summary
           </h3>
           <p
@@ -308,28 +324,9 @@ export default function AlertDetail() {
               gap: 'var(--cb-space-2)',
             }}
           >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--cb-space-3)',
-                fontSize: 14,
-              }}
-            >
-              <CheckIcon />
-              <span>Chatterbot detected concerning language</span>
-              <span
-                style={{
-                  marginLeft: 'auto',
-                  color: 'var(--cb-text-tertiary)',
-                  fontSize: 12,
-                }}
-              >
-                {new Date(alert.created_at).toLocaleTimeString()}
-              </span>
-            </div>
-            {alert.parent_notified_at && (
+            {(alert.deliveries || []).map((delivery) => (
               <div
+                key={delivery.id}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -337,8 +334,19 @@ export default function AlertDetail() {
                   fontSize: 14,
                 }}
               >
-                <CheckIcon />
-                <span>Parent notified via SMS</span>
+                <CheckIcon
+                  color={
+                    delivery.status === 'failed'
+                      ? 'var(--cb-danger)'
+                      : 'var(--cb-positive)'
+                  }
+                />
+                <span>
+                  {delivery.recipient_name} · {delivery.channel} ·{' '}
+                  {delivery.status}
+                  {delivery.masked_destination &&
+                    ` · ${delivery.masked_destination}`}
+                </span>
                 <span
                   style={{
                     marginLeft: 'auto',
@@ -346,12 +354,51 @@ export default function AlertDetail() {
                     fontSize: 12,
                   }}
                 >
-                  {new Date(alert.parent_notified_at).toLocaleTimeString()}
+                  {new Date(
+                    delivery.updated_at || delivery.created_at
+                  ).toLocaleTimeString()}
                 </span>
               </div>
+            ))}
+            {(alert.deliveries || []).length === 0 && (
+              <span style={{ fontSize: 14, color: 'var(--cb-text-tertiary)' }}>
+                No provider delivery evidence is available for this alert.
+              </span>
             )}
           </div>
         </div>
+
+        {(alert.timeline || []).length > 0 && (
+          <div style={{ marginBottom: 'var(--cb-space-5)' }}>
+            <h3
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
+                color: 'var(--cb-text-tertiary)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+                marginBottom: 'var(--cb-space-3)',
+              }}
+            >
+              Audit timeline
+            </h3>
+            <ol
+              style={{
+                margin: 0,
+                paddingLeft: 20,
+                color: 'var(--cb-text-secondary)',
+                lineHeight: 1.7,
+              }}
+            >
+              {alert.timeline.map((event) => (
+                <li key={event.id}>
+                  {event.action.replaceAll('_', ' ')} · {event.actor_name} ·{' '}
+                  {new Date(event.created_at).toLocaleString()}
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
 
         {alert.status !== 'resolved' && (
           <div

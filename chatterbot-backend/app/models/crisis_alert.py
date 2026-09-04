@@ -28,6 +28,11 @@ class CrisisAlert(db.Model):
     confidence = db.Column(db.Float, nullable=True)
     detection_version = db.Column(db.String(40), nullable=True)
     care_circle_notified_count = db.Column(db.Integer, default=0, nullable=False)
+    assigned_to = db.Column(db.String(120), nullable=True, index=True)
+    response_due_at = db.Column(db.DateTime, nullable=True, index=True)
+    follow_up_at = db.Column(db.DateTime, nullable=True)
+    resolution_reason = db.Column(db.String(50), nullable=True)
+    false_positive_reason = db.Column(db.String(500), nullable=True)
 
     # Context (privacy-safe summary, NOT raw message)
     context_summary = db.Column(db.Text, nullable=True)
@@ -51,7 +56,32 @@ class CrisisAlert(db.Model):
     created_at = db.Column(db.DateTime, default=utc_now)
     updated_at = db.Column(db.DateTime, default=utc_now, onupdate=utc_now)
 
+    events = db.relationship(
+        "SafetyAlertEvent",
+        backref="alert",
+        lazy="dynamic",
+        cascade="all, delete-orphan",
+    )
+    deliveries = db.relationship(
+        "NotificationDelivery",
+        backref="alert",
+        lazy="dynamic",
+        cascade="all, delete-orphan",
+    )
+
     def to_dict(self):
+        from app.models.safety_operations import NotificationDelivery, SafetyAlertEvent
+
+        deliveries = (
+            self.deliveries.order_by(NotificationDelivery.created_at.asc()).all()
+            if self.id is not None
+            else []
+        )
+        timeline = (
+            self.events.order_by(SafetyAlertEvent.created_at.asc()).all()
+            if self.id is not None
+            else []
+        )
         return {
             "id": self.id,
             "teen_id": self.teen_id,
@@ -62,6 +92,11 @@ class CrisisAlert(db.Model):
             "confidence": self.confidence,
             "detection_version": self.detection_version,
             "care_circle_notified_count": self.care_circle_notified_count or 0,
+            "assigned_to": self.assigned_to,
+            "response_due_at": self.response_due_at.isoformat() if self.response_due_at else None,
+            "follow_up_at": self.follow_up_at.isoformat() if self.follow_up_at else None,
+            "resolution_reason": self.resolution_reason,
+            "false_positive_reason": self.false_positive_reason,
             "context_summary": self.context_summary,
             "parent_notified_at": self.parent_notified_at.isoformat() if self.parent_notified_at else None,
             "acknowledged_at": self.acknowledged_at.isoformat() if self.acknowledged_at else None,
@@ -72,6 +107,8 @@ class CrisisAlert(db.Model):
             "resolved_by": self.resolved_by,
             "resolution_notes": self.resolution_notes,
             "recommended_actions": self.recommended_actions(),
+            "deliveries": [item.to_dict() for item in deliveries],
+            "timeline": [item.to_dict() for item in timeline],
         }
 
     def recommended_actions(self):
