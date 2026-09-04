@@ -1,4 +1,5 @@
 """Guardian Dashboard API routes."""
+from datetime import timedelta
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
@@ -11,6 +12,9 @@ from app.services.crisis_service import CrisisDetectionService
 from app.services.twilio_service import TwilioService
 from app.utils.time import utc_now
 from app.models.safety_operations import SafetyAlertEvent
+from app.models.privacy import DataDeletionRequest
+from app.services.privacy_service import record_privacy_event
+from config import settings
 
 dashboard_bp = Blueprint("dashboard", __name__)
 MAX_AUDIT_NOTES_LENGTH = 2_000
@@ -272,7 +276,7 @@ def update_teen(teen_id):
 @dashboard_bp.route("/teens/<int:teen_id>", methods=["DELETE"])
 @jwt_required()
 def delete_teen(teen_id):
-    """Delete a teen and all associated data (GDPR/COPPA compliance)."""
+    """Schedule recoverable deletion; the privacy job performs final erasure."""
     user_id = _get_authenticated_user_id()
     if user_id is None:
         return jsonify({"error": "Invalid authentication token"}), 401
@@ -281,11 +285,32 @@ def delete_teen(teen_id):
     if not teen:
         return jsonify({"error": "Teen not found"}), 404
 
-    # Delete all associated data (cascade handles most)
-    db.session.delete(teen)
+    data = _get_json_object()
+    if data is None or data.get("confirmation") != teen.first_name:
+        return jsonify({"error": f'Type "{teen.first_name}" to confirm deletion'}), 400
+    existing = DataDeletionRequest.query.filter_by(
+        teen_id=teen.id, status="scheduled"
+    ).first()
+    if existing:
+        return jsonify({"deletion_request": existing.to_dict()}), 200
+    deletion = DataDeletionRequest(
+        guardian_id=user_id,
+        teen_id=teen.id,
+        teen_name=teen.first_name,
+        scheduled_for=utc_now() + timedelta(days=settings.deletion_grace_days),
+    )
+    teen.is_active = False
+    db.session.add(deletion)
+    db.session.flush()
+    record_privacy_event(
+        user_id,
+        "deletion_scheduled",
+        teen.id,
+        {"request_id": deletion.id, "scheduled_for": deletion.scheduled_for.isoformat()},
+    )
     db.session.commit()
 
-    return jsonify({"message": "Teen and all data deleted successfully"}), 200
+    return jsonify({"deletion_request": deletion.to_dict()}), 202
 
 
 @dashboard_bp.route("/alerts", methods=["GET"])
@@ -381,7 +406,10 @@ def resolve_alert(alert_id):
     success = crisis_svc.resolve_alert(alert_id, user_id, notes)
 
     if success:
-        return jsonify({"message": "Alert resolved"}), 200
+        return jsonify({
+            "message": "Alert resolved",
+            "alert": db.session.get(CrisisAlert, alert_id).to_dict(),
+        }), 200
     else:
         return jsonify({"error": "Failed to resolve alert"}), 500
 
@@ -419,6 +447,13 @@ def confirm_teen_consent(teen_id):
         teen.consent_verified = True
         teen.consent_verified_at = utc_now()
         teen.consent_status = "guardian_confirmed"
+        teen.is_active = True
+        record_privacy_event(
+            user_id,
+            "consent_granted",
+            teen.id,
+            {"method": "authenticated_guardian_confirmation"},
+        )
         db.session.commit()
 
     return jsonify({"enrollment": teen.enrollment_to_dict()}), 200

@@ -53,6 +53,20 @@ class Settings(BaseSettings):
     # Gamification feature flag
     enable_gamification: bool = True
 
+    # Product defaults that must be confirmed during privacy counsel review.
+    privacy_policy_version: str = "privacy-2026-09-05-draft"
+    message_retention_days: int = 90
+    deletion_grace_days: int = 7
+    pilot_mode: bool = True
+    pilot_family_capacity: int = 50
+
+    @field_validator('message_retention_days', 'deletion_grace_days', 'pilot_family_capacity')
+    @classmethod
+    def validate_positive_operating_limits(cls, v):
+        if v <= 0:
+            raise ValueError('Privacy and pilot operating limits must be greater than zero')
+        return v
+
     @field_validator('jwt_access_token_expires')
     @classmethod
     def validate_jwt_expiry(cls, v):

@@ -11,6 +11,7 @@ from flask_jwt_extended import (
 
 from app import db, limiter
 from app.models.user import User
+from config import settings
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 bp = auth_bp  # Backward-compatible alias
@@ -68,6 +69,11 @@ def register():
         return jsonify({"error": f"password must be at least {MIN_PASSWORD_LENGTH} characters"}), 400
     if User.query.filter_by(email=email).first():
         return jsonify({"error": "Email already registered"}), 409
+    if settings.pilot_mode and User.query.filter_by(is_active=True).count() >= settings.pilot_family_capacity:
+        return jsonify({
+            "error": "The current family pilot is full",
+            "pilot_capacity": settings.pilot_family_capacity,
+        }), 503
 
     user = User(
         first_name=first_name,

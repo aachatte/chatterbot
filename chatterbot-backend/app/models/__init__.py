@@ -13,6 +13,7 @@ from app.models.safety_operations import (
     NotificationDelivery,
     SafetyAlertEvent,
 )
+from app.models.privacy import DataDeletionRequest, PrivacyEvent
 
 __all__ = [
     "User",
@@ -29,4 +30,6 @@ __all__ = [
     "FamilySafetyPlan",
     "NotificationDelivery",
     "SafetyAlertEvent",
+    "DataDeletionRequest",
+    "PrivacyEvent",
 ]

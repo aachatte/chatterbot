@@ -88,6 +88,7 @@ def create_app(config_override=None):
     from app.routes.gamification import gam_bp
     from app.routes.care_circle import care_circle_bp
     from app.routes.safety_plan import safety_plan_bp
+    from app.routes.privacy import privacy_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(sms_bp, url_prefix="/api/sms")
@@ -104,6 +105,18 @@ def create_app(config_override=None):
     app.register_blueprint(gam_bp, url_prefix="/api/gamification")
     app.register_blueprint(care_circle_bp, url_prefix="/api/care-circle")
     app.register_blueprint(safety_plan_bp, url_prefix="/api/safety-plans")
+    app.register_blueprint(privacy_bp, url_prefix="/api/privacy")
+
+    @app.cli.command("run-privacy-jobs")
+    def run_privacy_jobs_command():
+        """Apply configured retention and due deletion jobs."""
+        from app.services.privacy_service import run_privacy_jobs
+
+        result = run_privacy_jobs()
+        print(
+            f"Messages redacted: {result['messages_redacted']}; "
+            f"deletions completed: {result['deletions_completed']}"
+        )
 
     # Error handlers
     @app.errorhandler(400)

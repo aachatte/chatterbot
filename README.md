@@ -4,6 +4,11 @@ Chatterbot is an SMS first support platform for teens and their guardians. Teens
 
 Care Circle lets a guardian create a teen specific network of trusted adults, issue expiring invitation links, choose which support signals each member can receive, pause or remove access, and review a privacy safe activity history. Accepted members with SMS safety alerts enabled can receive a minimal safety signal without conversation text.
 
+Privacy controls provide versioned consent events, guardian exports that exclude
+teen message text, configurable content redaction, recoverable deletion
+requests, and controlled pilot capacity. Run the privacy lifecycle command on a
+daily schedule in deployed environments.
+
 ## Project structure
 
 | Directory | Stack | Purpose |

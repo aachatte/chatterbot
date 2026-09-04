@@ -1,6 +1,6 @@
 """Admin routes for internal operations."""
 import hmac
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask import Blueprint, request, jsonify
 from sqlalchemy import text
@@ -11,9 +11,11 @@ from app.models.teen import Teen
 from app.models.conversation import Conversation, Message
 from app.models.crisis_alert import CrisisAlert
 from app.models.safety_operations import SafetyAlertEvent
+from app.models.privacy import DataDeletionRequest, PrivacyEvent
 from app.models.subscription import Subscription
 from app.services.scheduler_service import SchedulerService
 from app.services.twilio_service import TwilioService
+from app.services.privacy_service import REDACTED_CONTENT
 from app.utils.time import utc_now
 import logging
 
@@ -32,6 +34,34 @@ VALID_RESOLUTION_REASONS = {
     "professional_handoff",
     "false_positive",
 }
+
+
+@admin_bp.route("/privacy-readiness", methods=["GET"])
+def privacy_readiness():
+    """Return non-identifying privacy job and pilot capacity signals."""
+    cutoff = utc_now() - timedelta(days=settings.message_retention_days)
+    pending_redaction = Message.query.filter(
+        Message.created_at < cutoff,
+        Message.content != REDACTED_CONTENT,
+    ).count()
+    overdue_deletions = DataDeletionRequest.query.filter(
+        DataDeletionRequest.status == "scheduled",
+        DataDeletionRequest.scheduled_for <= utc_now(),
+    ).count()
+    active_families = User.query.filter_by(is_active=True).count()
+    return jsonify({
+        "policy_version": settings.privacy_policy_version,
+        "pending_message_redactions": pending_redaction,
+        "overdue_deletions": overdue_deletions,
+        "privacy_events": PrivacyEvent.query.count(),
+        "pilot": {
+            "enabled": settings.pilot_mode,
+            "active_families": active_families,
+            "capacity": settings.pilot_family_capacity,
+            "at_capacity": active_families >= settings.pilot_family_capacity,
+        },
+    })
+
 
 def _check_admin_auth():
     """Check admin API key."""

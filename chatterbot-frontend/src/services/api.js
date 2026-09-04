@@ -94,10 +94,17 @@ export const api = {
       method: 'PUT',
       body: data,
     }),
-  deleteTeen: (id) =>
+  deleteTeen: (id, confirmation) =>
     request(`/dashboard/teens/${id}`, {
       method: 'DELETE',
+      body: { confirmation },
     }),
+  getPrivacyOverview: () => request('/privacy/overview'),
+  exportGuardianData: () => request('/privacy/export', { method: 'POST' }),
+  cancelDeletionRequest: (id) =>
+    request(`/privacy/deletion-requests/${id}`, { method: 'DELETE' }),
+  withdrawTeenConsent: (id) =>
+    request(`/privacy/teens/${id}/consent`, { method: 'DELETE' }),
   getAlerts: (params = {}) => {
     const query = new URLSearchParams(params).toString()
     return request(`/dashboard/alerts${query ? `?${query}` : ''}`)
