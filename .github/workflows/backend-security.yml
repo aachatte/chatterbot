@@ -47,7 +47,7 @@ jobs:
           cache: pip
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: npm
           cache-dependency-path: chatterbot-frontend/package-lock.json
       - name: Audit Python dependencies
