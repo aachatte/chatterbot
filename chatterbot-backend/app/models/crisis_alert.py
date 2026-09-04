@@ -24,6 +24,10 @@ class CrisisAlert(db.Model):
     status = db.Column(db.String(30), default=CrisisStatus.TRIGGERED.value, index=True)
     severity = db.Column(db.String(20), default="high")  # low, medium, high, critical
     keywords_matched = db.Column(db.JSON, default=list)
+    categories = db.Column(db.JSON, default=list)
+    confidence = db.Column(db.Float, nullable=True)
+    detection_version = db.Column(db.String(40), nullable=True)
+    care_circle_notified_count = db.Column(db.Integer, default=0, nullable=False)
 
     # Context (privacy-safe summary, NOT raw message)
     context_summary = db.Column(db.Text, nullable=True)
@@ -54,7 +58,10 @@ class CrisisAlert(db.Model):
             "teen_name": self.teen.first_name if self.teen else None,
             "status": self.status,
             "severity": self.severity,
-            "keywords_matched": self.keywords_matched or [],
+            "categories": self.categories or [],
+            "confidence": self.confidence,
+            "detection_version": self.detection_version,
+            "care_circle_notified_count": self.care_circle_notified_count or 0,
             "context_summary": self.context_summary,
             "parent_notified_at": self.parent_notified_at.isoformat() if self.parent_notified_at else None,
             "acknowledged_at": self.acknowledged_at.isoformat() if self.acknowledged_at else None,
@@ -64,4 +71,14 @@ class CrisisAlert(db.Model):
             "resolved_at": self.resolved_at.isoformat() if self.resolved_at else None,
             "resolved_by": self.resolved_by,
             "resolution_notes": self.resolution_notes,
+            "recommended_actions": self.recommended_actions(),
         }
+
+    def recommended_actions(self):
+        """Return non-clinical next steps without revealing conversation content."""
+        actions = ["Contact the teen directly and ask whether they are safe right now."]
+        if self.severity == "critical":
+            actions.append("If danger is immediate, call 911 or local emergency services.")
+        actions.append("Call or text 988 in the U.S. for crisis support and guidance.")
+        actions.append("Follow the family safety plan and keep a trusted adult with the teen.")
+        return actions

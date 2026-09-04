@@ -69,6 +69,20 @@ def twilio_webhook():
         logger.warning(f"Inactive teen {teen.id} attempted to message")
         return twilio_svc.create_empty_response(), 200
 
+    # Do not collect conversation content until enrollment is complete.
+    if not teen.consent_verified or teen.phone_verification_status != "verified":
+        logger.warning("Blocked SMS from incomplete enrollment for teen %s", teen.id)
+        twilio_svc.send_sms(
+            from_number,
+            "Chatterbot isn’t active on this number yet. Ask your guardian to finish consent and phone verification in the dashboard.",
+        )
+        return twilio_svc.create_empty_response(), 200
+
+    # Twilio retries webhooks. Replays must not create duplicate alerts.
+    if message_sid and Message.query.filter_by(twilio_sid=message_sid).first():
+        logger.info("Ignored duplicate Twilio message %s", message_sid)
+        return twilio_svc.create_empty_response(), 200
+
     # Update teen stats
     teen.last_interaction_at = db.func.now()
     teen.message_count += 1
@@ -98,24 +112,12 @@ def twilio_webhook():
         inbound_msg.crisis_keywords_matched = crisis_result["keywords_matched"]
         db.session.commit()
 
-        # Escalate
-        alert = crisis_svc.escalate(teen, inbound_msg, crisis_result)
-        conversation.is_crisis_flagged = True
-        db.session.commit()
+        if crisis_result["requires_escalation"]:
+            crisis_svc.escalate(teen, inbound_msg, crisis_result)
+            conversation.is_crisis_flagged = True
 
-        # Generate crisis-aware response
-        conv_history = context_svc.get_conversation_history(teen.id, limit=10)
-        context_facts = context_svc.get_context_for_teen(teen.id)
-
-        ai_response = openai_svc.generate_response(
-            user_message=body,
-            conversation_history=conv_history,
-            context_facts=context_facts,
-            teen_name=teen.first_name,
-            trigger_type="crisis",
-        )
-
-        reply_text = ai_response["text"]
+        # Crisis resources never depend on a model call succeeding safely.
+        reply_text = crisis_svc.safe_response(teen.first_name, crisis_result)
 
         # Send response
         twilio_svc.send_sms(teen.phone, reply_text)
@@ -125,7 +127,7 @@ def twilio_webhook():
             conversation_id=conversation.id,
             direction="outbound",
             content=reply_text,
-            is_crisis_flagged=True,
+            is_crisis_flagged=crisis_result["requires_escalation"],
         )
         db.session.add(outbound_msg)
         conversation.last_message_at = db.func.now()

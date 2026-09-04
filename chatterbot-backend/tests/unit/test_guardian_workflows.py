@@ -155,7 +155,7 @@ def test_guardian_preferences_and_alert_acknowledgement_are_persisted(app, clien
 
     teen_preferences = client.put(
         f"/api/dashboard/teens/{teen_id}/preferences",
-        json={"nudge_frequency": "low", "crisis_keywords_enabled": True},
+        json={"nudge_frequency": "low"},
         headers=headers,
     )
     assert teen_preferences.status_code == 200

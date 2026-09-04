@@ -252,10 +252,6 @@ def update_teen(teen_id):
                 "error": "nudge_frequency must be low, moderate, or high"
             }), 400
         teen.nudge_frequency = data["nudge_frequency"]
-    if "crisis_keywords_enabled" in data:
-        if not isinstance(data["crisis_keywords_enabled"], bool):
-            return jsonify({"error": "crisis_keywords_enabled must be a boolean"}), 400
-        teen.crisis_keywords_enabled = data["crisis_keywords_enabled"]
     if "is_active" in data:
         if not isinstance(data["is_active"], bool):
             return jsonify({"error": "is_active must be a boolean"}), 400
@@ -456,7 +452,7 @@ def teen_preferences(teen_id):
         return jsonify({"preferences": {
             "proactive_nudges_enabled": teen.proactive_nudges_enabled,
             "nudge_frequency": teen.nudge_frequency,
-            "crisis_keywords_enabled": teen.crisis_keywords_enabled,
+            "safety_detection_enabled": True,
         }}), 200
 
     data = _get_json_object()
@@ -465,11 +461,10 @@ def teen_preferences(teen_id):
     allowed = {
         "proactive_nudges_enabled",
         "nudge_frequency",
-        "crisis_keywords_enabled",
     }
     if not data or set(data) - allowed:
         return jsonify({"error": "Provide one or more supported preferences"}), 400
-    for field in ("proactive_nudges_enabled", "crisis_keywords_enabled"):
+    for field in ("proactive_nudges_enabled",):
         if field in data and not isinstance(data[field], bool):
             return jsonify({"error": f"{field} must be a boolean"}), 400
     if (
@@ -488,7 +483,7 @@ def teen_preferences(teen_id):
     return jsonify({"preferences": {
         "proactive_nudges_enabled": teen.proactive_nudges_enabled,
         "nudge_frequency": teen.nudge_frequency,
-        "crisis_keywords_enabled": teen.crisis_keywords_enabled,
+        "safety_detection_enabled": True,
     }}), 200
 
 

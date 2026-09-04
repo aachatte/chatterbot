@@ -53,7 +53,7 @@ class Message(db.Model):
 
     # Metadata
     created_at = db.Column(db.DateTime, default=utc_now, index=True)
-    twilio_sid = db.Column(db.String(100), nullable=True)  # Twilio message SID for audit
+    twilio_sid = db.Column(db.String(100), nullable=True, unique=True, index=True)
 
     def to_dict(self, include_content=True):
         data = {
