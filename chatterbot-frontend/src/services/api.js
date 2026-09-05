@@ -1,4 +1,11 @@
-const API_BASE = import.meta.env.VITE_API_URL || '/api'
+export function resolveApiBase({
+  isProduction = import.meta.env.PROD,
+  configuredUrl = import.meta.env.VITE_API_URL,
+} = {}) {
+  return isProduction ? '/api' : configuredUrl || '/api'
+}
+
+const API_BASE = resolveApiBase()
 let accessToken = null
 let staffAccessToken =
   typeof window !== 'undefined'
