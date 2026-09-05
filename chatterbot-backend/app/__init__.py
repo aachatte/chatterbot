@@ -1,6 +1,7 @@
 """Chatterbot Flask application factory."""
 import logging
 from datetime import timedelta
+import click
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -152,6 +153,32 @@ def create_app(config_override=None):
             f"Messages redacted: {result['messages_redacted']}; "
             f"deletions completed: {result['deletions_completed']}"
         )
+
+    @app.cli.command("create-staff")
+    @click.option("--name", prompt=True)
+    @click.option("--email", prompt=True)
+    @click.option(
+        "--role",
+        type=click.Choice(["viewer", "operator", "safety_lead", "admin"]),
+        prompt=True,
+    )
+    @click.password_option(confirmation_prompt=True)
+    def create_staff_command(name, email, role, password):
+        """Create the first named staff account from a trusted environment."""
+        from app.models.staff import StaffUser
+
+        normalized_email = email.strip().lower()
+        if len(password) < 12:
+            raise click.ClickException("Staff passwords require at least 12 characters")
+        if StaffUser.query.filter_by(email=normalized_email).first():
+            raise click.ClickException("A staff account already uses this email")
+        staff_user = StaffUser(
+            name=name.strip(), email=normalized_email, role=role
+        )
+        staff_user.set_password(password)
+        db.session.add(staff_user)
+        db.session.commit()
+        click.echo(f"Created {role} staff account for {normalized_email}")
 
     # Error handlers
     @app.errorhandler(400)

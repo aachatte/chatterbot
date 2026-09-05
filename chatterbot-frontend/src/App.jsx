@@ -22,20 +22,32 @@ const Demo = lazy(() => import('./pages/Demo.jsx'))
 const Support = lazy(() => import('./pages/Support.jsx'))
 const Analytics = lazy(() => import('./pages/Analytics.jsx'))
 const Onboarding = lazy(() => import('./pages/Onboarding.jsx'))
-const ConversationHistory = lazy(() => import('./pages/ConversationHistory.jsx'))
+const ConversationHistory = lazy(
+  () => import('./pages/ConversationHistory.jsx')
+)
 const Notifications = lazy(() => import('./pages/Notifications.jsx'))
 const CareCircle = lazy(() => import('./pages/CareCircle.jsx'))
 const JoinCareCircle = lazy(() => import('./pages/JoinCareCircle.jsx'))
 const TrustCenter = lazy(() => import('./pages/TrustCenter.jsx'))
 const Partners = lazy(() => import('./pages/Partners.jsx'))
 const SupportPlan = lazy(() => import('./pages/SupportPlan.jsx'))
+const StaffLogin = lazy(() => import('./pages/StaffLogin.jsx'))
+const StaffOperations = lazy(() => import('./pages/StaffOperations.jsx'))
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', color: 'var(--cb-text-secondary)' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh',
+          color: 'var(--cb-text-secondary)',
+        }}
+      >
         Loading...
       </div>
     )
@@ -60,11 +72,23 @@ function App() {
         <Route path="/trust-center" element={<TrustCenter />} />
         <Route path="/partners" element={<Partners />} />
         <Route path="/care-circle/join/:token" element={<JoinCareCircle />} />
-        <Route path="/dashboard" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+        <Route path="/staff" element={<StaffLogin />} />
+        <Route path="/staff/operations" element={<StaffOperations />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Dashboard />} />
           <Route path="teens" element={<Teens />} />
           <Route path="teens/:id" element={<TeenDetail />} />
-          <Route path="teens/:id/conversations" element={<ConversationHistory />} />
+          <Route
+            path="teens/:id/conversations"
+            element={<ConversationHistory />}
+          />
           <Route path="chat" element={<DashboardChat />} />
           <Route path="alerts" element={<Alerts />} />
           <Route path="alerts/:id" element={<AlertDetail />} />

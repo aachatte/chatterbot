@@ -13,6 +13,7 @@ from app.models.operations import (
     RefreshSession,
 )
 from app.models.safety_operations import FamilySafetyPlan
+from app.models.staff import StaffSession
 from app.models.teen import Teen
 from app.utils.time import utc_now
 from config import settings
@@ -124,6 +125,9 @@ def run_privacy_jobs(now=None):
         "deletions_completed": purge_due_deletions(current_time),
         "expired_sessions_deleted": RefreshSession.query.filter(
             RefreshSession.expires_at <= current_time
+        ).delete(synchronize_session=False),
+        "expired_staff_sessions_deleted": StaffSession.query.filter(
+            StaffSession.expires_at <= current_time
         ).delete(synchronize_session=False),
         "provider_receipts_deleted": ProviderEvent.query.filter(
             ProviderEvent.received_at < provider_cutoff,

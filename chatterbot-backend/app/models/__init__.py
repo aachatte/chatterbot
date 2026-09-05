@@ -23,6 +23,7 @@ from app.models.operations import (
     ProviderEvent,
     RefreshSession,
 )
+from app.models.staff import StaffAuditLog, StaffSession, StaffUser
 
 __all__ = [
     "User",
@@ -48,4 +49,7 @@ __all__ = [
     "PilotControl",
     "PilotEnrollment",
     "ProviderEvent",
+    "StaffAuditLog",
+    "StaffSession",
+    "StaffUser",
 ]

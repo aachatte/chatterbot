@@ -21,6 +21,11 @@ operational incidents, and bound provider timeouts and retries. The deployment
 Blueprint runs migrations and privacy jobs before release, schedules daily
 retention work, and supports a read only staging smoke test.
 
+Pilot staff now use individual role based accounts with expiring sessions,
+lockouts, and a privacy safe audit trail. The staff operations center reports
+aggregate activation, engagement, safety, and reliability measures. Teens can
+text PRIVACY or CIRCLE at any time to review sharing and active support adults.
+
 ## Project structure
 
 | Directory | Stack | Purpose |
@@ -86,6 +91,11 @@ The application creates the Care Circle tables during normal startup. Deployment
 Browser journeys run through Playwright in continuous integration. The staging
 smoke workflow requires the STAGING_API_URL and STAGING_ADMIN_API_KEY repository
 secrets.
+
+After applying the Sprint 6 migration, create the first named staff administrator
+from a trusted service shell with `flask --app run.py create-staff`. Staff sign in
+through `/staff`; keep the legacy administrative key for controlled bootstrap
+and recovery only.
 
 ## Production notes
 

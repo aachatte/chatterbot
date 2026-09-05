@@ -42,7 +42,7 @@ jobs:
           DATABASE_URL: sqlite:////tmp/chatterbot-migration-test.db
         run: |
           python -m scripts.prepare_database
-          flask --app run.py db current | grep 20260908_add_pilot_launch_controls
+          flask --app run.py db current | grep 20260909_add_staff_operations
       - name: Compile Python source
         run: python -m compileall -q app
 

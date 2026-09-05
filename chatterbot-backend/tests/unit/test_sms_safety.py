@@ -4,6 +4,7 @@ from flask import Flask
 
 from app import db
 from app.models.conversation import Message
+from app.models.care_circle import CareCircleMember
 from app.models.crisis_alert import CrisisAlert
 from app.models.operations import ProviderEvent
 from app.models.privacy import PrivacyEvent
@@ -154,4 +155,44 @@ def test_help_returns_resources_without_storing_conversation(app, client):
         assert Message.query.count() == 0
         assert ProviderEvent.query.filter_by(
             event_type="sms_command.help"
+        ).count() == 1
+
+
+def test_privacy_explains_sharing_without_storing_conversation(app, client):
+    response = _post_sms(client, "PRIVACY", "SM-privacy")
+    assert response.status_code == 200
+    with app.app_context():
+        assert Message.query.count() == 0
+        assert ProviderEvent.query.filter_by(
+            event_type="sms_command.privacy"
+        ).count() == 1
+
+
+def test_circle_lists_only_active_approved_adults(app, client):
+    with app.app_context():
+        teen = db.session.get(Teen, app.config["teen_id"])
+        db.session.add_all([
+            CareCircleMember(
+                guardian_id=teen.parent_id,
+                teen_id=teen.id,
+                name="Sam Carter",
+                email="sam@example.com",
+                status="active",
+            ),
+            CareCircleMember(
+                guardian_id=teen.parent_id,
+                teen_id=teen.id,
+                name="Pending Person",
+                email="pending@example.com",
+                status="pending",
+            ),
+        ])
+        db.session.commit()
+
+    response = _post_sms(client, "CIRCLE", "SM-circle")
+    assert response.status_code == 200
+    with app.app_context():
+        assert Message.query.count() == 0
+        assert ProviderEvent.query.filter_by(
+            event_type="sms_command.circle"
         ).count() == 1

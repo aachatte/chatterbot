@@ -1,5 +1,9 @@
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 let accessToken = null
+let staffAccessToken =
+  typeof window !== 'undefined'
+    ? window.sessionStorage.getItem('chatterbot_staff_token')
+    : null
 
 class ApiError extends Error {
   constructor(message, status, data) {
@@ -32,6 +36,31 @@ async function request(path, options = {}) {
     throw new ApiError(data.error || 'Request failed', response.status, data)
   }
 
+  return data
+}
+
+async function staffRequest(path, options = {}) {
+  const response = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(staffAccessToken
+        ? { Authorization: `Bearer ${staffAccessToken}` }
+        : {}),
+      ...options.headers,
+    },
+    body:
+      options.body && typeof options.body === 'object'
+        ? JSON.stringify(options.body)
+        : options.body,
+  }).catch((error) => {
+    throw new ApiError(error.message || 'Network error', 0, {})
+  })
+
+  const data = await response.json().catch(() => ({}))
+  if (!response.ok) {
+    throw new ApiError(data.error || 'Request failed', response.status, data)
+  }
   return data
 }
 
@@ -239,6 +268,73 @@ export const api = {
 
   // Conversation summaries (uses mood entries as proxy)
   getConversationSummaries: (teenId) => request(`/teens/${teenId}/mood`),
+}
+
+export const staffApi = {
+  hasSession: () => Boolean(staffAccessToken),
+  setAccessToken: (token) => {
+    staffAccessToken = token || null
+    if (typeof window !== 'undefined') {
+      if (staffAccessToken) {
+        window.sessionStorage.setItem(
+          'chatterbot_staff_token',
+          staffAccessToken
+        )
+      } else {
+        window.sessionStorage.removeItem('chatterbot_staff_token')
+      }
+    }
+  },
+  login: async (email, password) => {
+    const data = await staffRequest('/admin/session', {
+      method: 'POST',
+      body: { email, password },
+    })
+    staffApi.setAccessToken(data.access_token)
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem(
+        'chatterbot_staff_profile',
+        JSON.stringify(data.staff)
+      )
+    }
+    return data
+  },
+  profile: () => {
+    if (typeof window === 'undefined') return null
+    try {
+      return JSON.parse(
+        window.sessionStorage.getItem('chatterbot_staff_profile') || 'null'
+      )
+    } catch {
+      return null
+    }
+  },
+  logout: async () => {
+    try {
+      if (staffAccessToken) {
+        await staffRequest('/admin/session', { method: 'DELETE' })
+      }
+    } finally {
+      staffApi.setAccessToken(null)
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.removeItem('chatterbot_staff_profile')
+      }
+    }
+  },
+  getMetrics: (days = 30) => staffRequest(`/admin/pilot/metrics?days=${days}`),
+  getOperations: () => staffRequest('/admin/operations?status=open'),
+  getPilot: () => staffRequest('/admin/pilot'),
+  getAuditLog: () => staffRequest('/admin/audit-log'),
+  resolveOperation: (id, note) =>
+    staffRequest(`/admin/operations/${id}/resolve`, {
+      method: 'PATCH',
+      body: { note },
+    }),
+  updatePilot: (enabled, reason) =>
+    staffRequest('/admin/pilot', {
+      method: 'PATCH',
+      body: { enabled, reason },
+    }),
 }
 
 export { ApiError }
