@@ -7,6 +7,7 @@ from typing import List
 from openai import APIConnectionError, APIError, OpenAI, RateLimitError
 
 from config import settings
+from app.services.operations_service import emit_operational_event
 
 logger = logging.getLogger(__name__)
 MAX_RETRIES = 3
@@ -16,7 +17,11 @@ def _get_client():
     from flask import current_app
 
     api_key = current_app.config.get("OPENAI_API_KEY") or settings.openai_api_key
-    return OpenAI(api_key=api_key)
+    return OpenAI(
+        api_key=api_key,
+        timeout=settings.provider_timeout_seconds,
+        max_retries=settings.provider_max_retries,
+    )
 
 
 def _build_messages(history, new_message):
@@ -46,7 +51,16 @@ def stream_completion(history, new_message):
             return
         except (RateLimitError, APIConnectionError) as exc:
             if emitted_any or attempt == MAX_RETRIES - 1:
-                logger.error("Stream failed after %d attempts: %s", attempt + 1, exc)
+                logger.error(
+                    "Stream failed after %d attempts: %s",
+                    attempt + 1,
+                    type(exc).__name__,
+                )
+                emit_operational_event(
+                    "ai_provider",
+                    "openai.stream",
+                    "generation_failed",
+                )
                 raise
             time.sleep(delay)
             delay *= 2
@@ -71,7 +85,15 @@ class OpenAIService:
 
     def __init__(self):
         self.model = settings.openai_model
-        self.client = OpenAI(api_key=settings.openai_api_key) if settings.openai_api_key else None
+        self.client = (
+            OpenAI(
+                api_key=settings.openai_api_key,
+                timeout=settings.provider_timeout_seconds,
+                max_retries=settings.provider_max_retries,
+            )
+            if settings.openai_api_key
+            else None
+        )
 
     def _fallback_reply(self, message: str) -> str:
         return (
@@ -101,7 +123,12 @@ class OpenAIService:
             )
             return (completion.choices[0].message.content or "").strip() or self._fallback_reply(message)
         except Exception as exc:
-            logger.error("Parent assistant reply failed: %s", exc)
+            logger.error("Parent assistant reply failed: %s", type(exc).__name__)
+            emit_operational_event(
+                "ai_provider",
+                "openai.parent_assistant",
+                "generation_failed",
+            )
             return self._fallback_reply(message)
 
     def generate_response(
@@ -143,7 +170,12 @@ class OpenAIService:
             text = (completion.choices[0].message.content or "").strip()
             return {"text": text or self._fallback_reply(user_message)}
         except Exception as exc:
-            logger.error("Teen response generation failed: %s", exc)
+            logger.error("Teen response generation failed: %s", type(exc).__name__)
+            emit_operational_event(
+                "ai_provider",
+                "openai.teen_response",
+                "generation_failed",
+            )
             return {"text": self._fallback_reply(user_message)}
 
     def analyze_sentiment(self, text: str) -> float:

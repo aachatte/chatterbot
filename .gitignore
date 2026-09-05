@@ -2,6 +2,8 @@ chatterbot-frontend/node_modules/
 chatterbot-frontend/dist/
 chatterbot-frontend/coverage/
 chatterbot-frontend/storybook-static/
+chatterbot-frontend/test-results/
+chatterbot-frontend/playwright-report/
 generated_images/
 upload/
 node_modules/

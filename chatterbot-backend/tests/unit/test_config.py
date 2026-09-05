@@ -62,6 +62,12 @@ class TestSettings:
         with pytest.raises(ValidationError):
             Settings(jwt_access_token_expires=0)
 
+    def test_provider_limits_are_bounded(self):
+        with pytest.raises(ValidationError):
+            Settings(provider_timeout_seconds=0)
+        with pytest.raises(ValidationError):
+            Settings(provider_max_retries=6)
+
     def test_production_admin_key_must_be_secure(self):
         """Test that production requires a dedicated administrative credential."""
         with pytest.raises(ValidationError):

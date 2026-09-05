@@ -10,6 +10,7 @@ from app.models.crisis_alert import CrisisAlert, CrisisStatus
 from app.models.support_request import SupportRequest
 from app.models.teen import Teen
 from app.models.user import User
+from app.models.operations import GuardianNotification
 from app.routes.dashboard import dashboard_bp
 from app.routes.support import support_bp
 
@@ -220,3 +221,35 @@ def test_dashboard_overview_tolerates_malformed_legacy_messages():
     assert Teen._safe_content_lower(SimpleNamespace(content=None)) == ""
     assert Teen._safe_content_lower(SimpleNamespace(content="Feeling GOOD")) == "feeling good"
     assert Teen._safe_day_name(SimpleNamespace(created_at=None)) is None
+
+
+def test_guardian_notifications_are_scoped_and_can_be_read(app, client):
+    with app.app_context():
+        own = GuardianNotification(
+            guardian_id=app.config["guardian_id"],
+            category="billing",
+            title="Payment needs attention",
+            body="Review billing details.",
+        )
+        other = GuardianNotification(
+            guardian_id=app.config["other_guardian_id"],
+            category="account",
+            title="Other account",
+            body="Must remain private.",
+        )
+        db.session.add_all([own, other])
+        db.session.commit()
+        own_id = own.id
+
+    headers = _auth_headers(app, app.config["guardian_id"])
+    listed = client.get("/api/dashboard/notifications", headers=headers)
+    assert listed.status_code == 200
+    assert listed.get_json()["unread"] == 1
+    assert [item["id"] for item in listed.get_json()["notifications"]] == [own_id]
+
+    marked = client.patch(
+        f"/api/dashboard/notifications/{own_id}/read",
+        headers=headers,
+    )
+    assert marked.status_code == 200
+    assert marked.get_json()["notification"]["read_at"] is not None

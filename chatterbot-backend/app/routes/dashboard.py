@@ -13,8 +13,10 @@ from app.services.twilio_service import TwilioService
 from app.utils.time import utc_now
 from app.models.safety_operations import SafetyAlertEvent
 from app.models.privacy import DataDeletionRequest
+from app.models.operations import GuardianNotification
 from app.services.privacy_service import record_privacy_event
 from app.services.pilot_service import refresh_pilot_enrollment
+from app.services.operations_service import record_operational_event
 from config import settings
 
 dashboard_bp = Blueprint("dashboard", __name__)
@@ -26,6 +28,36 @@ VALID_ALERT_OWNERS = {
     "support_guardian",
     "counselor",
 }
+
+
+@dashboard_bp.route("/notifications", methods=["GET"])
+@jwt_required()
+def guardian_notifications():
+    guardian_id = _get_authenticated_user_id()
+    if guardian_id is None:
+        return jsonify({"error": "Invalid authentication token"}), 401
+    notifications = GuardianNotification.query.filter_by(
+        guardian_id=guardian_id
+    ).order_by(GuardianNotification.created_at.desc()).limit(100).all()
+    return jsonify({
+        "notifications": [item.to_dict() for item in notifications],
+        "unread": sum(1 for item in notifications if item.read_at is None),
+    }), 200
+
+
+@dashboard_bp.route("/notifications/<int:notification_id>/read", methods=["PATCH"])
+@jwt_required()
+def read_guardian_notification(notification_id):
+    guardian_id = _get_authenticated_user_id()
+    notification = GuardianNotification.query.filter_by(
+        id=notification_id, guardian_id=guardian_id
+    ).first()
+    if not notification:
+        return jsonify({"error": "Notification not found"}), 404
+    if notification.read_at is None:
+        notification.read_at = utc_now()
+        db.session.commit()
+    return jsonify({"notification": notification.to_dict()}), 200
 
 
 def _get_json_object():
@@ -475,6 +507,10 @@ def request_phone_verification(teen_id):
     teen = _get_owned_teen(teen_id, user_id)
     if not teen:
         return jsonify({"error": "Teen not found"}), 404
+    if teen.sms_opted_out_at is not None:
+        return jsonify({
+            "error": "This number opted out of SMS. The teen must reply START before verification."
+        }), 409
 
     token = teen.begin_phone_verification()
     result = TwilioService().send_sms(
@@ -483,6 +519,13 @@ def request_phone_verification(teen_id):
     )
     if not result["success"]:
         db.session.rollback()
+        record_operational_event(
+            "messaging",
+            "enrollment.phone_verification",
+            "verification_sms_failed",
+            detail={"teen_id": teen.id},
+        )
+        db.session.commit()
         return jsonify({"error": "Unable to send verification message"}), 503
 
     db.session.commit()

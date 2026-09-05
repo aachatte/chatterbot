@@ -227,6 +227,19 @@ export default function Teens() {
                     Consent pending
                   </span>
                 )}
+                {teen.sms_opted_out && (
+                  <span
+                    style={{
+                      fontSize: 11,
+                      padding: '2px 6px',
+                      borderRadius: 'var(--cb-radius-sm)',
+                      background: 'var(--cb-warning-soft)',
+                      color: 'var(--cb-warning)',
+                    }}
+                  >
+                    SMS paused
+                  </span>
+                )}
               </div>
               <div style={{ fontSize: 13, color: 'var(--cb-text-tertiary)' }}>
                 {teen.phone} · {teen.grade} · {teen.message_count} messages

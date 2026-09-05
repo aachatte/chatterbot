@@ -16,6 +16,8 @@ from app.services.scheduler_service import SchedulerService
 from app.routes.safety_plan import teen_visible_summary
 from app.utils.time import utc_now
 from app.services.pilot_service import pilot_allows_guardian
+from app.services.operations_service import record_operational_event
+from app.services.sms_compliance_service import handle_sms_command
 import logging
 
 sms_bp = Blueprint("sms", __name__)
@@ -67,6 +69,16 @@ def twilio_webhook():
         logger.warning("Inbound SMS did not match an enrolled teen")
         # Send welcome message for unknown numbers
         twilio_svc.send_sms(from_number, "Hi! This is Chatterbot. It looks like you\'re not registered yet. Ask your parent to sign up at chatterbot.app")
+        return twilio_svc.create_empty_response(), 200
+
+    command_response = handle_sms_command(teen, body, message_sid)
+    if command_response is not None:
+        if command_response:
+            twilio_svc.send_sms(from_number, command_response)
+        return twilio_svc.create_empty_response(), 200
+
+    if teen.sms_opted_out_at is not None:
+        logger.info("Blocked SMS processing for opted out teen %s", teen.id)
         return twilio_svc.create_empty_response(), 200
 
     if not teen.is_active:
@@ -227,6 +239,17 @@ def delivery_status():
             action=f"notification_{mapped}",
             notes=f"{delivery.recipient_type} SMS {mapped}.",
         ))
+    if mapped == "failed":
+        record_operational_event(
+            "messaging",
+            "twilio.delivery_status",
+            "sms_delivery_failed",
+            detail={
+                "delivery_id": delivery.id,
+                "recipient_type": delivery.recipient_type,
+                "error_code": request.form.get("ErrorCode") or None,
+            },
+        )
     db.session.commit()
     return jsonify({"status": mapped}), 200
 
@@ -248,12 +271,21 @@ def send_manual_sms():
     teen = Teen.query.filter_by(phone=phone.strip(), parent_id=user_id).first()
     if not teen:
         return jsonify({"error": "Teen not found"}), 404
+    if not teen.can_receive_sms():
+        return jsonify({"error": "SMS is disabled until enrollment and consent are active"}), 409
 
     result = twilio_svc.send_sms(teen.phone, message.strip())
 
     if result["success"]:
         return jsonify({"message": "SMS sent", "sid": result["sid"]}), 200
     else:
+        record_operational_event(
+            "messaging",
+            "guardian.manual_sms",
+            "manual_sms_failed",
+            detail={"teen_id": teen.id},
+        )
+        db.session.commit()
         return jsonify({"error": "Failed to send SMS", "details": result.get("error")}), 500
 
 
@@ -265,6 +297,8 @@ def trigger_nudge(teen_id):
     teen = Teen.query.filter_by(id=teen_id, parent_id=user_id).first()
     if not teen:
         return jsonify({"error": "Teen not found"}), 404
+    if not teen.can_receive_sms():
+        return jsonify({"error": "SMS is disabled until enrollment and consent are active"}), 409
 
     data = _get_json_object()
     if data is None:
@@ -297,4 +331,11 @@ def trigger_nudge(teen_id):
 
         return jsonify({"message": "Nudge sent", "sid": result["sid"]}), 200
     else:
+        record_operational_event(
+            "messaging",
+            "guardian.nudge",
+            "nudge_delivery_failed",
+            detail={"teen_id": teen.id},
+        )
+        db.session.commit()
         return jsonify({"error": "Failed to send nudge"}), 500

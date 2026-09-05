@@ -8,6 +8,7 @@ from flask_jwt_extended import JWTManager, create_access_token
 from app import db
 from app.models.conversation import Conversation, Message
 from app.models.privacy import DataDeletionRequest, PrivacyEvent
+from app.models.operations import OperationalEvent, ProviderEvent
 from app.models.teen import Teen
 from app.models.user import User
 from app.routes.dashboard import dashboard_bp
@@ -135,7 +136,21 @@ def test_due_deletion_erases_teen_and_retains_minimal_request_record(app):
             teen_name="Maya",
             scheduled_for=utc_now() - timedelta(minutes=1),
         )
-        db.session.add(deletion)
+        provider_event = ProviderEvent(
+            provider="twilio",
+            event_id="SM-delete",
+            event_type="sms_command.stop",
+            status="processed",
+            detail={"teen_id": app.config["teen_id"]},
+        )
+        operational_event = OperationalEvent(
+            category="messaging",
+            severity="warning",
+            source="scheduler.nudge",
+            code="nudge_delivery_failed",
+            detail={"teen_id": app.config["teen_id"], "nudge_id": 4},
+        )
+        db.session.add_all([deletion, provider_event, operational_event])
         db.session.commit()
         result = run_privacy_jobs()
         assert result["deletions_completed"] == 1
@@ -143,6 +158,11 @@ def test_due_deletion_erases_teen_and_retains_minimal_request_record(app):
         stored = DataDeletionRequest.query.one()
         assert stored.status == "completed"
         assert stored.teen_id is None
+        assert ProviderEvent.query.one().detail == {"teen_deleted": True}
+        assert OperationalEvent.query.one().detail == {
+            "nudge_id": 4,
+            "teen_deleted": True,
+        }
 
 
 def test_withdrawing_consent_disables_service_and_is_audited(app, client):

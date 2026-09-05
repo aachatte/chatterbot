@@ -221,7 +221,32 @@ export default function TeenDetail() {
             >
               Phone: {enrollment?.phone_verification_status || 'unverified'}
             </span>
+            {enrollment?.sms_opted_out && (
+              <span
+                style={{
+                  background: 'var(--cb-warning-soft)',
+                  borderRadius: 'var(--cb-radius-full)',
+                  padding: '6px 10px',
+                  fontSize: 13,
+                }}
+              >
+                SMS: opted out
+              </span>
+            )}
           </div>
+          {enrollment?.sms_opted_out && (
+            <p
+              role="alert"
+              style={{
+                color: 'var(--cb-text-secondary)',
+                fontSize: 13,
+                marginBottom: 'var(--cb-space-3)',
+              }}
+            >
+              Messaging is paused. The teen must text START before Chatterbot
+              can send verification or support messages.
+            </p>
+          )}
           {!enrollment?.consent_verified && (
             <button
               type="button"
@@ -238,7 +263,7 @@ export default function TeenDetail() {
             <div style={{ marginTop: 'var(--cb-space-3)' }}>
               <button
                 type="button"
-                disabled={enrollmentBusy}
+                disabled={enrollmentBusy || enrollment?.sms_opted_out}
                 onClick={() =>
                   updateEnrollment(() => api.requestPhoneVerification(id))
                 }

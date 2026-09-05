@@ -61,3 +61,73 @@ class PilotEnrollment(db.Model):
             "paused_at": self.paused_at.isoformat() if self.paused_at else None,
             "completed_at": self.completed_at.isoformat() if self.completed_at else None,
         }
+
+
+class ProviderEvent(db.Model):
+    __tablename__ = "provider_events"
+    __table_args__ = (
+        db.UniqueConstraint("provider", "event_id", name="uq_provider_event"),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    provider = db.Column(db.String(30), nullable=False, index=True)
+    event_id = db.Column(db.String(160), nullable=False)
+    event_type = db.Column(db.String(100), nullable=False, index=True)
+    status = db.Column(db.String(30), nullable=False, default="processed", index=True)
+    detail = db.Column(db.JSON, nullable=False, default=dict)
+    received_at = db.Column(db.DateTime, nullable=False, default=utc_now, index=True)
+    processed_at = db.Column(db.DateTime, nullable=True)
+
+
+class OperationalEvent(db.Model):
+    __tablename__ = "operational_events"
+
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(40), nullable=False, index=True)
+    severity = db.Column(db.String(20), nullable=False, default="warning", index=True)
+    status = db.Column(db.String(20), nullable=False, default="open", index=True)
+    source = db.Column(db.String(80), nullable=False)
+    code = db.Column(db.String(80), nullable=False)
+    detail = db.Column(db.JSON, nullable=False, default=dict)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now, index=True)
+    resolved_at = db.Column(db.DateTime, nullable=True)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "category": self.category,
+            "severity": self.severity,
+            "status": self.status,
+            "source": self.source,
+            "code": self.code,
+            "detail": self.detail or {},
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "resolved_at": self.resolved_at.isoformat() if self.resolved_at else None,
+        }
+
+
+class GuardianNotification(db.Model):
+    __tablename__ = "guardian_notifications"
+
+    id = db.Column(db.Integer, primary_key=True)
+    guardian_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    category = db.Column(db.String(40), nullable=False, index=True)
+    title = db.Column(db.String(120), nullable=False)
+    body = db.Column(db.String(500), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now, index=True)
+    read_at = db.Column(db.DateTime, nullable=True)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "category": self.category,
+            "title": self.title,
+            "body": self.body,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "read_at": self.read_at.isoformat() if self.read_at else None,
+        }

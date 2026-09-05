@@ -41,6 +41,9 @@ class Settings(BaseSettings):
     stripe_secret_key: str = ""
     stripe_webhook_secret: str = ""
     stripe_price_id: str = ""
+    provider_timeout_seconds: float = 10.0
+    provider_max_retries: int = 2
+    provider_event_retention_days: int = 30
 
     # Crisis
     crisis_escalation_email: str = ""
@@ -62,7 +65,12 @@ class Settings(BaseSettings):
     pilot_family_capacity: int = 50
     enable_admin_broadcast: bool = False
 
-    @field_validator('message_retention_days', 'deletion_grace_days', 'pilot_family_capacity')
+    @field_validator(
+        'message_retention_days',
+        'deletion_grace_days',
+        'pilot_family_capacity',
+        'provider_event_retention_days',
+    )
     @classmethod
     def validate_positive_operating_limits(cls, v):
         if v <= 0:
@@ -75,6 +83,20 @@ class Settings(BaseSettings):
         """Require a positive access-token lifetime."""
         if v <= 0:
             raise ValueError('JWT_ACCESS_TOKEN_EXPIRES must be greater than zero')
+        return v
+
+    @field_validator('provider_timeout_seconds')
+    @classmethod
+    def validate_provider_timeout(cls, v):
+        if not 1 <= v <= 60:
+            raise ValueError('PROVIDER_TIMEOUT_SECONDS must be between 1 and 60')
+        return v
+
+    @field_validator('provider_max_retries')
+    @classmethod
+    def validate_provider_retries(cls, v):
+        if not 0 <= v <= 5:
+            raise ValueError('PROVIDER_MAX_RETRIES must be between 0 and 5')
         return v
 
     @field_validator('openai_api_key')

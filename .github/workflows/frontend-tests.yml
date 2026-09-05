@@ -51,6 +51,23 @@ jobs:
           VITE_API_URL: http://localhost:5000
         run: npm run build
 
+      - name: Install browser
+        working-directory: chatterbot-frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Run pilot browser journeys
+        working-directory: chatterbot-frontend
+        run: npm run e2e
+
+      - name: Archive browser traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: chatterbot-frontend/test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Archive build artifacts
         uses: actions/upload-artifact@v4
         with:

@@ -42,6 +42,8 @@ class Teen(db.Model):
     phone_verification_token_hash = db.Column(db.String(64), nullable=True)
     phone_verification_expires_at = db.Column(db.DateTime, nullable=True)
     phone_verified_at = db.Column(db.DateTime, nullable=True)
+    sms_opted_out_at = db.Column(db.DateTime, nullable=True, index=True)
+    sms_opt_out_source = db.Column(db.String(30), nullable=True)
 
     # Analytics
     last_interaction_at = db.Column(db.DateTime, nullable=True)
@@ -90,6 +92,7 @@ class Teen(db.Model):
             "phone_verified_at": (
                 self.phone_verified_at.isoformat() if self.phone_verified_at else None
             ),
+            "sms_opted_out": self.sms_opted_out_at is not None,
             "last_interaction_at": self.last_interaction_at.isoformat() if self.last_interaction_at else None,
             "message_count": self.message_count,
             "crisis_alert_count": self.crisis_alert_count,
@@ -115,7 +118,17 @@ class Teen(db.Model):
                 if self.phone_verification_expires_at
                 else None
             ),
+            "sms_opted_out": self.sms_opted_out_at is not None,
         }
+
+    def can_receive_sms(self) -> bool:
+        """Return whether ordinary product messaging may be sent to this teen."""
+        return bool(
+            self.is_active
+            and self.consent_verified
+            and self.phone_verification_status == "verified"
+            and self.sms_opted_out_at is None
+        )
 
     def begin_phone_verification(self, expires_in: timedelta = timedelta(minutes=15)) -> str:
         """Create a short-lived verification token, retaining only its digest."""

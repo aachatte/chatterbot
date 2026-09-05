@@ -1,0 +1,74 @@
+services:
+  - type: web
+    name: chatterbot-api
+    runtime: docker
+    dockerfilePath: ./chatterbot-backend/Dockerfile
+    dockerContext: ./chatterbot-backend
+    healthCheckPath: /health/ready
+    autoDeployTrigger: checksPass
+    preDeployCommand: python -m scripts.prepare_database && flask --app run.py run-privacy-jobs
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_DEBUG
+        value: false
+      - key: PILOT_MODE
+        value: true
+      - key: ENABLE_ADMIN_BROADCAST
+        value: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: ADMIN_API_KEY
+        generateValue: true
+      - key: APP_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_PHONE_NUMBER
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_ID
+        sync: false
+
+  - type: cron
+    name: chatterbot-privacy-jobs
+    runtime: docker
+    dockerfilePath: ./chatterbot-backend/Dockerfile
+    dockerContext: ./chatterbot-backend
+    schedule: "0 4 * * *"
+    dockerCommand: flask --app run.py run-privacy-jobs
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_DEBUG
+        value: false
+      - key: SECRET_KEY
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: ADMIN_API_KEY
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false

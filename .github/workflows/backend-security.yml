@@ -33,7 +33,16 @@ jobs:
         env:
           PYTHONPATH: .
           REDIS_URL: ''
-        run: flask --app run.py db heads | grep 20260907_add_security_and_pilot_ops
+          FLASK_ENV: production
+          SECRET_KEY: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          JWT_SECRET_KEY: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+          ADMIN_API_KEY: cccccccccccccccccccccccccccccccc
+          APP_URL: https://api.example.test
+          FRONTEND_URL: https://app.example.test
+          DATABASE_URL: sqlite:////tmp/chatterbot-migration-test.db
+        run: |
+          python -m scripts.prepare_database
+          flask --app run.py db current | grep 20260908_add_pilot_launch_controls
       - name: Compile Python source
         run: python -m compileall -q app
 

@@ -6,7 +6,12 @@ from app.models.checkin_schedule import CheckinSchedule
 from app.models.conversation import Conversation, Message
 from app.models.mood_entry import MoodEntry
 from app.models.privacy import DataDeletionRequest, PrivacyEvent
-from app.models.operations import OperationalHeartbeat, RefreshSession
+from app.models.operations import (
+    OperationalEvent,
+    OperationalHeartbeat,
+    ProviderEvent,
+    RefreshSession,
+)
 from app.models.safety_operations import FamilySafetyPlan
 from app.models.teen import Teen
 from app.utils.time import utc_now
@@ -25,6 +30,23 @@ def record_privacy_event(guardian_id, event_type, teen_id=None, detail=None):
     )
     db.session.add(event)
     return event
+
+
+def redact_teen_operational_references(teen_id):
+    """Remove deleted teen identifiers from retained operational metadata."""
+    redacted = 0
+    for event in ProviderEvent.query.filter_by(provider="twilio").all():
+        if (event.detail or {}).get("teen_id") == teen_id:
+            event.detail = {"teen_deleted": True}
+            redacted += 1
+    for event in OperationalEvent.query.all():
+        detail = dict(event.detail or {})
+        if detail.get("teen_id") == teen_id:
+            detail.pop("teen_id", None)
+            detail["teen_deleted"] = True
+            event.detail = detail
+            redacted += 1
+    return redacted
 
 
 def build_guardian_export(guardian):
@@ -74,6 +96,7 @@ def purge_due_deletions(now=None):
     for deletion in requests:
         teen = db.session.get(Teen, deletion.teen_id) if deletion.teen_id else None
         if teen:
+            redact_teen_operational_references(teen.id)
             MoodEntry.query.filter_by(teen_id=teen.id).delete()
             CheckinSchedule.query.filter_by(teen_id=teen.id).delete()
             FamilySafetyPlan.query.filter_by(teen_id=teen.id).delete()
@@ -92,11 +115,23 @@ def purge_due_deletions(now=None):
 
 def run_privacy_jobs(now=None):
     current_time = now or utc_now()
+    provider_cutoff = current_time - timedelta(
+        days=settings.provider_event_retention_days
+    )
+    operations_cutoff = current_time - timedelta(days=365)
     result = {
         "messages_redacted": redact_expired_messages(current_time),
         "deletions_completed": purge_due_deletions(current_time),
         "expired_sessions_deleted": RefreshSession.query.filter(
             RefreshSession.expires_at <= current_time
+        ).delete(synchronize_session=False),
+        "provider_receipts_deleted": ProviderEvent.query.filter(
+            ProviderEvent.received_at < provider_cutoff,
+            ProviderEvent.status != "processing",
+        ).delete(synchronize_session=False),
+        "resolved_operations_deleted": OperationalEvent.query.filter(
+            OperationalEvent.status == "resolved",
+            OperationalEvent.resolved_at < operations_cutoff,
         ).delete(synchronize_session=False),
     }
     heartbeat = OperationalHeartbeat.query.filter_by(name="privacy_jobs").first()

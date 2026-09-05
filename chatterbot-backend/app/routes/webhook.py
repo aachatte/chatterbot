@@ -4,15 +4,24 @@ import logging
 
 from flask import Blueprint, request, jsonify
 import stripe
+from sqlalchemy.exc import IntegrityError
 from config import settings
 from app import db
 from app.models.user import User
 from app.models.subscription import Subscription
+from app.models.operations import GuardianNotification, ProviderEvent
+from app.services.operations_service import (
+    claim_provider_event,
+    complete_provider_event,
+    record_operational_event,
+)
+from app.utils.time import utc_now
 
 webhook_bp = Blueprint("webhooks", __name__)
 logger = logging.getLogger(__name__)
 
 stripe.api_key = settings.stripe_secret_key
+stripe.max_network_retries = settings.provider_max_retries
 
 
 @webhook_bp.route("/stripe", methods=["POST"])
@@ -30,21 +39,59 @@ def stripe_webhook():
     except stripe.error.SignatureVerificationError:
         return jsonify({"error": "Invalid signature"}), 400
 
+    event_id = event.get("id")
     event_type = event["type"]
     data = event["data"]["object"]
+    if not isinstance(event_id, str) or not event_id:
+        return jsonify({"error": "Webhook event identifier is required"}), 400
+    receipt = claim_provider_event(
+        "stripe", event_id, event_type, {"livemode": bool(event.get("livemode"))}
+    )
+    if receipt is None:
+        return jsonify({"status": "duplicate"}), 200
 
-    logger.info(f"Stripe webhook: {event_type}")
+    logger.info("Stripe webhook received type=%s", event_type)
 
-    if event_type == "checkout.session.completed":
-        _handle_checkout_completed(data)
-    elif event_type == "invoice.payment_succeeded":
-        _handle_payment_succeeded(data)
-    elif event_type == "invoice.payment_failed":
-        _handle_payment_failed(data)
-    elif event_type == "customer.subscription.deleted":
-        _handle_subscription_deleted(data)
-    elif event_type == "customer.subscription.updated":
-        _handle_subscription_updated(data)
+    try:
+        if event_type == "checkout.session.completed":
+            _handle_checkout_completed(data)
+        elif event_type == "invoice.payment_succeeded":
+            _handle_payment_succeeded(data)
+        elif event_type == "invoice.payment_failed":
+            _handle_payment_failed(data)
+        elif event_type == "customer.subscription.deleted":
+            _handle_subscription_deleted(data)
+        elif event_type == "customer.subscription.updated":
+            _handle_subscription_updated(data)
+        complete_provider_event(receipt)
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        existing = ProviderEvent.query.filter_by(
+            provider="stripe", event_id=event_id
+        ).first()
+        if existing:
+            return jsonify({"status": "duplicate"}), 200
+        logger.exception("Stripe webhook integrity failure type=%s", event_type)
+        return jsonify({"error": "Webhook processing failed"}), 500
+    except Exception:
+        db.session.rollback()
+        failed = claim_provider_event(
+            "stripe", event_id, event_type, {"livemode": bool(event.get("livemode"))}
+        )
+        if failed is not None:
+            failed.status = "failed"
+            failed.processed_at = utc_now()
+            record_operational_event(
+                "billing",
+                "stripe.webhook",
+                "webhook_processing_failed",
+                severity="critical",
+                detail={"event_type": event_type},
+            )
+            db.session.commit()
+        logger.exception("Stripe webhook processing failed type=%s", event_type)
+        return jsonify({"error": "Webhook processing failed"}), 500
 
     return jsonify({"status": "ok"}), 200
 
@@ -98,7 +145,6 @@ def _handle_checkout_completed(data):
                 exc,
             )
 
-    db.session.commit()
     logger.info(f"Subscription activated for user {user.id}")
 
 
@@ -113,7 +159,6 @@ def _handle_payment_succeeded(data):
         sub.status = "active"
         sub.current_period_start = datetime.utcfromtimestamp(data["period_start"])
         sub.current_period_end = datetime.utcfromtimestamp(data["period_end"])
-        db.session.commit()
 
 
 def _handle_payment_failed(data):
@@ -125,10 +170,23 @@ def _handle_payment_failed(data):
     sub = Subscription.query.filter_by(stripe_subscription_id=subscription_id).first()
     if sub:
         sub.status = "past_due"
-        db.session.commit()
-
-        # TODO: Send payment failure notification to user
-        logger.warning(f"Payment failed for subscription {subscription_id}")
+        record_operational_event(
+            "billing",
+            "stripe.invoice",
+            "payment_failed",
+            severity="warning",
+            detail={"subscription_record_id": sub.id, "guardian_id": sub.user_id},
+        )
+        db.session.add(GuardianNotification(
+            guardian_id=sub.user_id,
+            category="billing",
+            title="Payment needs attention",
+            body=(
+                "We could not process your latest payment. Review billing "
+                "details to prevent an interruption."
+            ),
+        ))
+        logger.warning("Payment failed for subscription record %s", sub.id)
 
 
 def _handle_subscription_deleted(data):
@@ -139,8 +197,7 @@ def _handle_subscription_deleted(data):
     if sub:
         sub.status = "canceled"
         sub.plan_tier = "free"
-        db.session.commit()
-        logger.info(f"Subscription {subscription_id} canceled")
+        logger.info("Subscription record %s canceled", sub.id)
 
 
 def _handle_subscription_updated(data):
@@ -151,4 +208,3 @@ def _handle_subscription_updated(data):
     if sub:
         sub.status = data.get("status", sub.status)
         sub.cancel_at_period_end = data.get("cancel_at_period_end", False)
-        db.session.commit()

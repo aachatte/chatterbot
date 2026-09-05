@@ -96,6 +96,9 @@ export const api = {
       method: 'PUT',
       body: data,
     }),
+  getGuardianNotifications: () => request('/dashboard/notifications'),
+  markGuardianNotificationRead: (id) =>
+    request(`/dashboard/notifications/${id}/read`, { method: 'PATCH' }),
   updateTeenPreferences: (id, data) =>
     request(`/dashboard/teens/${id}/preferences`, {
       method: 'PUT',

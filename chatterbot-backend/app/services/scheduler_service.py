@@ -7,6 +7,7 @@ from app.services.twilio_service import TwilioService
 from app.services.openai_service import OpenAIService
 from app.services.context_service import ContextMemoryService
 from app.utils.time import utc_now
+from app.services.operations_service import record_operational_event
 import logging
 
 logger = logging.getLogger(__name__)
@@ -54,8 +55,12 @@ class SchedulerService:
     def _send_nudge(self, nudge: ScheduledNudge):
         """Send a single nudge and update state."""
         teen = db.session.get(Teen, nudge.teen_id)
-        if not teen or not teen.is_active:
+        if not teen or not teen.is_active or not teen.consent_verified:
             nudge.is_active = False
+            db.session.commit()
+            return
+        if teen.sms_opted_out_at is not None or not teen.proactive_nudges_enabled:
+            nudge.next_send_at = utc_now() + timedelta(days=1)
             db.session.commit()
             return
 
@@ -94,9 +99,16 @@ class SchedulerService:
             conv.message_count += 1
 
             db.session.commit()
-            logger.info(f"Nudge sent to teen {teen.id}: {personalized[:50]}...")
+            logger.info("Nudge sent to teen %s", teen.id)
         else:
-            logger.error(f"Failed to send nudge to teen {teen.id}: {result.get('error')}")
+            record_operational_event(
+                "messaging",
+                "scheduler.nudge",
+                "nudge_delivery_failed",
+                detail={"teen_id": teen.id, "nudge_id": nudge.id},
+            )
+            db.session.commit()
+            logger.error("Failed to send nudge to teen %s", teen.id)
 
     def _personalize_nudge(self, template: str, teen, context_facts: list) -> str:
         """Use LLM to personalize a nudge template."""

@@ -12,7 +12,12 @@ from app.models.conversation import Conversation, Message
 from app.models.crisis_alert import CrisisAlert
 from app.models.safety_operations import SafetyAlertEvent
 from app.models.privacy import DataDeletionRequest, PrivacyEvent
-from app.models.operations import OperationalHeartbeat, PilotEnrollment
+from app.models.operations import (
+    OperationalEvent,
+    OperationalHeartbeat,
+    PilotEnrollment,
+    ProviderEvent,
+)
 from app.models.subscription import Subscription
 from app.services.scheduler_service import SchedulerService
 from app.services.twilio_service import TwilioService
@@ -288,7 +293,10 @@ def send_broadcast():
     if not message:
         return jsonify({"error": "message is required"}), 400
 
-    teens = Teen.query.filter_by(is_active=True).all()
+    teens = [
+        teen for teen in Teen.query.filter_by(is_active=True).all()
+        if teen.can_receive_sms()
+    ]
     twilio = TwilioService()
 
     results = []
@@ -316,3 +324,53 @@ def admin_health():
     )
     report["timestamp"] = utc_now().isoformat()
     return jsonify(report), 200 if report["ready"] else 503
+
+
+@admin_bp.route("/operations", methods=["GET"])
+def operations_summary():
+    """Return privacy safe pilot signals and recent operational events."""
+    since = utc_now() - timedelta(hours=24)
+    status = request.args.get("status", "open")
+    query = OperationalEvent.query
+    if status != "all":
+        query = query.filter_by(status=status)
+    events = query.order_by(OperationalEvent.created_at.desc()).limit(100).all()
+    provider_failures = ProviderEvent.query.filter(
+        ProviderEvent.status == "failed",
+        ProviderEvent.received_at >= since,
+    ).count()
+    return jsonify({
+        "window_hours": 24,
+        "open_critical": OperationalEvent.query.filter_by(
+            status="open", severity="critical"
+        ).count(),
+        "provider_failures": provider_failures,
+        "sms_opt_outs": Teen.query.filter(
+            Teen.sms_opted_out_at.isnot(None)
+        ).count(),
+        "events": [event.to_dict() for event in events],
+    }), 200
+
+
+@admin_bp.route("/operations/<int:event_id>/resolve", methods=["PATCH"])
+def resolve_operational_event(event_id):
+    """Resolve an operational signal with an attributed operator note."""
+    event = db.session.get(OperationalEvent, event_id)
+    if not event:
+        return jsonify({"error": "Operational event not found"}), 404
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "Request body must be a JSON object"}), 400
+    note = data.get("note", "")
+    if not isinstance(note, str) or not 2 <= len(note.strip()) <= 500:
+        return jsonify({"error": "note must be between 2 and 500 characters"}), 400
+    detail = dict(event.detail or {})
+    detail["resolution"] = {
+        "actor": g.admin_actor,
+        "note": note.strip(),
+    }
+    event.detail = detail
+    event.status = "resolved"
+    event.resolved_at = utc_now()
+    db.session.commit()
+    return jsonify({"event": event.to_dict()}), 200

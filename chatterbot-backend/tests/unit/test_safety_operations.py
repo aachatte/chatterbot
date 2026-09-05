@@ -5,6 +5,7 @@ from flask_jwt_extended import JWTManager, create_access_token
 
 from app import db
 from app.models.crisis_alert import CrisisAlert
+from app.models.operations import OperationalEvent
 from app.models.safety_operations import (
     FamilySafetyPlan,
     NotificationDelivery,
@@ -168,3 +169,32 @@ def test_delivery_callback_records_final_evidence(app, client):
         assert stored.status == "delivered"
         assert stored.delivered_at is not None
         assert SafetyAlertEvent.query.filter_by(action="notification_delivered").count() == 1
+
+
+def test_failed_delivery_creates_privacy_safe_operational_signal(app, client):
+    with app.app_context():
+        delivery = NotificationDelivery(
+            alert_id=app.config["alert_id"],
+            recipient_type="guardian",
+            recipient_id=app.config["guardian_id"],
+            recipient_name="Alex",
+            provider_sid="SM-failed",
+            status="sent",
+        )
+        db.session.add(delivery)
+        db.session.commit()
+    response = client.post(
+        "/api/sms/delivery-status",
+        data={
+            "MessageSid": "SM-failed",
+            "MessageStatus": "undelivered",
+            "ErrorCode": "30003",
+            "ErrorMessage": "Unavailable",
+        },
+    )
+    assert response.status_code == 200
+    with app.app_context():
+        signal = OperationalEvent.query.one()
+        assert signal.code == "sms_delivery_failed"
+        assert signal.detail["error_code"] == "30003"
+        assert "Unavailable" not in str(signal.detail)

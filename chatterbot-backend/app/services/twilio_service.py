@@ -1,5 +1,6 @@
 """Twilio SMS gateway service."""
 from twilio.rest import Client
+from twilio.http.http_client import TwilioHttpClient
 from twilio.twiml.messaging_response import MessagingResponse
 from config import settings
 import logging
@@ -12,7 +13,12 @@ class TwilioService:
         self.client = None
         if settings.twilio_account_sid and settings.twilio_auth_token:
             self.client = Client(
-                settings.twilio_account_sid, settings.twilio_auth_token
+                settings.twilio_account_sid,
+                settings.twilio_auth_token,
+                http_client=TwilioHttpClient(
+                    timeout=settings.provider_timeout_seconds,
+                    max_retries=settings.provider_max_retries,
+                ),
             )
         self.from_number = settings.twilio_phone_number
 
@@ -31,15 +37,15 @@ class TwilioService:
             if status_callback:
                 payload["status_callback"] = status_callback
             message = self.client.messages.create(**payload)
-            logger.info(f"SMS sent to {to_number}: SID={message.sid}")
+            logger.info("SMS accepted by provider sid=%s", message.sid)
             return {
                 "success": True,
                 "sid": message.sid,
                 "status": message.status,
             }
-        except Exception as e:
-            logger.error(f"Failed to send SMS to {to_number}: {e}")
-            return {"success": False, "error": str(e)}
+        except Exception as exc:
+            logger.error("SMS provider request failed: %s", type(exc).__name__)
+            return {"success": False, "error": "SMS provider request failed"}
 
     def parse_inbound_webhook(self, form_data: dict) -> dict:
         """Parse Twilio inbound message webhook data."""

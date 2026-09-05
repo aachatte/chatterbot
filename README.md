@@ -15,6 +15,12 @@ request logging, dependency readiness checks, explicit pilot enrollment, and a
 global pilot pause control. Backend and security checks run in continuous
 integration alongside the frontend workflow.
 
+Pilot launch controls recognize SMS consent commands before conversation
+processing, retain idempotent provider receipts, surface privacy safe
+operational incidents, and bound provider timeouts and retries. The deployment
+Blueprint runs migrations and privacy jobs before release, schedules daily
+retention work, and supports a read only staging smoke test.
+
 ## Project structure
 
 | Directory | Stack | Purpose |
@@ -76,6 +82,10 @@ cd chatterbot-backend
 ```
 
 The application creates the Care Circle tables during normal startup. Deployments with externally managed schemas can use the included Care Circle migration as the schema reference.
+
+Browser journeys run through Playwright in continuous integration. The staging
+smoke workflow requires the STAGING_API_URL and STAGING_ADMIN_API_KEY repository
+secrets.
 
 ## Production notes
 
