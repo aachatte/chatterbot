@@ -2,33 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../services/api.js'
 
-const MOCK_TEENS = [
-  {
-    id: 1,
-    first_name: 'Maya',
-    phone: '+1 (555) 123-4567',
-    age: 16,
-    grade: '11th',
-    is_active: true,
-    consent_verified: true,
-    message_count: 187,
-    last_interaction_at: '2026-08-13T07:30:00Z',
-    interests: ['lacrosse', 'debate'],
-  },
-  {
-    id: 2,
-    first_name: 'Ethan',
-    phone: '+1 (555) 987-6543',
-    age: 14,
-    grade: '9th',
-    is_active: true,
-    consent_verified: true,
-    message_count: 155,
-    last_interaction_at: '2026-08-12T22:15:00Z',
-    interests: ['basketball', 'gaming'],
-  },
-]
-
 export default function Teens() {
   const [teens, setTeens] = useState([])
   const [loading, setLoading] = useState(true)

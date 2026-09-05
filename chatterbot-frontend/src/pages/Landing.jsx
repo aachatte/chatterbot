@@ -222,12 +222,15 @@ export default function Landing() {
 
             <h1 className="landing-hero__heading">
               A friend for teens.{' '}
-              <span className="landing-hero__heading-accent">Peace of mind for parents</span>
+              <span className="landing-hero__heading-accent">
+                Peace of mind for parents
+              </span>
             </h1>
 
             <p className="landing-hero__sub">
-              Chatterbot starts each SMS check-in and shares only the signals that
-              matter, giving teens room to talk and parents a trusted path to support.
+              Chatterbot starts each SMS check-in and shares only the signals
+              that matter, giving teens room to talk and parents a trusted path
+              to support.
             </p>
 
             <div className="landing-hero__actions">
@@ -258,10 +261,15 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="landing-command" aria-label="Guardian command center preview">
+          <div
+            className="landing-command"
+            aria-label="Guardian command center preview"
+          >
             <div className="landing-command__topbar">
               <div>
-                <span className="landing-command__eyebrow">Guardian command center</span>
+                <span className="landing-command__eyebrow">
+                  Guardian command center
+                </span>
                 <strong>Good afternoon, Alex</strong>
               </div>
               <span className="landing-command__live">
@@ -321,7 +329,9 @@ export default function Landing() {
       <section className="landing-gamification" id="platform">
         <div className="landing-gamification__inner">
           <div className="landing-gamification__header">
-            <p className="landing-section-eyebrow">A healthier engagement loop</p>
+            <p className="landing-section-eyebrow">
+              A healthier engagement loop
+            </p>
             <h2 className="landing-section-heading">
               Progress teens can see and feel.
             </h2>
@@ -360,7 +370,10 @@ export default function Landing() {
             ].map((item) => (
               <article key={item.title} className="landing-gamification__card">
                 <div className="landing-gamification__art">
-                  <img src={item.image} alt={`${item.title} achievement badge`} />
+                  <img
+                    src={item.image}
+                    alt={`${item.title} achievement badge`}
+                  />
                   <span>{item.tag}</span>
                 </div>
                 <h3 className="landing-gamification__title">{item.title}</h3>
@@ -369,14 +382,19 @@ export default function Landing() {
                   <span>{item.unlock}</span>
                   <strong>{item.progress}%</strong>
                 </div>
-                <div className="landing-gamification__progress" aria-hidden="true">
+                <div
+                  className="landing-gamification__progress"
+                  aria-hidden="true"
+                >
                   <span style={{ width: `${item.progress}%` }} />
                 </div>
               </article>
             ))}
           </div>
           <div className="landing-gamification__why">
-            <div className="landing-gamification__why-label">Designed with intention</div>
+            <div className="landing-gamification__why-label">
+              Designed with intention
+            </div>
             <div className="landing-gamification__why-items">
               {[
                 {
@@ -700,7 +718,9 @@ export default function Landing() {
       {/* ── ECOSYSTEM ── */}
       <section className="landing-press">
         <div className="landing-press__inner">
-          <p className="landing-press__label">One support layer. Every care setting.</p>
+          <p className="landing-press__label">
+            One support layer. Every care setting.
+          </p>
           <div className="landing-press__logos">
             {[
               'Families',
@@ -722,7 +742,9 @@ export default function Landing() {
         <div className="landing-problem__inner">
           <div className="landing-problem__header">
             <p className="landing-section-eyebrow">The Chatterbot advantage</p>
-            <h2 className="landing-section-heading">From daily signal to coordinated action.</h2>
+            <h2 className="landing-section-heading">
+              From daily signal to coordinated action.
+            </h2>
             <p className="landing-section-body">
               Most tools own one moment. Chatterbot connects the full support
               loop without asking teens to change how they communicate.
@@ -733,22 +755,26 @@ export default function Landing() {
               {
                 value: '01',
                 label: 'Engage naturally',
-                source: 'Proactive SMS check-ins meet teens in an everyday channel.',
+                source:
+                  'Proactive SMS check-ins meet teens in an everyday channel.',
               },
               {
                 value: '02',
                 label: 'Understand patterns',
-                source: 'Context and mood signals build a clearer longitudinal view.',
+                source:
+                  'Context and mood signals build a clearer longitudinal view.',
               },
               {
                 value: '03',
                 label: 'Guide the next step',
-                source: 'Age-aware support turns difficult moments into manageable actions.',
+                source:
+                  'Age-aware support turns difficult moments into manageable actions.',
               },
               {
                 value: '04',
                 label: 'Escalate responsibly',
-                source: 'Consent, ownership checks, and audit trails support accountable response.',
+                source:
+                  'Consent, ownership checks, and audit trails support accountable response.',
               },
             ].map((s) => (
               <div key={s.value} className="landing-problem__stat">
@@ -771,9 +797,8 @@ export default function Landing() {
             className="landing-section-body"
             style={{ textAlign: 'center', marginBottom: 48 }}
           >
-            Every Chatterbot subscription includes access to a curated library
-            of age-appropriate mental health resources, hotlines, and self-help
-            tools.
+            Direct links to established crisis, mental-health, and bullying
+            resources are available here without an account.
           </p>
           <div className="landing-resources__grid">
             {[
@@ -781,34 +806,46 @@ export default function Landing() {
                 icon: '📞',
                 title: '988 Suicide & Crisis Lifeline',
                 body: '24/7 call or text. Free, confidential.',
+                href: 'https://988lifeline.org/',
               },
               {
                 icon: '🗣️',
                 title: 'Crisis Text Line',
                 body: 'Text HOME to 741741 for immediate support.',
+                href: 'https://www.crisistextline.org/',
               },
               {
                 icon: '🧠',
                 title: 'Teen Mental Health',
-                body: 'Articles on anxiety, depression, and stress written for teens.',
+                body: 'Trusted information for children, teens, and families from NIMH.',
+                href: 'https://www.nimh.nih.gov/health/topics/child-and-adolescent-mental-health',
               },
               {
                 icon: '😴',
                 title: 'Sleep Foundation Teen Guide',
                 body: 'Science-backed sleep tips for 13–17 year olds.',
+                href: 'https://www.sleepfoundation.org/teens-and-sleep',
               },
               {
                 icon: '🤝',
                 title: 'Anti-Bullying Resources',
-                body: 'PACER Center resources for teens experiencing bullying.',
+                body: 'Practical guidance for teens experiencing bullying.',
+                href: 'https://www.stopbullying.gov/resources/teens',
               },
               {
                 icon: '🏫',
                 title: 'School Support',
-                body: 'How to talk to your school counselor. Guided scripts for teens.',
+                body: 'Guidance for families seeking evaluation and support at school.',
+                href: 'https://www.nimh.nih.gov/health/publications/children-and-mental-health',
               },
             ].map((resource) => (
-              <article key={resource.title} className="landing-resources__card">
+              <a
+                key={resource.title}
+                className="landing-resources__card"
+                href={resource.href}
+                target="_blank"
+                rel="noreferrer"
+              >
                 <div className="landing-resources__title-wrap">
                   <span className="landing-resources__icon" aria-hidden="true">
                     {resource.icon}
@@ -816,7 +853,7 @@ export default function Landing() {
                   <h3 className="landing-resources__title">{resource.title}</h3>
                 </div>
                 <p className="landing-resources__body">{resource.body}</p>
-              </article>
+              </a>
             ))}
           </div>
         </div>
@@ -833,9 +870,10 @@ export default function Landing() {
             </h2>
             <p className="landing-section-body">
               Schools and counselors can partner with Chatterbot to extend
-              mental health support beyond office hours. Counselors get opt-in
-              crisis alert CC, and students get 24/7 support that complements —
-              not replaces — professional care.
+              mental health support beyond office hours. Current partner pilots
+              focus on guardian-led enrollment, designated counselor contacts,
+              and privacy-conscious safety workflows that complement — not
+              replace — professional care.
             </p>
             <a
               href="mailto:schools@chatterbot.ai"
@@ -847,11 +885,11 @@ export default function Landing() {
           <div className="landing-school__features-card">
             <ul className="landing-school__features">
               {[
-                'Counselor opt-in crisis CC',
+                'Guardian-designated counselor contacts',
                 'Privacy review ready workflows',
-                'Bulk guardian enrollment',
-                'District analytics dashboard',
-                'Dedicated onboarding support',
+                'Individual guardian enrollment',
+                'Aggregate pilot outcome review',
+                'Partner onboarding support',
               ].map((feature) => (
                 <li key={feature} className="landing-school__feature">
                   <span className="landing-school__check" aria-hidden="true">
@@ -872,10 +910,13 @@ export default function Landing() {
             The right people, aligned around the right signal.
           </h2>
           <p className="landing-section-body" style={{ textAlign: 'center' }}>
-            Give guardians, counselors, and approved supporters a shared view
-            of next steps—while keeping each teen’s private conversations private.
+            Give guardians, counselors, and approved supporters a shared view of
+            next steps—while keeping each teen’s private conversations private.
           </p>
-          <div className="landing-referral__network" aria-label="Care Circle workflow">
+          <div
+            className="landing-referral__network"
+            aria-label="Care Circle workflow"
+          >
             <div className="landing-referral__person landing-referral__person--guardian">
               <span>AG</span>
               <strong>Guardian</strong>
@@ -910,28 +951,27 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── PRICING ── */}
+      {/* ── PILOT ACCESS ── */}
       <section className="landing-pricing">
         <div className="landing-pricing__inner">
-          <p className="landing-section-eyebrow">Simple pricing</p>
-          <h2 className="landing-section-heading">One family. One price.</h2>
+          <p className="landing-section-eyebrow">Controlled pilot</p>
+          <h2 className="landing-section-heading">Start with pilot access.</h2>
           <p
             className="landing-section-body"
             style={{ textAlign: 'center', marginBottom: 48 }}
           >
-            No per-message fees. No surprise charges. Cancel anytime.
+            Chatterbot is currently validating the family experience before
+            introducing paid plans. Pilot access does not require a credit card.
           </p>
           <div className="landing-pricing__cards">
             <div className="landing-pricing__card">
-              <div className="landing-pricing__plan">Individual</div>
-              <div className="landing-pricing__price">
-                $7<span>/mo</span>
-              </div>
+              <div className="landing-pricing__plan">Family pilot</div>
+              <div className="landing-pricing__price">Included</div>
               <div className="landing-pricing__desc">
-                For one teen, one guardian
+                For approved pilot families
               </div>
               <ul className="landing-pricing__features">
-                <li>✓ Daily SMS check-ins</li>
+                <li>✓ Scheduled SMS check-ins</li>
                 <li>✓ Safety alert notifications</li>
                 <li>✓ Guardian dashboard</li>
                 <li>✓ Phone verification flow</li>
@@ -941,41 +981,41 @@ export default function Landing() {
                 className="btn btn--outline-navy btn--lg"
                 style={{ width: '100%', justifyContent: 'center' }}
               >
-                Start free trial
+                Request pilot access
               </Link>
             </div>
             <div className="landing-pricing__card landing-pricing__card--featured">
-              <div className="landing-pricing__badge">Most popular</div>
-              <div className="landing-pricing__plan">Family</div>
-              <div className="landing-pricing__price">
-                $12<span>/mo</span>
+              <div className="landing-pricing__badge">Available now</div>
+              <div className="landing-pricing__plan">Family support</div>
+              <div className="landing-pricing__price">Pilot</div>
+              <div className="landing-pricing__desc">
+                Capacity-controlled access
               </div>
-              <div className="landing-pricing__desc">Up to 5 teen profiles</div>
               <ul className="landing-pricing__features">
-                <li>✓ Everything in Individual</li>
-                <li>✓ Up to 5 teen profiles</li>
-                <li>✓ Priority support</li>
-                <li>✓ Weekly digest emails</li>
+                <li>✓ Guardian dashboard</li>
+                <li>✓ Care Circle permissions</li>
+                <li>✓ Family support plan</li>
+                <li>✓ On-demand weekly summary</li>
               </ul>
               <Link
                 to="/register"
                 className="btn btn--primary btn--lg"
                 style={{ width: '100%', justifyContent: 'center' }}
               >
-                Start free trial
+                Create an account
               </Link>
             </div>
             <div className="landing-pricing__card">
-              <div className="landing-pricing__plan">Organizations</div>
-              <div className="landing-pricing__price">Custom</div>
+              <div className="landing-pricing__plan">Partner pilots</div>
+              <div className="landing-pricing__price">Contact us</div>
               <div className="landing-pricing__desc">
                 Schools, districts & health systems
               </div>
               <ul className="landing-pricing__features">
-                <li>✓ Unlimited profiles</li>
-                <li>✓ SSO & admin console</li>
-                <li>✓ Dedicated support</li>
-                <li>✓ Custom integrations</li>
+                <li>✓ Defined pilot cohort</li>
+                <li>✓ Privacy workflow review</li>
+                <li>✓ Aggregate outcome measures</li>
+                <li>✓ Guided onboarding</li>
               </ul>
               <Link
                 to="/support"
@@ -987,8 +1027,8 @@ export default function Landing() {
             </div>
           </div>
           <p className="landing-pricing__guarantee">
-            🔒 30-day money-back guarantee · No credit card required to start ·
-            Cancel anytime
+            🔒 Capacity controlled · No credit card required · Broad public
+            launch follows clinical, privacy, and security review
           </p>
         </div>
       </section>
@@ -1081,7 +1121,10 @@ export default function Landing() {
                 value: 'Private',
                 label: 'signals for guardians, not conversation transcripts',
               },
-              { value: 'Ready', label: 'clear escalation paths when risk rises' },
+              {
+                value: 'Ready',
+                label: 'clear escalation paths when risk rises',
+              },
             ].map((s) => (
               <div key={s.value} className="landing-mission__number">
                 <div className="landing-mission__number-value">{s.value}</div>
@@ -1101,12 +1144,15 @@ export default function Landing() {
           >
             The complete support platform
           </p>
-          <h2 className="landing-section-heading" style={{ textAlign: 'center' }}>
+          <h2
+            className="landing-section-heading"
+            style={{ textAlign: 'center' }}
+          >
             Trust is a feature everyone can see.
           </h2>
           <p className="landing-section-body landing-trust__intro">
-            Chatterbot gives teens clear choices, parents understandable signals,
-            and every trusted adult a defined responsibility.
+            Chatterbot gives teens clear choices, parents understandable
+            signals, and every trusted adult a defined responsibility.
           </p>
           <div className="landing-trust__grid">
             {[
@@ -1163,7 +1209,7 @@ export default function Landing() {
               Explore the Trust Center →
             </Link>
             <Link to="/demo" className="btn btn--ghost btn--lg">
-              Try every feature in the demo
+              Explore the product experience
             </Link>
           </div>
         </div>

@@ -22,9 +22,6 @@ const Demo = lazy(() => import('./pages/Demo.jsx'))
 const Support = lazy(() => import('./pages/Support.jsx'))
 const Analytics = lazy(() => import('./pages/Analytics.jsx'))
 const Onboarding = lazy(() => import('./pages/Onboarding.jsx'))
-const ConversationHistory = lazy(
-  () => import('./pages/ConversationHistory.jsx')
-)
 const Notifications = lazy(() => import('./pages/Notifications.jsx'))
 const CareCircle = lazy(() => import('./pages/CareCircle.jsx'))
 const JoinCareCircle = lazy(() => import('./pages/JoinCareCircle.jsx'))
@@ -85,10 +82,6 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="teens" element={<Teens />} />
           <Route path="teens/:id" element={<TeenDetail />} />
-          <Route
-            path="teens/:id/conversations"
-            element={<ConversationHistory />}
-          />
           <Route path="chat" element={<DashboardChat />} />
           <Route path="alerts" element={<Alerts />} />
           <Route path="alerts/:id" element={<AlertDetail />} />

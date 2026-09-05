@@ -97,17 +97,11 @@ const readiness = [
 
 export default function Partners() {
   const [activeAudience, setActiveAudience] = useState('families')
-  const [submitted, setSubmitted] = useState(false)
   const audience = useMemo(
     () => audiences.find((item) => item.id === activeAudience),
     [activeAudience]
   )
   const AudienceIcon = audience.icon
-
-  const submitInterest = (event) => {
-    event.preventDefault()
-    setSubmitted(true)
-  }
 
   return (
     <div className="partners-root">
@@ -258,82 +252,22 @@ export default function Partners() {
                 </span>
               </div>
             </div>
-            {submitted ? (
-              <div className="pilot-success" role="status">
-                <span>
-                  <Check size={28} />
-                </span>
-                <h3>Interest recorded</h3>
-                <p>
-                  This preview demonstrates the completed request flow. Connect
-                  the production support endpoint before accepting real
-                  submissions.
-                </p>
-                <button type="button" onClick={() => setSubmitted(false)}>
-                  Submit another request
-                </button>
-              </div>
-            ) : (
-              <form className="pilot-form" onSubmit={submitInterest}>
-                <label>
-                  Name
-                  <input
-                    required
-                    name="name"
-                    autoComplete="name"
-                    placeholder="Your name"
-                  />
-                </label>
-                <label>
-                  Work email
-                  <input
-                    required
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    placeholder="you@organization.org"
-                  />
-                </label>
-                <label>
-                  Organization
-                  <input
-                    required
-                    name="organization"
-                    autoComplete="organization"
-                    placeholder="Organization name"
-                  />
-                </label>
-                <label>
-                  Setting
-                  <select
-                    value={activeAudience}
-                    onChange={(event) => setActiveAudience(event.target.value)}
-                  >
-                    {audiences.map((item) => (
-                      <option value={item.id} key={item.id}>
-                        {item.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  What would a successful pilot accomplish?
-                  <textarea
-                    required
-                    name="goal"
-                    rows="4"
-                    placeholder="Tell us about the people and outcome you want to support."
-                  />
-                </label>
-                <button type="submit">
-                  Request a pilot conversation <ArrowRight size={17} />
-                </button>
-                <small>
-                  This form is a product preview and does not transmit
-                  information yet.
-                </small>
-              </form>
-            )}
+            <div className="pilot-success">
+              <span>
+                <HeartHandshake size={28} />
+              </span>
+              <h3>Talk with the Chatterbot team</h3>
+              <p>
+                Email us with your setting, proposed cohort, response team, and
+                the outcome you want the pilot to support.
+              </p>
+              <a
+                href={`mailto:schools@chatterbot.ai?subject=${encodeURIComponent(`Chatterbot ${audience.label} pilot inquiry`)}`}
+                className="partners-button partners-button--primary"
+              >
+                Email the pilot team <ArrowRight size={17} />
+              </a>
+            </div>
           </div>
         </section>
       </main>

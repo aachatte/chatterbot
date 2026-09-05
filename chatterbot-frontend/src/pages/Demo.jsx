@@ -3,13 +3,11 @@ import { Link } from 'react-router-dom'
 import {
   BellRing,
   Check,
-  CircleDollarSign,
   ClipboardCheck,
   HeartHandshake,
   House,
   MessageCircleHeart,
   ShieldCheck,
-  Sparkles,
   UserRoundCheck,
   UsersRound,
   Clock3,
@@ -113,9 +111,9 @@ const ACTIVITY = [
 ]
 
 const BILLING = {
-  plan: 'Family Plan',
-  price: '$12 / month',
-  nextBilling: 'Sep 14, 2024',
+  plan: 'Family pilot',
+  price: 'No charge during pilot',
+  nextBilling: 'Not applicable',
   teens: 2,
   maxTeens: 5,
   status: 'Active',
@@ -272,10 +270,8 @@ const TABS = [
   { id: 'supportPlan', label: 'Support Plan', icon: Clock3 },
   { id: 'progress', label: 'Progress', icon: ChartColumnIncreasing },
   { id: 'alerts', label: 'Safety', icon: ShieldCheck },
-  { id: 'gamification', label: 'Rewards', icon: Sparkles },
   { id: 'chat', label: 'SMS experience', icon: MessageCircleHeart },
   { id: 'enrollment', label: 'Enrollment', icon: ClipboardCheck },
-  { id: 'billing', label: 'Billing', icon: CircleDollarSign },
 ]
 
 const FEATURE_EXPLAINERS = {
@@ -361,12 +357,12 @@ const FEATURE_EXPLAINERS = {
     ],
   },
   billing: {
-    title: 'Subscription & Billing',
+    title: 'Pilot access',
     bullets: [
-      'Family plan covers up to 5 teen profiles for a flat monthly fee',
-      'No per-message or per-alert charges—predictable pricing',
-      'Stripe-powered secure checkout and invoice management',
-      'Cancel or change plan anytime from the dashboard',
+      'Chatterbot is operating as a controlled family pilot',
+      'No credit card is required during the pilot',
+      'Paid checkout and subscription management are not active',
+      'Families will receive notice before paid plans are introduced',
     ],
   },
   enrollment: {
@@ -386,21 +382,36 @@ const DEMO_SCENARIOS = [
     label: 'School stress',
     level: 'Support',
     message: 'I am overwhelmed by this paper and do not know where to start.',
-    steps: ['Name the stress', 'Create one manageable plan', 'Share a broad support signal', 'Follow up tomorrow'],
+    steps: [
+      'Name the stress',
+      'Create one manageable plan',
+      'Share a broad support signal',
+      'Follow up tomorrow',
+    ],
   },
   {
     id: 'bullying',
     label: 'Bullying',
     level: 'Elevated',
     message: 'They keep posting about me and I am scared to go to school.',
-    steps: ['Check immediate safety', 'Offer trusted adult choices', 'Send a limited concern signal', 'Confirm human follow through'],
+    steps: [
+      'Check immediate safety',
+      'Offer trusted adult choices',
+      'Send a limited concern signal',
+      'Confirm human follow through',
+    ],
   },
   {
     id: 'crisis',
     label: 'Immediate danger',
     level: 'Urgent',
     message: 'I might hurt myself tonight.',
-    steps: ['Shift out of ordinary chat', 'Show immediate crisis resources', 'Alert approved safety contacts', 'Escalate until acknowledged'],
+    steps: [
+      'Shift out of ordinary chat',
+      'Show immediate crisis resources',
+      'Alert approved safety contacts',
+      'Escalate until acknowledged',
+    ],
   },
 ]
 
@@ -410,8 +421,18 @@ function TrustTab() {
   const visibility = [
     ['Complete conversation text', 'Visible', 'Not shared', 'Not shared'],
     ['Check in completed', 'Visible', 'Visible', 'If permitted'],
-    ['Broad support topic', 'Visible before sharing', 'Summary only', 'If permitted'],
-    ['Urgent safety concern', 'Teen notified', 'Immediate signal', 'Safety roles only'],
+    [
+      'Broad support topic',
+      'Visible before sharing',
+      'Summary only',
+      'If permitted',
+    ],
+    [
+      'Urgent safety concern',
+      'Teen notified',
+      'Immediate signal',
+      'Safety roles only',
+    ],
   ]
   const boundaries = [
     'Pretend to be human or a mental health professional',
@@ -425,28 +446,130 @@ function TrustTab() {
   return (
     <div className="demo-trust">
       <section className="demo-card demo-trust__agreement">
-        <div className="demo-card__header"><div><span className="demo-section-label">Shared agreement</span><span className="demo-card__title">Everyone knows who can see what</span></div><span className="demo-badge demo-badge--green">Teen visible</span></div>
-        <div className="demo-trust__table-wrap"><table><thead><tr><th>Information</th><th>Teen</th><th>Guardian</th><th>Care Circle</th></tr></thead><tbody>{visibility.map((row) => <tr key={row[0]}>{row.map((cell, index) => index === 0 ? <th key={cell}>{cell}</th> : <td key={cell}>{cell}</td>)}</tr>)}</tbody></table></div>
+        <div className="demo-card__header">
+          <div>
+            <span className="demo-section-label">Shared agreement</span>
+            <span className="demo-card__title">
+              Everyone knows who can see what
+            </span>
+          </div>
+          <span className="demo-badge demo-badge--green">Teen visible</span>
+        </div>
+        <div className="demo-trust__table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Information</th>
+                <th>Teen</th>
+                <th>Guardian</th>
+                <th>Care Circle</th>
+              </tr>
+            </thead>
+            <tbody>
+              {visibility.map((row) => (
+                <tr key={row[0]}>
+                  {row.map((cell, index) =>
+                    index === 0 ? (
+                      <th key={cell}>{cell}</th>
+                    ) : (
+                      <td key={cell}>{cell}</td>
+                    )
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section className="demo-card demo-trust__simulator">
-        <div className="demo-card__header"><div><span className="demo-section-label">Safety response simulator</span><span className="demo-card__title">See what happens next</span></div></div>
-        <div className="demo-trust__scenario-buttons">{DEMO_SCENARIOS.map((item) => <button type="button" key={item.id} className={scenarioId === item.id ? 'is-active' : ''} onClick={() => setScenarioId(item.id)}><span>{item.level}</span>{item.label}</button>)}</div>
-        <div className="demo-trust__scenario"><div className="demo-trust__message"><small>Fictional teen message</small><strong>“{scenario.message}”</strong></div><div className="demo-trust__steps">{scenario.steps.map((step, index) => <div key={step}><span>{index + 1}</span><strong>{step}</strong></div>)}</div></div>
-        <p className="demo-trust__note">This illustrates the intended workflow. Automated signals can be incomplete or incorrect and do not replace emergency care or human judgment.</p>
+        <div className="demo-card__header">
+          <div>
+            <span className="demo-section-label">
+              Safety response simulator
+            </span>
+            <span className="demo-card__title">See what happens next</span>
+          </div>
+        </div>
+        <div className="demo-trust__scenario-buttons">
+          {DEMO_SCENARIOS.map((item) => (
+            <button
+              type="button"
+              key={item.id}
+              className={scenarioId === item.id ? 'is-active' : ''}
+              onClick={() => setScenarioId(item.id)}
+            >
+              <span>{item.level}</span>
+              {item.label}
+            </button>
+          ))}
+        </div>
+        <div className="demo-trust__scenario">
+          <div className="demo-trust__message">
+            <small>Fictional teen message</small>
+            <strong>“{scenario.message}”</strong>
+          </div>
+          <div className="demo-trust__steps">
+            {scenario.steps.map((step, index) => (
+              <div key={step}>
+                <span>{index + 1}</span>
+                <strong>{step}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+        <p className="demo-trust__note">
+          This illustrates the intended workflow. Automated signals can be
+          incomplete or incorrect and do not replace emergency care or human
+          judgment.
+        </p>
       </section>
 
       <section className="demo-card demo-trust__boundaries">
-        <div className="demo-card__header"><div><span className="demo-section-label">Product boundaries</span><span className="demo-card__title">What Chatterbot will never do</span></div></div>
-        <div>{boundaries.map((boundary) => <p key={boundary}><span>Never</span>{boundary}</p>)}</div>
-        <div className="demo-trust__evaluation"><ShieldCheck size={20} /><div><strong>Evaluation before claims</strong><span>Safety results should include misses, false alerts, limitations, and the date of independent review.</span></div></div>
+        <div className="demo-card__header">
+          <div>
+            <span className="demo-section-label">Product boundaries</span>
+            <span className="demo-card__title">
+              What Chatterbot will never do
+            </span>
+          </div>
+        </div>
+        <div>
+          {boundaries.map((boundary) => (
+            <p key={boundary}>
+              <span>Never</span>
+              {boundary}
+            </p>
+          ))}
+        </div>
+        <div className="demo-trust__evaluation">
+          <ShieldCheck size={20} />
+          <div>
+            <strong>Evaluation before claims</strong>
+            <span>
+              Safety results should include misses, false alerts, limitations,
+              and the date of independent review.
+            </span>
+          </div>
+        </div>
       </section>
     </div>
   )
 }
 
 function DemoSwitch({ checked, onChange, label }) {
-  return <button type="button" className={`demo-support__switch${checked ? ' is-on' : ''}`} role="switch" aria-checked={checked} aria-label={label} onClick={() => onChange(!checked)}><span /></button>
+  return (
+    <button
+      type="button"
+      className={`demo-support__switch${checked ? ' is-on' : ''}`}
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={() => onChange(!checked)}
+    >
+      <span />
+    </button>
+  )
 }
 
 function SupportPlanTab() {
@@ -461,32 +584,151 @@ function SupportPlanTab() {
     <div className="demo-support">
       <div className="demo-overview__grid">
         <section className="demo-card">
-          <div className="demo-card__header"><div><span className="demo-section-label">Teen controls</span><span className="demo-card__title">Maya shapes the relationship</span></div><span className={`demo-badge ${paused ? 'demo-badge--yellow' : 'demo-badge--green'}`}>{paused ? 'Paused' : 'Active'}</span></div>
-          <label className="demo-support__field">Preferred check in time<select value={checkInTime} onChange={(event) => setCheckInTime(event.target.value)}><option>4:00 PM</option><option>6:30 PM</option><option>8:00 PM</option></select></label>
-          <label className="demo-support__field">Conversation tone<select value={tone} onChange={(event) => setTone(event.target.value)}><option>Encouraging</option><option>Calm and direct</option><option>Playful</option></select></label>
-          <button type="button" className="demo-btn demo-btn--outline" onClick={() => setPaused((value) => !value)}>{paused ? 'Resume check ins' : 'Pause for 24 hours'}</button>
+          <div className="demo-card__header">
+            <div>
+              <span className="demo-section-label">Teen controls</span>
+              <span className="demo-card__title">
+                Maya shapes the relationship
+              </span>
+            </div>
+            <span
+              className={`demo-badge ${paused ? 'demo-badge--yellow' : 'demo-badge--green'}`}
+            >
+              {paused ? 'Paused' : 'Active'}
+            </span>
+          </div>
+          <label className="demo-support__field">
+            Preferred check in time
+            <select
+              value={checkInTime}
+              onChange={(event) => setCheckInTime(event.target.value)}
+            >
+              <option>4:00 PM</option>
+              <option>6:30 PM</option>
+              <option>8:00 PM</option>
+            </select>
+          </label>
+          <label className="demo-support__field">
+            Conversation tone
+            <select
+              value={tone}
+              onChange={(event) => setTone(event.target.value)}
+            >
+              <option>Encouraging</option>
+              <option>Calm and direct</option>
+              <option>Playful</option>
+            </select>
+          </label>
+          <button
+            type="button"
+            className="demo-btn demo-btn--outline"
+            onClick={() => setPaused((value) => !value)}
+          >
+            {paused ? 'Resume check ins' : 'Pause for 24 hours'}
+          </button>
         </section>
         <section className="demo-card">
-          <div className="demo-card__header"><div><span className="demo-section-label">Sharing choices</span><span className="demo-card__title">Routine signals stay adjustable</span></div></div>
-          <div className="demo-support__setting"><div><strong>Weekly support signal</strong><span>Broad patterns without conversation text</span></div><DemoSwitch checked={weeklySignal} onChange={setWeeklySignal} label="Weekly support signal" /></div>
-          <div className="demo-support__setting"><div><strong>Care Circle updates</strong><span>Check in completion for approved adults</span></div><DemoSwitch checked={circleUpdates} onChange={setCircleUpdates} label="Care Circle updates" /></div>
-          <p className="demo-support__safety"><ShieldCheck size={16} /> Urgent safety signals follow the family response plan.</p>
+          <div className="demo-card__header">
+            <div>
+              <span className="demo-section-label">Sharing choices</span>
+              <span className="demo-card__title">
+                Routine signals stay adjustable
+              </span>
+            </div>
+          </div>
+          <div className="demo-support__setting">
+            <div>
+              <strong>Weekly support signal</strong>
+              <span>Broad patterns without conversation text</span>
+            </div>
+            <DemoSwitch
+              checked={weeklySignal}
+              onChange={setWeeklySignal}
+              label="Weekly support signal"
+            />
+          </div>
+          <div className="demo-support__setting">
+            <div>
+              <strong>Care Circle updates</strong>
+              <span>Check in completion for approved adults</span>
+            </div>
+            <DemoSwitch
+              checked={circleUpdates}
+              onChange={setCircleUpdates}
+              label="Care Circle updates"
+            />
+          </div>
+          <p className="demo-support__safety">
+            <ShieldCheck size={16} /> Urgent safety signals follow the family
+            response plan.
+          </p>
         </section>
       </div>
 
       <section className="demo-card demo-support__chain">
-        <div className="demo-card__header"><div><span className="demo-section-label">Human response chain</span><span className="demo-card__title">An urgent signal never ends at notification</span></div><span className={`demo-badge ${acknowledged ? 'demo-badge--green' : 'demo-badge--yellow'}`}>{acknowledged ? 'Owned by Alex' : 'Awaiting response'}</span></div>
-        <div className="demo-support__contacts">{[
-          ['01', 'Alex Johnson', 'Primary parent', 'Immediately'],
-          ['02', 'Sam Carter', 'Backup counselor', 'After 5 minutes'],
-          ['03', 'Local response plan', 'Final pathway', 'After 10 minutes'],
-        ].map(([number, name, role, timing]) => <div key={number}><span>{number}</span><div><strong>{name}</strong><small>{role}</small></div><div><small>Escalates</small><strong>{timing}</strong></div></div>)}</div>
-        <button type="button" className="demo-btn demo-btn--primary" onClick={() => setAcknowledged((value) => !value)}>{acknowledged ? 'Release acknowledgement' : 'Acknowledge as Alex'}</button>
+        <div className="demo-card__header">
+          <div>
+            <span className="demo-section-label">Human response chain</span>
+            <span className="demo-card__title">
+              An urgent signal never ends at notification
+            </span>
+          </div>
+          <span
+            className={`demo-badge ${acknowledged ? 'demo-badge--green' : 'demo-badge--yellow'}`}
+          >
+            {acknowledged ? 'Owned by Alex' : 'Awaiting response'}
+          </span>
+        </div>
+        <div className="demo-support__contacts">
+          {[
+            ['01', 'Alex Johnson', 'Primary parent', 'Immediately'],
+            ['02', 'Sam Carter', 'Backup counselor', 'After 5 minutes'],
+            ['03', 'Local response plan', 'Final pathway', 'After 10 minutes'],
+          ].map(([number, name, role, timing]) => (
+            <div key={number}>
+              <span>{number}</span>
+              <div>
+                <strong>{name}</strong>
+                <small>{role}</small>
+              </div>
+              <div>
+                <small>Escalates</small>
+                <strong>{timing}</strong>
+              </div>
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          className="demo-btn demo-btn--primary"
+          onClick={() => setAcknowledged((value) => !value)}
+        >
+          {acknowledged ? 'Release acknowledgement' : 'Acknowledge as Alex'}
+        </button>
       </section>
 
       <section className="demo-card demo-support__people">
-        <div className="demo-card__header"><div><span className="demo-section-label">Ask a real person</span><span className="demo-card__title">Human support is one action away</span></div></div>
-        <div>{[['AJ', 'Alex · parent'], ['SC', 'Sam · counselor'], ['PS', 'Priya · aunt']].map(([initials, person]) => <button type="button" key={person}><span>{initials}</span><strong>{person}</strong><MessageCircleHeart size={17} /></button>)}</div>
+        <div className="demo-card__header">
+          <div>
+            <span className="demo-section-label">Ask a real person</span>
+            <span className="demo-card__title">
+              Human support is one action away
+            </span>
+          </div>
+        </div>
+        <div>
+          {[
+            ['AJ', 'Alex · parent'],
+            ['SC', 'Sam · counselor'],
+            ['PS', 'Priya · aunt'],
+          ].map(([initials, person]) => (
+            <button type="button" key={person}>
+              <span>{initials}</span>
+              <strong>{person}</strong>
+              <MessageCircleHeart size={17} />
+            </button>
+          ))}
+        </div>
       </section>
     </div>
   )
@@ -495,23 +737,99 @@ function SupportPlanTab() {
 function ProgressTab() {
   const signals = [
     ['Today · 4:18 PM', 'Check in completed', 'Completion only', 'Guardian'],
-    ['Tuesday · 7:32 PM', 'Support requested', 'School stress · no transcript', 'Sam and guardian'],
-    ['Monday · 4:22 PM', 'Coping plan created', 'Broad progress signal', 'Guardian'],
+    [
+      'Tuesday · 7:32 PM',
+      'Support requested',
+      'School stress · no transcript',
+      'Sam and guardian',
+    ],
+    [
+      'Monday · 4:22 PM',
+      'Coping plan created',
+      'Broad progress signal',
+      'Guardian',
+    ],
   ]
   return (
     <div className="demo-progress">
-      <div className="demo-stats">{[
-        ['5', 'Check ins completed', 'one more than last week'],
-        ['2', 'Coping tools practiced', 'breathing and planning'],
-        ['1', 'Trusted adult connection', 'requested by Maya'],
-        ['8 min', 'Care Circle response', 'human follow through'],
-      ].map(([value, label, sub]) => <div className="demo-stat-card" key={label}><div className="demo-stat-card__label">{label}</div><div className="demo-stat-card__value">{value}</div><div className="demo-stat-card__sub">{sub}</div></div>)}</div>
-      <section className="demo-card demo-progress__win"><MessageCircleHeart size={22} /><div><span className="demo-section-label">Small win</span><h2>Maya asked Sam for help before the school day started.</h2><p>Progress celebrates healthy action, not a positive mood or longer conversation.</p></div></section>
-      <section className="demo-card demo-progress__history">
-        <div className="demo-card__header"><div><span className="demo-section-label">Shared signal history</span><span className="demo-card__title">The teen and guardian see the same record</span></div><span className="demo-card__action">No transcripts</span></div>
-        <div className="demo-progress__history-head"><span>Signal</span><span>Information included</span><span>Audience</span></div>{signals.map(([date, title, detail, audience]) => <div className="demo-progress__history-row" key={date}><div><strong>{title}</strong><small>{date}</small></div><span>{detail}</span><span>{audience}</span></div>)}
+      <div className="demo-stats">
+        {[
+          ['5', 'Check ins completed', 'one more than last week'],
+          ['2', 'Coping tools practiced', 'breathing and planning'],
+          ['1', 'Trusted adult connection', 'requested by Maya'],
+          ['8 min', 'Care Circle response', 'human follow through'],
+        ].map(([value, label, sub]) => (
+          <div className="demo-stat-card" key={label}>
+            <div className="demo-stat-card__label">{label}</div>
+            <div className="demo-stat-card__value">{value}</div>
+            <div className="demo-stat-card__sub">{sub}</div>
+          </div>
+        ))}
+      </div>
+      <section className="demo-card demo-progress__win">
+        <MessageCircleHeart size={22} />
+        <div>
+          <span className="demo-section-label">Small win</span>
+          <h2>Maya asked Sam for help before the school day started.</h2>
+          <p>
+            Progress celebrates healthy action, not a positive mood or longer
+            conversation.
+          </p>
+        </div>
       </section>
-      <div className="demo-overview__grid"><section className="demo-card demo-progress__rules"><div className="demo-card__title">Healthy reward rules</div>{['Reward checking in and asking for help', 'Never reward a positive mood', 'Never compare teens against each other', 'Never optimize for longer conversations'].map((rule) => <p key={rule}><Check size={15} />{rule}</p>)}</section><section className="demo-card demo-progress__data"><Database size={24} /><h2>Teen data controls</h2><p>Review sharing history, request a secure download, or begin a deletion request from one place.</p><button type="button" className="demo-btn demo-btn--outline">Review data choices</button></section></div>
+      <section className="demo-card demo-progress__history">
+        <div className="demo-card__header">
+          <div>
+            <span className="demo-section-label">Shared signal history</span>
+            <span className="demo-card__title">
+              The teen and guardian see the same record
+            </span>
+          </div>
+          <span className="demo-card__action">No transcripts</span>
+        </div>
+        <div className="demo-progress__history-head">
+          <span>Signal</span>
+          <span>Information included</span>
+          <span>Audience</span>
+        </div>
+        {signals.map(([date, title, detail, audience]) => (
+          <div className="demo-progress__history-row" key={date}>
+            <div>
+              <strong>{title}</strong>
+              <small>{date}</small>
+            </div>
+            <span>{detail}</span>
+            <span>{audience}</span>
+          </div>
+        ))}
+      </section>
+      <div className="demo-overview__grid">
+        <section className="demo-card demo-progress__rules">
+          <div className="demo-card__title">Healthy reward rules</div>
+          {[
+            'Reward checking in and asking for help',
+            'Never reward a positive mood',
+            'Never compare teens against each other',
+            'Never optimize for longer conversations',
+          ].map((rule) => (
+            <p key={rule}>
+              <Check size={15} />
+              {rule}
+            </p>
+          ))}
+        </section>
+        <section className="demo-card demo-progress__data">
+          <Database size={24} />
+          <h2>Teen data controls</h2>
+          <p>
+            Review sharing history, request a secure download, or begin a
+            deletion request from one place.
+          </p>
+          <button type="button" className="demo-btn demo-btn--outline">
+            Review data choices
+          </button>
+        </section>
+      </div>
     </div>
   )
 }
@@ -890,8 +1208,8 @@ function TeensTab() {
         <div className="demo-prefs">
           {[
             'Immediate SMS on any safety alert',
-            'Daily summary email',
-            'Weekly digest email',
+            'In-app account notices',
+            'On-demand weekly summary',
           ].map((p) => (
             <label key={p} className="demo-pref-row">
               <input type="checkbox" defaultChecked readOnly />
@@ -1058,7 +1376,7 @@ function GamificationTab() {
       <div className="demo-stats">
         {[
           {
-            label: 'Live challenges',
+            label: 'Concept challenges',
             value: `${GAMIFICATION_OVERVIEW.activeChallenges}`,
             sub: 'this week',
           },
@@ -1089,7 +1407,7 @@ function GamificationTab() {
       <div className="demo-overview__grid">
         <div className="demo-card">
           <div className="demo-card__header">
-            <span className="demo-card__title">Weekly challenges</span>
+            <span className="demo-card__title">Planned challenge concepts</span>
           </div>
           <div className="demo-gamification__challenge-list">
             {GAMIFICATION_CHALLENGES.map((challenge) => (
@@ -1124,7 +1442,9 @@ function GamificationTab() {
 
         <div className="demo-card">
           <div className="demo-card__header">
-            <span className="demo-card__title">Top streaks</span>
+            <span className="demo-card__title">
+              Illustrative streak profiles
+            </span>
           </div>
           <div className="demo-gamification__leaderboard">
             {GAMIFICATION_LEADERBOARD.map((entry) => (
@@ -1246,8 +1566,8 @@ function BillingTab() {
           {[
             ['Teen slots used', `${BILLING.teens} of ${BILLING.maxTeens}`],
             ['Next billing date', BILLING.nextBilling],
-            ['Payment method', 'Visa ···· 4242'],
-            ['Invoices', '3 available'],
+            ['Payment method', 'Not required'],
+            ['Invoices', 'Not available during pilot'],
           ].map(([k, v]) => (
             <div key={k} className="demo-detail-cell">
               <div className="demo-detail-cell__label">{k}</div>
@@ -1272,8 +1592,8 @@ function BillingTab() {
         <div className="demo-plan-grid">
           {[
             {
-              name: 'Individual',
-              price: '$7/mo',
+              name: 'Family pilot',
+              price: 'Included',
               teens: 1,
               features: [
                 'Daily check-ins',
@@ -1282,8 +1602,8 @@ function BillingTab() {
               ],
             },
             {
-              name: 'Family',
-              price: '$12/mo',
+              name: 'Pilot access',
+              price: 'Capacity controlled',
               teens: 5,
               features: [
                 'Everything in Individual',
@@ -1293,13 +1613,13 @@ function BillingTab() {
               current: true,
             },
             {
-              name: 'Interactive Plus',
-              price: 'Custom',
+              name: 'Partner pilot',
+              price: 'Contact us',
               teens: '∞',
               features: [
-                'Unlimited profiles',
-                'SSO & admin console',
-                'Dedicated support',
+                'Defined pilot cohort',
+                'Aggregate outcome review',
+                'Guided onboarding',
               ],
             },
           ].map((p) => (
@@ -1587,7 +1907,7 @@ export default function Demo() {
           </div>
           <div className="demo-command-bar__controls">
             <span className="demo-system-status demo-system-status--dark">
-              <span /> All systems active
+              <span /> Illustrative interface
             </span>
             <label>
               <span>Viewing</span>
@@ -1653,10 +1973,12 @@ export default function Demo() {
 
       {/* Footer disclaimer */}
       <footer className="demo-footer">
-        This demonstration uses entirely fictional data. It does not send
-        messages, evaluate safety signals, create accounts, or represent live
-        monitoring. Chatterbot is not an emergency service. In a real emergency,
-        call 911 or text 988.
+        This demonstration uses entirely fictional data and previews implemented
+        product workflows. Controls do not send messages, evaluate safety
+        signals, create accounts, or represent live monitoring. Paid billing,
+        leaderboards, and wellness challenges are not currently offered.
+        Chatterbot is not an emergency service. In a real emergency, call 911 or
+        text 988.
       </footer>
     </div>
   )

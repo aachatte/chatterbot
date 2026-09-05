@@ -2,54 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../services/api.js'
 
-const MOCK_TEEN_DETAIL = {
-  teen: {
-    id: 1,
-    first_name: 'Maya',
-    phone: '+1 (555) 123-4567',
-    age: 16,
-    grade: '11th',
-    interests: ['lacrosse', 'debate', 'music'],
-    schedule: { lacrosse: 'Mon/Wed 4:30pm', debate: 'Tue/Thu 3:00pm' },
-    is_active: true,
-    consent_verified: true,
-    proactive_nudges_enabled: true,
-    nudge_frequency: 'moderate',
-    crisis_keywords_enabled: true,
-  },
-  dashboard_summary: {
-    mood_score: 72,
-    mood_label: 'positive',
-    message_count_7d: 187,
-    activity_by_day: {
-      Mon: 25,
-      Tue: 32,
-      Wed: 18,
-      Thu: 28,
-      Fri: 35,
-      Sat: 22,
-      Sun: 27,
-    },
-  },
-  conversations: [
-    {
-      id: 1,
-      started_at: '2026-08-13T06:00:00Z',
-      last_message_at: '2026-08-13T07:30:00Z',
-      message_count: 12,
-      is_crisis_flagged: false,
-    },
-    {
-      id: 2,
-      started_at: '2026-08-12T18:00:00Z',
-      last_message_at: '2026-08-12T22:00:00Z',
-      message_count: 8,
-      is_crisis_flagged: false,
-    },
-  ],
-  alerts: [],
-}
-
 export default function TeenDetail() {
   const { id } = useParams()
   const navigate = useNavigate()

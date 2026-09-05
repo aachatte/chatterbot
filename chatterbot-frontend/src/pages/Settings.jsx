@@ -14,6 +14,7 @@ const actionStyle = {
 
 export default function Settings() {
   const [privacy, setPrivacy] = useState(null)
+  const [referrals, setReferrals] = useState([])
   const [notice, setNotice] = useState('')
   const loadPrivacy = () => api.getPrivacyOverview().then(setPrivacy)
 
@@ -21,7 +22,21 @@ export default function Settings() {
     loadPrivacy().catch(() =>
       setNotice('Privacy controls could not be loaded.')
     )
+    api
+      .getReferrals()
+      .then(setReferrals)
+      .catch(() => {})
   }, [])
+
+  const createReferral = async () => {
+    try {
+      const referral = await api.generateReferral()
+      setReferrals((current) => [referral, ...current])
+      setNotice(`Referral code ${referral.code} is ready to share.`)
+    } catch (error) {
+      setNotice(error?.data?.error || 'A referral code could not be created.')
+    }
+  }
 
   const downloadExport = async () => {
     try {
@@ -103,6 +118,36 @@ export default function Settings() {
         <button type="button" onClick={downloadExport} style={actionStyle}>
           Download my data
         </button>
+      </section>
+
+      <section
+        className="glass-card"
+        style={{ marginBottom: 'var(--cb-space-5)' }}
+      >
+        <h2 style={{ fontSize: 20, marginBottom: 8 }}>Family referrals</h2>
+        <p
+          style={{
+            color: 'var(--cb-text-secondary)',
+            lineHeight: 1.6,
+            marginBottom: 16,
+          }}
+        >
+          Create a single-use pilot referral code for another family. Codes do
+          not grant access to your account or any teen information.
+        </p>
+        <button type="button" onClick={createReferral} style={actionStyle}>
+          Create referral code
+        </button>
+        {referrals.length > 0 && (
+          <ul style={{ margin: '16px 0 0', paddingLeft: 20 }}>
+            {referrals.map((referral) => (
+              <li key={referral.id} style={{ marginTop: 8 }}>
+                <strong>{referral.code}</strong> ·{' '}
+                {referral.used ? 'Redeemed' : 'Available'}
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       {scheduled.map((item) => (

@@ -3,42 +3,51 @@ import { useLocation } from 'react-router-dom'
 
 const DEFAULT_META = {
   title: 'Chatterbot | Guardian Dashboard',
-  description: 'Chatterbot helps guardians support teens with proactive SMS check-ins and safety alerts.',
+  description:
+    'Chatterbot helps guardians support teens with proactive SMS check-ins and safety alerts.',
   robots: 'index, follow',
 }
 
 const ROUTE_META = {
   '/': {
     title: 'Chatterbot | A friend for teens. Peace of mind for parents',
-    description: 'Daily SMS check-ins, guardian dashboards, and instant safety alerts to help families support teens.',
+    description:
+      'Daily SMS check-ins, guardian dashboards, and instant safety alerts to help families support teens.',
   },
   '/demo': {
     title: 'Chatterbot Demo | Guardian safety dashboard',
-    description: 'See how Chatterbot conversations and alerts work in a live guardian dashboard demo.',
+    description:
+      'Explore fictional examples of Chatterbot guardian, enrollment, Care Circle, and safety workflows.',
   },
   '/trust-center': {
     title: 'Trust Center | Chatterbot',
-    description: 'Understand what Chatterbot shares, how safety signals work, and how teens stay connected to trusted people.',
+    description:
+      'Understand what Chatterbot shares, how safety signals work, and how teens stay connected to trusted people.',
   },
   '/partners': {
     title: 'Partner with Chatterbot',
-    description: 'Explore responsible Chatterbot pilots for families, schools, care teams, and youth organizations.',
+    description:
+      'Explore responsible Chatterbot pilots for families, schools, care teams, and youth organizations.',
   },
   '/privacy': {
     title: 'Privacy Center | Chatterbot',
-    description: 'Learn what data Chatterbot uses and how guardians can manage account and privacy preferences.',
+    description:
+      'Learn what data Chatterbot uses and how guardians can manage account and privacy preferences.',
   },
   '/terms': {
     title: 'Service Terms | Chatterbot',
-    description: 'Read the terms for using Chatterbot responsibly as part of your family safety workflow.',
+    description:
+      'Read the terms for using Chatterbot responsibly as part of your family safety workflow.',
   },
   '/safety': {
     title: 'Safety and Escalation | Chatterbot',
-    description: 'Understand how Chatterbot safety notifications fit into broader support and escalation plans.',
+    description:
+      'Understand how Chatterbot safety notifications fit into broader support and escalation plans.',
   },
   '/support': {
     title: 'Support Center | Chatterbot',
-    description: 'Get help with enrollment, notifications, and account access in the Chatterbot support center.',
+    description:
+      'Get help with enrollment, notifications, and account access in the Chatterbot support center.',
   },
   '/login': {
     title: 'Sign in | Chatterbot',
@@ -100,7 +109,11 @@ export default function SeoManager() {
     setOrCreateMeta('og:title', meta.title, 'property')
     setOrCreateMeta('og:description', meta.description, 'property')
     setOrCreateMeta('og:type', 'website', 'property')
-    setOrCreateMeta('og:url', `${window.location.origin}${pathname}`, 'property')
+    setOrCreateMeta(
+      'og:url',
+      `${window.location.origin}${pathname}`,
+      'property'
+    )
     setOrCreateMeta('twitter:card', 'summary_large_image')
     setOrCreateMeta('twitter:title', meta.title)
     setOrCreateMeta('twitter:description', meta.description)

@@ -1,5 +1,6 @@
 """Chatterbot Flask application factory."""
 import logging
+import os
 from datetime import timedelta
 import click
 from flask import Flask
@@ -215,7 +216,12 @@ def create_app(config_override=None):
     @app.route("/health/live")
     def liveness():
         """Confirm that the API process can serve requests."""
-        return {"status": "alive", "service": "chatterbot-api"}, 200
+        release = os.getenv("RENDER_GIT_COMMIT", "unknown")
+        return {
+            "status": "alive",
+            "service": "chatterbot-api",
+            "release": release[:12],
+        }, 200
 
     @app.route("/health/ready")
     def readiness():

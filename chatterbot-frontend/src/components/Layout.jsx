@@ -30,13 +30,21 @@ import './Layout.css'
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/dashboard/teens', label: 'Teens', icon: Users },
-  { path: '/dashboard/care-circle', label: 'Care Circle', icon: HeartHandshake },
-  { path: '/dashboard/support-plan', label: 'Support Plan', icon: ClipboardCheck },
+  {
+    path: '/dashboard/care-circle',
+    label: 'Care Circle',
+    icon: HeartHandshake,
+  },
+  {
+    path: '/dashboard/support-plan',
+    label: 'Support Plan',
+    icon: ClipboardCheck,
+  },
   { path: '/dashboard/chat', label: 'Assistant', icon: MessageSquareText },
   { path: '/dashboard/alerts', label: 'Alerts', icon: Shield },
   { path: '/dashboard/notifications', label: 'Notifications', icon: Bell },
   { path: '/dashboard/analytics', label: 'Analytics', icon: ChartColumn },
-  { path: '/dashboard/billing', label: 'Billing', icon: CreditCard },
+  { path: '/dashboard/billing', label: 'Pilot Access', icon: CreditCard },
   { path: '/dashboard/settings', label: 'Settings', icon: Settings },
   { path: '/dashboard/support', label: 'Support', icon: LifeBuoy },
 ]

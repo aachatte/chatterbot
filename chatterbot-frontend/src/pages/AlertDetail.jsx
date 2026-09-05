@@ -2,26 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../services/api.js'
 
-const MOCK_ALERT = {
-  id: 1,
-  teen_id: 1,
-  teen_name: 'Maya',
-  status: 'parent_notified',
-  severity: 'medium',
-  categories: ['severe_distress'],
-  confidence: 0.73,
-  care_circle_notified_count: 1,
-  recommended_actions: [
-    'Contact the teen directly and ask whether they are safe right now.',
-    'Call or text 988 in the U.S. for crisis support and guidance.',
-  ],
-
-  context_summary:
-    'Chatterbot detected signs of academic stress from Maya around a history paper deadline. The AI provided supportive guidance and broke down the assignment into smaller tasks. No self-harm language was detected.',
-  parent_notified_at: '2026-08-10T14:31:00Z',
-  created_at: '2026-08-10T14:30:00Z',
-}
-
 export default function AlertDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
