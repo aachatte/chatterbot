@@ -9,7 +9,7 @@ describe('Vercel routing', () => {
 
     expect(config.rewrites[0]).toEqual({
       source: '/api/:path*',
-      destination: 'https://api.chatterbot.app/api/:path*',
+      destination: 'https://chatterbot-1855.onrender.com/api/:path*',
     })
     expect(config.rewrites.at(-1)).toEqual({
       source: '/(.*)',
